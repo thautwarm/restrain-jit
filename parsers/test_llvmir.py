@@ -25,9 +25,9 @@ with open("llvmir.rbnf-lex") as f:
 LEX = [
     r(float="[-+]?[0-9]+\.([eE][-+]?\d+)"),
     r(int='\d+'),
-    r(globalIdent="@\S+"),
-    r(localIdent="%\S+"),
-    r(identifier="[a-zA-Z_]{1}[a-zA-Z0-9_]*"),
+    r(globalIdent="@[-a-zA-Z$._][-a-zA-Z$._0-9]*"),
+    r(localIdent="%[-a-zA-Z$._][-a-zA-Z$._0-9]*"),
+    r(identifier="[-a-zA-Z$._][-a-zA-Z$._0-9]*"),
     r(str=r'"([^\\"]+|\\.)*?"'),
     # stackoverflow 12643009/regular-expression-for-floating-point-numbers
     r(whitespace="\s+"),
@@ -50,7 +50,12 @@ with open("llvmir.py") as f:
 scope = link(lexicals, code, scope=None)
 #
 for source in [
-        "@gg = constant void bitcast (i8* 3 to i16*)", "%a = type {i8*, i1}"
+        "@gg = constant void bitcast (i8* 3 to i16*)", "%a = type {i8*, i1}",
+    """
+    define i8 @f (void){
+        ret void
+    }
+    """
 ]:
     tokens = list(run_lexer("xxx", source))
     for each in tokens:

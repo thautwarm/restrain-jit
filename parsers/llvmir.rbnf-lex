@@ -73,6 +73,11 @@ quote inbounds
 quote inrange
 quote bitcast
 quote to
+quote declare
+quote define
+quote store
+quote volatile
+quote ret
 quote appending
 quote available_externally
 quote common

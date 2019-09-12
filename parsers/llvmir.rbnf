@@ -198,7 +198,7 @@ BlockAddressConst : "blockaddress" "(" GlobalName "," LocalName ")"
 ConstantOperand2  : '(' TypeConstant ',' Type Constant ')'
 ;
 
-ConstantExpr      : binOp BinOpQualifier ConstantOperand2
+ConstantExpr      : BinOp BinOpQualifier ConstantOperand2
 ;
 
 
@@ -208,7 +208,7 @@ ConstantExpr      : binOp BinOpQualifier ConstantOperand2
     OverflowFlags : [OverflowFlags] ("nsw" | "nuw")
     ;
 
-    binOp : "add" | "fadd" | "sub"  | "fsub" | "mul"  | "fmul"
+    BinOp : "add" | "fadd" | "sub"  | "fsub" | "mul"  | "fmul"
           | "udiv"| "sdiv" | "urem" | "srem" | "frem" | "shl"
           | "lshr"| "ashr" | "and"  | "or"   | "xor"
     ;
@@ -270,8 +270,66 @@ FunctionHeader : Type GlobalName '(' Params ')' [UnnamedAddr]
 FunctionDef : 'define' FunctionHeader FunctionBody
 ;
 
-FunctionBody : '{' '}'
+FunctionBody : '{' [BasicBlockList] '}'
 ;
+
+BasicBlockList : [BasicBlockList] BasicBlock
+;
+
+BasicBlock : [name] [InstructionList] Terminator
+;
+
+InstructionList : StoreInst
+                | [LocalName "="] ValueInstruction
+;
+
+StoreInst : 'store' ['volatile'] Type Value ',' Type Value [',' Alignment]
+; # TODO
+
+
+Terminator : 'ret' 'void'
+; # TODO
+
+Value : Constant | LocalName
+;
+
+ValueInstruction : BinInst
+                 | ExtValInst
+                 | InsValInst
+                 | GEPInst
+
+; # TODO
+
+#
+#                 | AllocaInst
+#                 | LoadInst
+#
+#                 | TruncExtInst
+#                 | CompatcastInst
+#                 | BitcastInst
+#                 | CmpInst
+#                 | SelectInst
+#                 | CallInst
+
+
+BinInst : BinOp BinOpQualifier TypeValue ',' Value
+;
+
+ExtValInst : "extractvalue" TypeValue ',' IndexList
+;
+
+InsValInst : "insertvalue" TypeValue ',' TypeValue ',' IndexList
+;
+
+GEPInst : "getelementptr" ["inbounds"] Type ',' TypeValue [',' SepTypeValueList ]
+;
+
+SepTypeValueList : [SepTypeValueList ','] TypeValue
+;
+TypeValue     : Type Value
+;
+
+
 
 # we wouldn't use ...
 
