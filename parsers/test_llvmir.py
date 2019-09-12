@@ -51,8 +51,9 @@ scope = link(lexicals, code, scope=None)
 #
 for source in [
         "@gg = constant void bitcast (i8* 3 to i16*)", "%a = type {i8*, i1}",
-    """
+        """
     define i8 @f (void){
+        %i = getelementptr i32*, i32* %j, i32 1
         ret void
     }
     """

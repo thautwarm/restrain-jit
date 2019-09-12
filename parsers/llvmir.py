@@ -107,6 +107,56 @@ def lr_loop_GEPConstIndexList(_slot_0, prim__state, prim__tokens):
         lcl_0 = prim__not__eq(lcl_0, False)
     lcl_0 = prim__reset(prim__tokens, _off_0)
     return lr_GEPConstIndexList_reduce
+def lr_step_IncList(_slot_0, prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote ,")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_1 = lcl_0
+    lcl_0 = prim__is__null(_slot_1)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote , not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = (_slot_0, _slot_1)
+        _slot_local__1 = lcl_0
+        lcl_0 = parse_Inc(prim__state, prim__tokens)
+        _slot_2_check = lcl_0
+        lcl_0 = _slot_2_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_2_check
+        else:
+            lcl_0 = _slot_2_check[1]
+            lcl_0 = prim__to__result(lcl_0)
+            _slot_2 = lcl_0
+            lcl_0 = (_slot_local__1, _slot_2)
+            lcl_0 = prim__mk__ast("IncList", lcl_0)
+            _slot_local__2 = lcl_0
+            lcl_0 = (True, _slot_local__2)
+    return lcl_0
+def lr_loop_IncList(_slot_0, prim__state, prim__tokens):
+    lr_IncList_reduce = _slot_0
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = lr_step_IncList(lr_IncList_reduce, prim__state, prim__tokens)
+    lr_IncList_try = lcl_0
+    lcl_0 = lr_IncList_try[0]
+    lcl_0 = prim__not__eq(lcl_0, False)
+    while lcl_0:
+        lcl_0 = prim__tokens.offset
+        _off_0 = lcl_0
+        lcl_0 = lr_IncList_try[1]
+        lcl_0 = prim__to__result(lcl_0)
+        lr_IncList_reduce = lcl_0
+        lcl_0 = lr_step_IncList(lr_IncList_reduce, prim__state, prim__tokens)
+        lr_IncList_try = lcl_0
+        # recalculate condition
+        lcl_0 = lr_IncList_try[0]
+        lcl_0 = prim__not__eq(lcl_0, False)
+    lcl_0 = prim__reset(prim__tokens, _off_0)
+    return lr_IncList_reduce
 def lr_step_IndexList(_slot_0, prim__state, prim__tokens):
     lcl_0 = prim__tk__id("quote ,")
     lcl_0 = prim__match__tk(prim__tokens, lcl_0)
@@ -339,6 +389,43 @@ def lr_loop_SepTypeValueList(_slot_0, prim__state, prim__tokens):
         lcl_0 = prim__not__eq(lcl_0, False)
     lcl_0 = prim__reset(prim__tokens, _off_0)
     return lr_SepTypeValueList_reduce
+def lr_step_TopLevelEntityList(_slot_0, prim__state, prim__tokens):
+    lcl_0 = parse_TopLevelEntity(prim__state, prim__tokens)
+    _slot_1_check = lcl_0
+    lcl_0 = _slot_1_check[0]
+    lcl_0 = prim__eq(lcl_0, False)
+    if lcl_0:
+        lcl_0 = _slot_1_check
+    else:
+        lcl_0 = _slot_1_check[1]
+        lcl_0 = prim__to__result(lcl_0)
+        _slot_1 = lcl_0
+        lcl_0 = (_slot_0, _slot_1)
+        lcl_0 = prim__mk__ast("TopLevelEntityList", lcl_0)
+        _slot_local__1 = lcl_0
+        lcl_0 = (True, _slot_local__1)
+    return lcl_0
+def lr_loop_TopLevelEntityList(_slot_0, prim__state, prim__tokens):
+    lr_TopLevelEntityList_reduce = _slot_0
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = lr_step_TopLevelEntityList(lr_TopLevelEntityList_reduce, prim__state, prim__tokens)
+    lr_TopLevelEntityList_try = lcl_0
+    lcl_0 = lr_TopLevelEntityList_try[0]
+    lcl_0 = prim__not__eq(lcl_0, False)
+    while lcl_0:
+        lcl_0 = prim__tokens.offset
+        _off_0 = lcl_0
+        lcl_0 = lr_TopLevelEntityList_try[1]
+        lcl_0 = prim__to__result(lcl_0)
+        lr_TopLevelEntityList_reduce = lcl_0
+        lcl_0 = lr_step_TopLevelEntityList(lr_TopLevelEntityList_reduce, prim__state, prim__tokens)
+        lr_TopLevelEntityList_try = lcl_0
+        # recalculate condition
+        lcl_0 = lr_TopLevelEntityList_try[0]
+        lcl_0 = prim__not__eq(lcl_0, False)
+    lcl_0 = prim__reset(prim__tokens, _off_0)
+    return lr_TopLevelEntityList_reduce
 def lr_step_Type(_slot_0, prim__state, prim__tokens):
     lcl_0 = prim__tokens.offset
     _off_0 = lcl_0
@@ -1030,6 +1117,732 @@ def parse_Alignment(prim__state, prim__tokens):
             lcl_1 = (True, _slot_local__1)
             lcl_0 = lcl_1
     return lcl_0
+def parse_AllocaInst(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote alloca")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote alloca not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = parse_Type(prim__state, prim__tokens)
+        _slot_1_check = lcl_0
+        lcl_0 = _slot_1_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_1_check
+        else:
+            lcl_1 = _slot_1_check[1]
+            lcl_1 = prim__to__result(lcl_1)
+            _slot_1 = lcl_1
+            lcl_1 = prim__tokens.offset
+            _off_1 = lcl_1
+            lcl_1 = prim__peekable(prim__tokens, 0)
+            if lcl_1:
+                # switch
+                lcl_3 = prim__peek(prim__tokens, 0)
+                lcl_3 = lcl_3.idint
+                if lcl_3 == prim__tk__id("quote ,"):
+                    lcl_3 = prim__mv__forward(prim__tokens)
+                    _slot_2 = lcl_3
+                    lcl_3 = prim__tokens.offset
+                    _off_2 = lcl_3
+                    lcl_3 = prim__peekable(prim__tokens, 0)
+                    if lcl_3:
+                        # switch
+                        lcl_4 = prim__peek(prim__tokens, 0)
+                        lcl_4 = lcl_4.idint
+                        if lcl_4 == prim__tk__id("quote {"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote void"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote label"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_5 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_5, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote i8"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote i64"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_5 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_5, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote i32"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote i16"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_5 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_5, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote i1"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote f64"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_5 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_5, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote f32"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote align"):
+                            lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_5 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_5, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_local__1)
+                                lcl_4 = prim__mk__ast("AllocaInst", lcl_4)
+                                _slot_local__2 = lcl_4
+                                lcl_4 = (True, _slot_local__2)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("quote ["):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_4 = _slot_3_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_3 = lcl_4
+                                lcl_4 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = prim__tokens.offset
+                                _off_3 = lcl_4
+                                lcl_4 = prim__peekable(prim__tokens, 0)
+                                if lcl_4:
+                                    # switch
+                                    lcl_5 = prim__peek(prim__tokens, 0)
+                                    lcl_5 = lcl_5.idint
+                                    if lcl_5 == prim__tk__id("quote ,"):
+                                        lcl_5 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_5
+                                        lcl_5 = _slot_5_check[0]
+                                        lcl_5 = prim__eq(lcl_5, False)
+                                        if lcl_5:
+                                            lcl_5 = _slot_5_check
+                                        else:
+                                            lcl_6 = _slot_5_check[1]
+                                            lcl_6 = prim__to__result(lcl_6)
+                                            _slot_5 = lcl_6
+                                            lcl_6 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_6
+                                            lcl_6 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                            _slot_local__3 = lcl_6
+                                            lcl_6 = (True, _slot_local__3)
+                                            lcl_5 = lcl_6
+                                        lcl_4 = lcl_5
+                                    else:
+                                        lcl_5 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("AllocaInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                else:
+                                    lcl_4 = (_off_3, "AllocaInst got EOF")
+                                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                                    lcl_4 = prim__to__any(lcl_4)
+                                    lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                        elif lcl_4 == prim__tk__id("localIdent"):
+                            lcl_4 = parse_TypeValue(prim__state, prim__tokens)
+                            _slot_3_check = lcl_4
+                            lcl_4 = _slot_3_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_3_check
+                            else:
+                                lcl_5 = _slot_3_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_3 = lcl_5
+                                lcl_5 = (_slot_2, _slot_3)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = prim__tokens.offset
+                                _off_3 = lcl_5
+                                lcl_5 = prim__peekable(prim__tokens, 0)
+                                if lcl_5:
+                                    # switch
+                                    lcl_6 = prim__peek(prim__tokens, 0)
+                                    lcl_6 = lcl_6.idint
+                                    if lcl_6 == prim__tk__id("quote ,"):
+                                        lcl_6 = prim__mv__forward(prim__tokens)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = parse_Alignment(prim__state, prim__tokens)
+                                        _slot_5_check = lcl_6
+                                        lcl_6 = _slot_5_check[0]
+                                        lcl_6 = prim__eq(lcl_6, False)
+                                        if lcl_6:
+                                            lcl_6 = _slot_5_check
+                                        else:
+                                            lcl_7 = _slot_5_check[1]
+                                            lcl_7 = prim__to__result(lcl_7)
+                                            _slot_5 = lcl_7
+                                            lcl_7 = (_slot_4, _slot_5)
+                                            _slot_local__2 = lcl_7
+                                            lcl_7 = (_slot_0, _slot_1, _slot_local__1, _slot_local__2)
+                                            lcl_7 = prim__mk__ast("AllocaInst", lcl_7)
+                                            _slot_local__3 = lcl_7
+                                            lcl_7 = (True, _slot_local__3)
+                                            lcl_6 = lcl_7
+                                        lcl_5 = lcl_6
+                                    else:
+                                        lcl_6 = (_slot_0, _slot_1, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("AllocaInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                else:
+                                    lcl_5 = (_off_3, "AllocaInst got EOF")
+                                    lcl_5 = prim__cons(lcl_5, prim__nil)
+                                    lcl_5 = prim__to__any(lcl_5)
+                                    lcl_5 = (False, lcl_5)
+                                lcl_4 = lcl_5
+                            lcl_3 = lcl_4
+                        else:
+                            lcl_4 = (_off_2, "AllocaInst lookahead failed")
+                            lcl_5 = prim__cons(lcl_4, prim__nil)
+                            lcl_4 = prim__to__any(lcl_5)
+                            lcl_4 = (False, lcl_4)
+                            lcl_3 = lcl_4
+                    else:
+                        lcl_3 = (_off_2, "AllocaInst got EOF")
+                        lcl_3 = prim__cons(lcl_3, prim__nil)
+                        lcl_3 = prim__to__any(lcl_3)
+                        lcl_3 = (False, lcl_3)
+                    lcl_2 = lcl_3
+                else:
+                    lcl_3 = (_slot_0, _slot_1)
+                    lcl_3 = prim__mk__ast("AllocaInst", lcl_3)
+                    _slot_local__1 = lcl_3
+                    lcl_3 = (True, _slot_local__1)
+                    lcl_2 = lcl_3
+                lcl_1 = lcl_2
+            else:
+                lcl_2 = (_off_1, "AllocaInst got EOF")
+                lcl_2 = prim__cons(lcl_2, prim__nil)
+                lcl_2 = prim__to__any(lcl_2)
+                lcl_2 = (False, lcl_2)
+                lcl_1 = lcl_2
+            lcl_0 = lcl_1
+    return lcl_0
 def parse_ArrayConst(prim__state, prim__tokens):
     lcl_0 = prim__tk__id("quote [")
     lcl_0 = prim__match__tk(prim__tokens, lcl_0)
@@ -1647,7 +2460,7 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     _slot_local__1 = lcl_2
                     lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote sdiv"):
+        elif lcl_2 == prim__tk__id("quote select"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -1674,8 +2487,8 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote ret"):
-            lcl_2 = parse_Terminator(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("quote sdiv"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_3, False)
@@ -1685,10 +2498,63 @@ def parse_BasicBlock(prim__state, prim__tokens):
                 lcl_2 = _slot_0_check[1]
                 lcl_2 = prim__to__result(lcl_2)
                 _slot_0 = lcl_2
-                lcl_2 = (_slot_0,)
-                lcl_2 = prim__mk__ast("BasicBlock", lcl_2)
-                _slot_local__1 = lcl_2
-                lcl_2 = (True, _slot_local__1)
+                lcl_2 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_2 = _slot_1_check[0]
+                lcl_2 = prim__eq(lcl_2, False)
+                if lcl_2:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = (_slot_0, _slot_1)
+                    lcl_2 = prim__mk__ast("BasicBlock", lcl_2)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ret"):
+            lcl_2 = parse_Terminator(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("BasicBlock", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote phi"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_2 = _slot_1_check[0]
+                lcl_2 = prim__eq(lcl_2, False)
+                if lcl_2:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = (_slot_0, _slot_1)
+                    lcl_2 = prim__mk__ast("BasicBlock", lcl_2)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote or"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
@@ -1770,7 +2636,60 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote load"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_2 = _slot_1_check[0]
+                lcl_2 = prim__eq(lcl_2, False)
+                if lcl_2:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = (_slot_0, _slot_1)
+                    lcl_2 = prim__mk__ast("BasicBlock", lcl_2)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote insertvalue"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_3
+                lcl_3 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_3, False)
+                if lcl_3:
+                    lcl_3 = _slot_1_check
+                else:
+                    lcl_3 = _slot_1_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_1 = lcl_3
+                    lcl_3 = (_slot_0, _slot_1)
+                    lcl_3 = prim__mk__ast("BasicBlock", lcl_3)
+                    _slot_local__1 = lcl_3
+                    lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote icmp"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
@@ -1902,7 +2821,7 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     _slot_local__1 = lcl_2
                     lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote fadd"):
+        elif lcl_2 == prim__tk__id("quote fcmp"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -1929,7 +2848,60 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote fadd"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_2 = _slot_1_check[0]
+                lcl_2 = prim__eq(lcl_2, False)
+                if lcl_2:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = (_slot_0, _slot_1)
+                    lcl_2 = prim__mk__ast("BasicBlock", lcl_2)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote extractvalue"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_3
+                lcl_3 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_3, False)
+                if lcl_3:
+                    lcl_3 = _slot_1_check
+                else:
+                    lcl_3 = _slot_1_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_1 = lcl_3
+                    lcl_3 = (_slot_0, _slot_1)
+                    lcl_3 = prim__mk__ast("BasicBlock", lcl_3)
+                    _slot_local__1 = lcl_3
+                    lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote bitcast"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
@@ -2008,7 +2980,7 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     _slot_local__1 = lcl_2
                     lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote add"):
+        elif lcl_2 == prim__tk__id("quote alloca"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -2035,7 +3007,7 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("localIdent"):
+        elif lcl_2 == prim__tk__id("quote add"):
             lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
@@ -2061,8 +3033,8 @@ def parse_BasicBlock(prim__state, prim__tokens):
                     _slot_local__1 = lcl_2
                     lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("identifier"):
-            lcl_2 = parse_name(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("localIdent"):
+            lcl_2 = parse_InstructionList(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_2, False)
@@ -2072,20 +3044,73 @@ def parse_BasicBlock(prim__state, prim__tokens):
                 lcl_3 = _slot_0_check[1]
                 lcl_3 = prim__to__result(lcl_3)
                 _slot_0 = lcl_3
-                lcl_3 = prim__tokens.offset
-                _off_1 = lcl_3
-                lcl_3 = prim__peekable(prim__tokens, 0)
+                lcl_3 = parse_Terminator(prim__state, prim__tokens)
+                _slot_1_check = lcl_3
+                lcl_3 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_3, False)
                 if lcl_3:
+                    lcl_3 = _slot_1_check
+                else:
+                    lcl_3 = _slot_1_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_1 = lcl_3
+                    lcl_3 = (_slot_0, _slot_1)
+                    lcl_3 = prim__mk__ast("BasicBlock", lcl_3)
+                    _slot_local__1 = lcl_3
+                    lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("identifier"):
+            lcl_2 = parse_name(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = prim__tokens.offset
+                _off_1 = lcl_2
+                lcl_2 = prim__peekable(prim__tokens, 0)
+                if lcl_2:
                     # switch
-                    lcl_5 = prim__peek(prim__tokens, 0)
-                    lcl_5 = lcl_5.idint
-                    if lcl_5 == prim__tk__id("quote xor"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                    lcl_4 = prim__peek(prim__tokens, 0)
+                    lcl_4 = lcl_4.idint
+                    if lcl_4 == prim__tk__id("quote xor"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
+                            else:
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote urem"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2104,41 +3129,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote urem"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote udiv"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote udiv"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote sub"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2157,41 +3182,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote sub"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote store"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote store"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote srem"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2210,41 +3235,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote srem"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote shl"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote shl"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote select"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2263,41 +3288,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote sdiv"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote sdiv"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote ret"):
-                        lcl_5 = parse_Terminator(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote ret"):
+                        lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2306,41 +3331,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                             lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                             _slot_local__1 = lcl_5
                             lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote or"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote phi"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote mul"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote or"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2359,41 +3384,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote lshr"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote mul"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote insertvalue"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote lshr"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2412,41 +3437,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote getelementptr"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote load"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote fsub"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote insertvalue"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2465,41 +3490,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote frem"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote icmp"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote fmul"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote getelementptr"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2518,41 +3543,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote fadd"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote fsub"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote extractvalue"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote frem"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2571,41 +3596,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote ashr"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote fmul"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote and"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote fcmp"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2624,41 +3649,41 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("quote add"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote fadd"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
                         lcl_5 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_5, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
-                            lcl_6 = _slot_1_check[1]
-                            lcl_6 = prim__to__result(lcl_6)
-                            _slot_1 = lcl_6
-                            lcl_6 = parse_Terminator(prim__state, prim__tokens)
-                            _slot_2_check = lcl_6
-                            lcl_6 = _slot_2_check[0]
-                            lcl_6 = prim__eq(lcl_6, False)
-                            if lcl_6:
-                                lcl_6 = _slot_2_check
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
                             else:
-                                lcl_6 = _slot_2_check[1]
-                                lcl_6 = prim__to__result(lcl_6)
-                                _slot_2 = lcl_6
-                                lcl_6 = (_slot_0, _slot_1, _slot_2)
-                                lcl_6 = prim__mk__ast("BasicBlock", lcl_6)
-                                _slot_local__1 = lcl_6
-                                lcl_6 = (True, _slot_local__1)
-                            lcl_5 = lcl_6
-                        lcl_4 = lcl_5
-                    elif lcl_5 == prim__tk__id("localIdent"):
-                        lcl_5 = parse_InstructionList(prim__state, prim__tokens)
-                        _slot_1_check = lcl_5
-                        lcl_6 = _slot_1_check[0]
-                        lcl_5 = prim__eq(lcl_6, False)
-                        if lcl_5:
-                            lcl_5 = _slot_1_check
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote extractvalue"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
                         else:
                             lcl_5 = _slot_1_check[1]
                             lcl_5 = prim__to__result(lcl_5)
@@ -2677,21 +3702,180 @@ def parse_BasicBlock(prim__state, prim__tokens):
                                 lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
                                 _slot_local__1 = lcl_5
                                 lcl_5 = (True, _slot_local__1)
-                        lcl_4 = lcl_5
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote bitcast"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_5 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
+                            else:
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote ashr"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = (_slot_0, _slot_1, _slot_2)
+                                lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote and"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_5 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
+                            else:
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote alloca"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = (_slot_0, _slot_1, _slot_2)
+                                lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("quote add"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_5 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_5, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_4 = _slot_1_check[1]
+                            lcl_4 = prim__to__result(lcl_4)
+                            _slot_1 = lcl_4
+                            lcl_4 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_4
+                            lcl_4 = _slot_2_check[0]
+                            lcl_4 = prim__eq(lcl_4, False)
+                            if lcl_4:
+                                lcl_4 = _slot_2_check
+                            else:
+                                lcl_4 = _slot_2_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_2 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2)
+                                lcl_4 = prim__mk__ast("BasicBlock", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                        lcl_3 = lcl_4
+                    elif lcl_4 == prim__tk__id("localIdent"):
+                        lcl_4 = parse_InstructionList(prim__state, prim__tokens)
+                        _slot_1_check = lcl_4
+                        lcl_4 = _slot_1_check[0]
+                        lcl_4 = prim__eq(lcl_4, False)
+                        if lcl_4:
+                            lcl_4 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Terminator(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = (_slot_0, _slot_1, _slot_2)
+                                lcl_5 = prim__mk__ast("BasicBlock", lcl_5)
+                                _slot_local__1 = lcl_5
+                                lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
                     else:
-                        lcl_5 = (_off_1, "BasicBlock lookahead failed")
-                        lcl_5 = prim__cons(lcl_5, prim__nil)
-                        lcl_5 = prim__to__any(lcl_5)
-                        lcl_5 = (False, lcl_5)
-                        lcl_4 = lcl_5
-                    lcl_3 = lcl_4
+                        lcl_4 = (_off_1, "BasicBlock lookahead failed")
+                        lcl_5 = prim__cons(lcl_4, prim__nil)
+                        lcl_4 = prim__to__any(lcl_5)
+                        lcl_4 = (False, lcl_4)
+                        lcl_3 = lcl_4
+                    lcl_2 = lcl_3
                 else:
-                    lcl_4 = (_off_1, "BasicBlock got EOF")
-                    lcl_5 = prim__cons(lcl_4, prim__nil)
-                    lcl_4 = prim__to__any(lcl_5)
-                    lcl_4 = (False, lcl_4)
-                    lcl_3 = lcl_4
-                lcl_2 = lcl_3
+                    lcl_3 = (_off_1, "BasicBlock got EOF")
+                    lcl_3 = prim__cons(lcl_3, prim__nil)
+                    lcl_3 = prim__to__any(lcl_3)
+                    lcl_3 = (False, lcl_3)
+                    lcl_2 = lcl_3
             lcl_1 = lcl_2
         else:
             lcl_2 = (_off_0, "BasicBlock lookahead failed")
@@ -3077,6 +4261,56 @@ def parse_BitCastExpr(prim__state, prim__tokens):
                 lcl_1 = lcl_2
             lcl_0 = lcl_1
     return lcl_0
+def parse_BitcastInst(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote bitcast")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote bitcast not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = parse_TypeValue(prim__state, prim__tokens)
+        _slot_1_check = lcl_0
+        lcl_0 = _slot_1_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_1_check
+        else:
+            lcl_1 = _slot_1_check[1]
+            lcl_1 = prim__to__result(lcl_1)
+            _slot_1 = lcl_1
+            lcl_1 = prim__tk__id("quote to")
+            lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+            _slot_2 = lcl_1
+            lcl_1 = prim__is__null(_slot_2)
+            if lcl_1:
+                lcl_1 = prim__tokens.offset
+                lcl_1 = (lcl_1, "quote to not match")
+                lcl_1 = prim__cons(lcl_1, prim__nil)
+                lcl_1 = prim__to__any(lcl_1)
+                lcl_1 = (False, lcl_1)
+            else:
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_3_check = lcl_1
+                lcl_1 = _slot_3_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_3_check
+                else:
+                    lcl_2 = _slot_3_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_3 = lcl_2
+                    lcl_2 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                    lcl_2 = prim__mk__ast("BitcastInst", lcl_2)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = (True, _slot_local__1)
+                    lcl_1 = lcl_2
+            lcl_0 = lcl_1
+    return lcl_0
 def parse_BlockAddressConst(prim__state, prim__tokens):
     lcl_0 = prim__tk__id("quote blockaddress")
     lcl_0 = prim__match__tk(prim__tokens, lcl_0)
@@ -3232,6 +4466,149 @@ def parse_CharArrayConst(prim__state, prim__tokens):
             _slot_local__1 = lcl_1
             lcl_1 = (True, _slot_local__1)
             lcl_0 = lcl_1
+    return lcl_0
+def parse_CmpInst(prim__state, prim__tokens):
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = prim__peekable(prim__tokens, 0)
+    if lcl_0:
+        # switch
+        lcl_2 = prim__peek(prim__tokens, 0)
+        lcl_2 = lcl_2.idint
+        if lcl_2 == prim__tk__id("quote icmp"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = parse_IPred(prim__state, prim__tokens)
+            _slot_1_check = lcl_2
+            lcl_2 = _slot_1_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_1_check
+            else:
+                lcl_3 = _slot_1_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_1 = lcl_3
+                lcl_3 = parse_Type(prim__state, prim__tokens)
+                _slot_2_check = lcl_3
+                lcl_3 = _slot_2_check[0]
+                lcl_3 = prim__eq(lcl_3, False)
+                if lcl_3:
+                    lcl_3 = _slot_2_check
+                else:
+                    lcl_3 = _slot_2_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_2 = lcl_3
+                    lcl_3 = parse_Value(prim__state, prim__tokens)
+                    _slot_3_check = lcl_3
+                    lcl_3 = _slot_3_check[0]
+                    lcl_3 = prim__eq(lcl_3, False)
+                    if lcl_3:
+                        lcl_3 = _slot_3_check
+                    else:
+                        lcl_3 = _slot_3_check[1]
+                        lcl_3 = prim__to__result(lcl_3)
+                        _slot_3 = lcl_3
+                        lcl_3 = prim__tk__id("quote ,")
+                        lcl_3 = prim__match__tk(prim__tokens, lcl_3)
+                        _slot_4 = lcl_3
+                        lcl_3 = prim__is__null(_slot_4)
+                        if lcl_3:
+                            lcl_3 = prim__tokens.offset
+                            lcl_3 = (lcl_3, "quote , not match")
+                            lcl_3 = prim__cons(lcl_3, prim__nil)
+                            lcl_3 = prim__to__any(lcl_3)
+                            lcl_3 = (False, lcl_3)
+                        else:
+                            lcl_3 = parse_Value(prim__state, prim__tokens)
+                            _slot_5_check = lcl_3
+                            lcl_3 = _slot_5_check[0]
+                            lcl_3 = prim__eq(lcl_3, False)
+                            if lcl_3:
+                                lcl_3 = _slot_5_check
+                            else:
+                                lcl_4 = _slot_5_check[1]
+                                lcl_4 = prim__to__result(lcl_4)
+                                _slot_5 = lcl_4
+                                lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4, _slot_5)
+                                lcl_4 = prim__mk__ast("CmpInst", lcl_4)
+                                _slot_local__1 = lcl_4
+                                lcl_4 = (True, _slot_local__1)
+                                lcl_3 = lcl_4
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote fcmp"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_3 = parse_FPred(prim__state, prim__tokens)
+            _slot_1_check = lcl_3
+            lcl_4 = _slot_1_check[0]
+            lcl_2 = prim__eq(lcl_4, False)
+            if lcl_2:
+                lcl_2 = _slot_1_check
+            else:
+                lcl_2 = _slot_1_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_1 = lcl_2
+                lcl_2 = parse_Type(prim__state, prim__tokens)
+                _slot_2_check = lcl_2
+                lcl_2 = _slot_2_check[0]
+                lcl_2 = prim__eq(lcl_2, False)
+                if lcl_2:
+                    lcl_2 = _slot_2_check
+                else:
+                    lcl_2 = _slot_2_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = parse_Value(prim__state, prim__tokens)
+                    _slot_3_check = lcl_2
+                    lcl_2 = _slot_3_check[0]
+                    lcl_2 = prim__eq(lcl_2, False)
+                    if lcl_2:
+                        lcl_2 = _slot_3_check
+                    else:
+                        lcl_2 = _slot_3_check[1]
+                        lcl_2 = prim__to__result(lcl_2)
+                        _slot_3 = lcl_2
+                        lcl_2 = prim__tk__id("quote ,")
+                        lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                        _slot_4 = lcl_2
+                        lcl_2 = prim__is__null(_slot_4)
+                        if lcl_2:
+                            lcl_2 = prim__tokens.offset
+                            lcl_2 = (lcl_2, "quote , not match")
+                            lcl_2 = prim__cons(lcl_2, prim__nil)
+                            lcl_2 = prim__to__any(lcl_2)
+                            lcl_2 = (False, lcl_2)
+                        else:
+                            lcl_2 = parse_Value(prim__state, prim__tokens)
+                            _slot_5_check = lcl_2
+                            lcl_2 = _slot_5_check[0]
+                            lcl_2 = prim__eq(lcl_2, False)
+                            if lcl_2:
+                                lcl_2 = _slot_5_check
+                            else:
+                                lcl_3 = _slot_5_check[1]
+                                lcl_3 = prim__to__result(lcl_3)
+                                _slot_5 = lcl_3
+                                lcl_3 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4, _slot_5)
+                                lcl_3 = prim__mk__ast("CmpInst", lcl_3)
+                                _slot_local__1 = lcl_3
+                                lcl_3 = (True, _slot_local__1)
+                                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        else:
+            lcl_2 = (_off_0, "CmpInst lookahead failed")
+            lcl_3 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_3)
+            lcl_2 = (False, lcl_2)
+            lcl_1 = lcl_2
+        lcl_0 = lcl_1
+    else:
+        lcl_1 = (_off_0, "CmpInst got EOF")
+        lcl_1 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_1)
+        lcl_1 = (False, lcl_1)
+        lcl_0 = lcl_1
     return lcl_0
 def parse_Constant(prim__state, prim__tokens):
     lcl_0 = prim__tokens.offset
@@ -4906,6 +6283,156 @@ def parse_ExternLinkage(prim__state, prim__tokens):
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
     return lcl_0
+def parse_FPred(prim__state, prim__tokens):
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = prim__peekable(prim__tokens, 0)
+    if lcl_0:
+        # switch
+        lcl_2 = prim__peek(prim__tokens, 0)
+        lcl_2 = lcl_2.idint
+        if lcl_2 == prim__tk__id("quote uno"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote une"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ult"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ule"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ugt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote uge"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ueq"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote true"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ord"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote one"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote olt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ole"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ogt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote oge"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote oeq"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote false"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("FPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        else:
+            lcl_2 = (_off_0, "FPred lookahead failed")
+            lcl_2 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_2)
+            lcl_2 = (False, lcl_2)
+            lcl_1 = lcl_2
+        lcl_0 = lcl_1
+    else:
+        lcl_1 = (_off_0, "FPred got EOF")
+        lcl_1 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_1)
+        lcl_1 = (False, lcl_1)
+        lcl_0 = lcl_1
+    return lcl_0
 def parse_FloatConst(prim__state, prim__tokens):
     lcl_0 = parse_FloatLit(prim__state, prim__tokens)
     _slot_0_check = lcl_0
@@ -5193,6 +6720,33 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         _slot_local__1 = lcl_1
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote select"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote sdiv"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
@@ -5221,6 +6775,33 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote ret"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote phi"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
                 lcl_1 = _slot_1_check[0]
@@ -5328,7 +6909,61 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         _slot_local__1 = lcl_1
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote load"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote insertvalue"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote icmp"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
                 lcl_1 = _slot_1_check[0]
@@ -5463,6 +7098,33 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         _slot_local__1 = lcl_1
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote fcmp"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote fadd"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
@@ -5517,6 +7179,33 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         _slot_local__1 = lcl_1
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote bitcast"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote ashr"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
@@ -5545,6 +7234,33 @@ def parse_FunctionBody(prim__state, prim__tokens):
                         lcl_1 = (True, _slot_local__1)
                 lcl_0 = lcl_1
             elif lcl_1 == prim__tk__id("quote and"):
+                lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote }")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote } not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("FunctionBody", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote alloca"):
                 lcl_1 = parse_BasicBlockList(prim__state, prim__tokens)
                 _slot_1_check = lcl_1
                 lcl_1 = _slot_1_check[0]
@@ -7662,6 +9378,39 @@ def parse_Global(prim__state, prim__tokens):
                         _slot_local__1 = lcl_1
                         lcl_1 = (True, _slot_local__1)
                     lcl_0 = lcl_1
+                elif lcl_1 == prim__tk__id("quote dso_preemptable"):
+                    lcl_1 = parse_GlobalDef(prim__state, prim__tokens)
+                    _slot_2_check = lcl_1
+                    lcl_1 = _slot_2_check[0]
+                    lcl_1 = prim__eq(lcl_1, False)
+                    if lcl_1:
+                        lcl_1 = _slot_2_check
+                    else:
+                        lcl_2 = _slot_2_check[1]
+                        lcl_2 = prim__to__result(lcl_2)
+                        _slot_2 = lcl_2
+                        lcl_2 = (_slot_0, _slot_1, _slot_2)
+                        lcl_2 = prim__mk__ast("Global", lcl_2)
+                        _slot_local__1 = lcl_2
+                        lcl_2 = (True, _slot_local__1)
+                        lcl_1 = lcl_2
+                    lcl_0 = lcl_1
+                elif lcl_1 == prim__tk__id("quote dso_local"):
+                    lcl_1 = parse_GlobalDef(prim__state, prim__tokens)
+                    _slot_2_check = lcl_1
+                    lcl_2 = _slot_2_check[0]
+                    lcl_1 = prim__eq(lcl_2, False)
+                    if lcl_1:
+                        lcl_1 = _slot_2_check
+                    else:
+                        lcl_1 = _slot_2_check[1]
+                        lcl_1 = prim__to__result(lcl_1)
+                        _slot_2 = lcl_1
+                        lcl_1 = (_slot_0, _slot_1, _slot_2)
+                        lcl_1 = prim__mk__ast("Global", lcl_1)
+                        _slot_local__1 = lcl_1
+                        lcl_1 = (True, _slot_local__1)
+                    lcl_0 = lcl_1
                 elif lcl_1 == prim__tk__id("quote constant"):
                     lcl_1 = parse_GlobalDef(prim__state, prim__tokens)
                     _slot_2_check = lcl_1
@@ -7808,12 +9557,330 @@ def parse_GlobalDecl(prim__state, prim__tokens):
                         _slot_local__1 = lcl_2
                         lcl_2 = (True, _slot_local__1)
                 lcl_1 = lcl_2
-            elif lcl_2 == prim__tk__id("quote constant"):
-                lcl_2 = parse_Immutable(prim__state, prim__tokens)
+            elif lcl_2 == prim__tk__id("quote dso_preemptable"):
+                lcl_2 = parse_PreemptionSpecifier(prim__state, prim__tokens)
                 _slot_1_check = lcl_2
                 lcl_2 = _slot_1_check[0]
                 lcl_2 = prim__eq(lcl_2, False)
                 if lcl_2:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_3 = _slot_1_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_1 = lcl_3
+                    lcl_3 = prim__tokens.offset
+                    _off_1 = lcl_3
+                    lcl_3 = prim__peekable(prim__tokens, 0)
+                    if lcl_3:
+                        # switch
+                        lcl_5 = prim__peek(prim__tokens, 0)
+                        lcl_5 = lcl_5.idint
+                        if lcl_5 == prim__tk__id("quote unnamed_addr"):
+                            lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = parse_Type(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_5
+                                    lcl_5 = _slot_4_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_4_check
+                                    else:
+                                        lcl_5 = _slot_4_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_5 = prim__mk__ast("GlobalDecl", lcl_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote local_unnamed_addr"):
+                            lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Immutable(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = parse_Type(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_6
+                                    lcl_6 = _slot_4_check[0]
+                                    lcl_6 = prim__eq(lcl_6, False)
+                                    if lcl_6:
+                                        lcl_6 = _slot_4_check
+                                    else:
+                                        lcl_6 = _slot_4_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_6 = prim__mk__ast("GlobalDecl", lcl_6)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (True, _slot_local__1)
+                                lcl_5 = lcl_6
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote global"):
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_6 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_6, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("GlobalDecl", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote constant"):
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_6 = prim__mk__ast("GlobalDecl", lcl_6)
+                                    _slot_local__1 = lcl_6
+                                    lcl_6 = (True, _slot_local__1)
+                                lcl_5 = lcl_6
+                            lcl_4 = lcl_5
+                        else:
+                            lcl_5 = (_off_1, "GlobalDecl lookahead failed")
+                            lcl_6 = prim__cons(lcl_5, prim__nil)
+                            lcl_5 = prim__to__any(lcl_6)
+                            lcl_5 = (False, lcl_5)
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    else:
+                        lcl_4 = (_off_1, "GlobalDecl got EOF")
+                        lcl_4 = prim__cons(lcl_4, prim__nil)
+                        lcl_4 = prim__to__any(lcl_4)
+                        lcl_4 = (False, lcl_4)
+                        lcl_3 = lcl_4
+                    lcl_2 = lcl_3
+                lcl_1 = lcl_2
+            elif lcl_2 == prim__tk__id("quote dso_local"):
+                lcl_2 = parse_PreemptionSpecifier(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_3 = _slot_1_check[0]
+                lcl_4 = prim__eq(lcl_3, False)
+                if lcl_4:
+                    lcl_2 = _slot_1_check
+                else:
+                    lcl_3 = _slot_1_check[1]
+                    lcl_3 = prim__to__result(lcl_3)
+                    _slot_1 = lcl_3
+                    lcl_3 = prim__tokens.offset
+                    _off_1 = lcl_3
+                    lcl_3 = prim__peekable(prim__tokens, 0)
+                    if lcl_3:
+                        # switch
+                        lcl_5 = prim__peek(prim__tokens, 0)
+                        lcl_5 = lcl_5.idint
+                        if lcl_5 == prim__tk__id("quote unnamed_addr"):
+                            lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = parse_Type(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_5
+                                    lcl_5 = _slot_4_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_4_check
+                                    else:
+                                        lcl_5 = _slot_4_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_5 = prim__mk__ast("GlobalDecl", lcl_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote local_unnamed_addr"):
+                            lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Immutable(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = parse_Type(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_6
+                                    lcl_6 = _slot_4_check[0]
+                                    lcl_6 = prim__eq(lcl_6, False)
+                                    if lcl_6:
+                                        lcl_6 = _slot_4_check
+                                    else:
+                                        lcl_6 = _slot_4_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_6 = prim__mk__ast("GlobalDecl", lcl_6)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (True, _slot_local__1)
+                                lcl_5 = lcl_6
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote global"):
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_6 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_6, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("GlobalDecl", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                            lcl_4 = lcl_5
+                        elif lcl_5 == prim__tk__id("quote constant"):
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_6 = prim__mk__ast("GlobalDecl", lcl_6)
+                                    _slot_local__1 = lcl_6
+                                    lcl_6 = (True, _slot_local__1)
+                                lcl_5 = lcl_6
+                            lcl_4 = lcl_5
+                        else:
+                            lcl_5 = (_off_1, "GlobalDecl lookahead failed")
+                            lcl_6 = prim__cons(lcl_5, prim__nil)
+                            lcl_5 = prim__to__any(lcl_6)
+                            lcl_5 = (False, lcl_5)
+                            lcl_4 = lcl_5
+                        lcl_3 = lcl_4
+                    else:
+                        lcl_4 = (_off_1, "GlobalDecl got EOF")
+                        lcl_4 = prim__cons(lcl_4, prim__nil)
+                        lcl_4 = prim__to__any(lcl_4)
+                        lcl_4 = (False, lcl_4)
+                        lcl_3 = lcl_4
+                    lcl_2 = lcl_3
+                lcl_1 = lcl_2
+            elif lcl_2 == prim__tk__id("quote constant"):
+                lcl_2 = parse_Immutable(prim__state, prim__tokens)
+                _slot_1_check = lcl_2
+                lcl_3 = _slot_1_check[0]
+                lcl_4 = prim__eq(lcl_3, False)
+                if lcl_4:
                     lcl_2 = _slot_1_check
                 else:
                     lcl_3 = _slot_1_check[1]
@@ -7986,12 +10053,410 @@ def parse_GlobalDef(prim__state, prim__tokens):
                         _slot_local__1 = lcl_2
                         lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote constant"):
-            lcl_2 = parse_Immutable(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("quote dso_preemptable"):
+            lcl_2 = parse_PreemptionSpecifier(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_2, False)
             if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = prim__tokens.offset
+                _off_1 = lcl_3
+                lcl_3 = prim__peekable(prim__tokens, 0)
+                if lcl_3:
+                    # switch
+                    lcl_5 = prim__peek(prim__tokens, 0)
+                    lcl_5 = lcl_5.idint
+                    if lcl_5 == prim__tk__id("quote unnamed_addr"):
+                        lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = parse_Constant(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_5
+                                    lcl_5 = _slot_4_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_4_check
+                                    else:
+                                        lcl_5 = _slot_4_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_5 = prim__mk__ast("GlobalDef", lcl_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (True, _slot_local__1)
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote local_unnamed_addr"):
+                        lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_6 = _slot_1_check[1]
+                            lcl_6 = prim__to__result(lcl_6)
+                            _slot_1 = lcl_6
+                            lcl_6 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_6
+                            lcl_6 = _slot_2_check[0]
+                            lcl_6 = prim__eq(lcl_6, False)
+                            if lcl_6:
+                                lcl_6 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = parse_Constant(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_6
+                                    lcl_6 = _slot_4_check[0]
+                                    lcl_6 = prim__eq(lcl_6, False)
+                                    if lcl_6:
+                                        lcl_6 = _slot_4_check
+                                    else:
+                                        lcl_6 = _slot_4_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_6 = prim__mk__ast("GlobalDef", lcl_6)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (True, _slot_local__1)
+                            lcl_5 = lcl_6
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote global"):
+                        lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_6 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_6, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Type(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Constant(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("GlobalDef", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote constant"):
+                        lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_6 = _slot_1_check[1]
+                            lcl_6 = prim__to__result(lcl_6)
+                            _slot_1 = lcl_6
+                            lcl_6 = parse_Type(prim__state, prim__tokens)
+                            _slot_2_check = lcl_6
+                            lcl_6 = _slot_2_check[0]
+                            lcl_6 = prim__eq(lcl_6, False)
+                            if lcl_6:
+                                lcl_6 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Constant(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_6 = prim__mk__ast("GlobalDef", lcl_6)
+                                    _slot_local__1 = lcl_6
+                                    lcl_6 = (True, _slot_local__1)
+                            lcl_5 = lcl_6
+                        lcl_4 = lcl_5
+                    else:
+                        lcl_5 = (_off_1, "GlobalDef lookahead failed")
+                        lcl_6 = prim__cons(lcl_5, prim__nil)
+                        lcl_5 = prim__to__any(lcl_6)
+                        lcl_5 = (False, lcl_5)
+                        lcl_4 = lcl_5
+                    lcl_3 = lcl_4
+                else:
+                    lcl_4 = (_off_1, "GlobalDef got EOF")
+                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                    lcl_4 = prim__to__any(lcl_4)
+                    lcl_4 = (False, lcl_4)
+                    lcl_3 = lcl_4
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote dso_local"):
+            lcl_2 = parse_PreemptionSpecifier(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_4 = prim__eq(lcl_3, False)
+            if lcl_4:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = prim__tokens.offset
+                _off_1 = lcl_3
+                lcl_3 = prim__peekable(prim__tokens, 0)
+                if lcl_3:
+                    # switch
+                    lcl_5 = prim__peek(prim__tokens, 0)
+                    lcl_5 = lcl_5.idint
+                    if lcl_5 == prim__tk__id("quote unnamed_addr"):
+                        lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = parse_Constant(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_5
+                                    lcl_5 = _slot_4_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_4_check
+                                    else:
+                                        lcl_5 = _slot_4_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_4 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_5 = prim__mk__ast("GlobalDef", lcl_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (True, _slot_local__1)
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote local_unnamed_addr"):
+                        lcl_5 = parse_UnnamedAddr(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_6 = _slot_1_check[1]
+                            lcl_6 = prim__to__result(lcl_6)
+                            _slot_1 = lcl_6
+                            lcl_6 = parse_Immutable(prim__state, prim__tokens)
+                            _slot_2_check = lcl_6
+                            lcl_6 = _slot_2_check[0]
+                            lcl_6 = prim__eq(lcl_6, False)
+                            if lcl_6:
+                                lcl_6 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Type(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = parse_Constant(prim__state, prim__tokens)
+                                    _slot_4_check = lcl_6
+                                    lcl_6 = _slot_4_check[0]
+                                    lcl_6 = prim__eq(lcl_6, False)
+                                    if lcl_6:
+                                        lcl_6 = _slot_4_check
+                                    else:
+                                        lcl_6 = _slot_4_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_4 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                        lcl_6 = prim__mk__ast("GlobalDef", lcl_6)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (True, _slot_local__1)
+                            lcl_5 = lcl_6
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote global"):
+                        lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_6 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_6, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_5 = _slot_1_check[1]
+                            lcl_5 = prim__to__result(lcl_5)
+                            _slot_1 = lcl_5
+                            lcl_5 = parse_Type(prim__state, prim__tokens)
+                            _slot_2_check = lcl_5
+                            lcl_5 = _slot_2_check[0]
+                            lcl_5 = prim__eq(lcl_5, False)
+                            if lcl_5:
+                                lcl_5 = _slot_2_check
+                            else:
+                                lcl_5 = _slot_2_check[1]
+                                lcl_5 = prim__to__result(lcl_5)
+                                _slot_2 = lcl_5
+                                lcl_5 = parse_Constant(prim__state, prim__tokens)
+                                _slot_3_check = lcl_5
+                                lcl_5 = _slot_3_check[0]
+                                lcl_5 = prim__eq(lcl_5, False)
+                                if lcl_5:
+                                    lcl_5 = _slot_3_check
+                                else:
+                                    lcl_5 = _slot_3_check[1]
+                                    lcl_5 = prim__to__result(lcl_5)
+                                    _slot_3 = lcl_5
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("GlobalDef", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                        lcl_4 = lcl_5
+                    elif lcl_5 == prim__tk__id("quote constant"):
+                        lcl_5 = parse_Immutable(prim__state, prim__tokens)
+                        _slot_1_check = lcl_5
+                        lcl_5 = _slot_1_check[0]
+                        lcl_5 = prim__eq(lcl_5, False)
+                        if lcl_5:
+                            lcl_5 = _slot_1_check
+                        else:
+                            lcl_6 = _slot_1_check[1]
+                            lcl_6 = prim__to__result(lcl_6)
+                            _slot_1 = lcl_6
+                            lcl_6 = parse_Type(prim__state, prim__tokens)
+                            _slot_2_check = lcl_6
+                            lcl_6 = _slot_2_check[0]
+                            lcl_6 = prim__eq(lcl_6, False)
+                            if lcl_6:
+                                lcl_6 = _slot_2_check
+                            else:
+                                lcl_6 = _slot_2_check[1]
+                                lcl_6 = prim__to__result(lcl_6)
+                                _slot_2 = lcl_6
+                                lcl_6 = parse_Constant(prim__state, prim__tokens)
+                                _slot_3_check = lcl_6
+                                lcl_6 = _slot_3_check[0]
+                                lcl_6 = prim__eq(lcl_6, False)
+                                if lcl_6:
+                                    lcl_6 = _slot_3_check
+                                else:
+                                    lcl_6 = _slot_3_check[1]
+                                    lcl_6 = prim__to__result(lcl_6)
+                                    _slot_3 = lcl_6
+                                    lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_6 = prim__mk__ast("GlobalDef", lcl_6)
+                                    _slot_local__1 = lcl_6
+                                    lcl_6 = (True, _slot_local__1)
+                            lcl_5 = lcl_6
+                        lcl_4 = lcl_5
+                    else:
+                        lcl_5 = (_off_1, "GlobalDef lookahead failed")
+                        lcl_6 = prim__cons(lcl_5, prim__nil)
+                        lcl_5 = prim__to__any(lcl_6)
+                        lcl_5 = (False, lcl_5)
+                        lcl_4 = lcl_5
+                    lcl_3 = lcl_4
+                else:
+                    lcl_4 = (_off_1, "GlobalDef got EOF")
+                    lcl_4 = prim__cons(lcl_4, prim__nil)
+                    lcl_4 = prim__to__any(lcl_4)
+                    lcl_4 = (False, lcl_4)
+                    lcl_3 = lcl_4
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote constant"):
+            lcl_2 = parse_Immutable(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_4 = prim__eq(lcl_3, False)
+            if lcl_4:
                 lcl_2 = _slot_0_check
             else:
                 lcl_3 = _slot_0_check[1]
@@ -8054,6 +10519,108 @@ def parse_GlobalName(prim__state, prim__tokens):
         _slot_local__1 = lcl_0
         lcl_0 = (True, _slot_local__1)
     return lcl_0
+def parse_IPred(prim__state, prim__tokens):
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = prim__peekable(prim__tokens, 0)
+    if lcl_0:
+        # switch
+        lcl_2 = prim__peek(prim__tokens, 0)
+        lcl_2 = lcl_2.idint
+        if lcl_2 == prim__tk__id("quote ult"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ule"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ugt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote uge"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote slt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote sle"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote sgt"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote sge"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote ne"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote eq"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("IPred", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        else:
+            lcl_2 = (_off_0, "IPred lookahead failed")
+            lcl_2 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_2)
+            lcl_2 = (False, lcl_2)
+            lcl_1 = lcl_2
+        lcl_0 = lcl_1
+    else:
+        lcl_1 = (_off_0, "IPred got EOF")
+        lcl_1 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_1)
+        lcl_1 = (False, lcl_1)
+        lcl_0 = lcl_1
+    return lcl_0
 def parse_Immutable(prim__state, prim__tokens):
     lcl_0 = prim__tokens.offset
     _off_0 = lcl_0
@@ -8091,6 +10658,84 @@ def parse_Immutable(prim__state, prim__tokens):
         lcl_1 = prim__to__any(lcl_1)
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
+    return lcl_0
+def parse_Inc(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote [")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote [ not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = parse_Value(prim__state, prim__tokens)
+        _slot_1_check = lcl_0
+        lcl_0 = _slot_1_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_1_check
+        else:
+            lcl_1 = _slot_1_check[1]
+            lcl_1 = prim__to__result(lcl_1)
+            _slot_1 = lcl_1
+            lcl_1 = prim__tk__id("quote ,")
+            lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+            _slot_2 = lcl_1
+            lcl_1 = prim__is__null(_slot_2)
+            if lcl_1:
+                lcl_1 = prim__tokens.offset
+                lcl_1 = (lcl_1, "quote , not match")
+                lcl_1 = prim__cons(lcl_1, prim__nil)
+                lcl_1 = prim__to__any(lcl_1)
+                lcl_1 = (False, lcl_1)
+            else:
+                lcl_1 = parse_LocalName(prim__state, prim__tokens)
+                _slot_3_check = lcl_1
+                lcl_1 = _slot_3_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_3_check
+                else:
+                    lcl_2 = _slot_3_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_3 = lcl_2
+                    lcl_2 = prim__tk__id("quote ]")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_4 = lcl_2
+                    lcl_2 = prim__is__null(_slot_4)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote ] not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                        lcl_2 = prim__mk__ast("Inc", lcl_2)
+                        _slot_local__1 = lcl_2
+                        lcl_2 = (True, _slot_local__1)
+                    lcl_1 = lcl_2
+            lcl_0 = lcl_1
+    return lcl_0
+def parse_IncList(prim__state, prim__tokens):
+    lcl_0 = parse_Inc(prim__state, prim__tokens)
+    _slot_0_check = lcl_0
+    lcl_0 = _slot_0_check[0]
+    lcl_0 = prim__eq(lcl_0, False)
+    if lcl_0:
+        lcl_0 = _slot_0_check
+    else:
+        lcl_0 = _slot_0_check[1]
+        lcl_0 = prim__to__result(lcl_0)
+        _slot_0 = lcl_0
+        lcl_0 = (_slot_0,)
+        lcl_0 = prim__mk__ast("IncList", lcl_0)
+        _slot_local__1 = lcl_0
+        lcl_0 = lr_loop_IncList(_slot_local__1, prim__state, prim__tokens)
+        lcl_0 = (True, lcl_0)
     return lcl_0
 def parse_IndexList(prim__state, prim__tokens):
     lcl_0 = parse_IntLit(prim__state, prim__tokens)
@@ -8425,7 +11070,40 @@ def parse_InstructionList(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote select"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("InstructionList", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote sdiv"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("InstructionList", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote phi"):
             lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -8491,7 +11169,40 @@ def parse_InstructionList(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote load"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("InstructionList", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote insertvalue"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("InstructionList", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote icmp"):
             lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -8574,7 +11285,7 @@ def parse_InstructionList(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote fadd"):
+        elif lcl_2 == prim__tk__id("quote fcmp"):
             lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
@@ -8590,7 +11301,40 @@ def parse_InstructionList(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote fadd"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("InstructionList", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote extractvalue"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("InstructionList", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote bitcast"):
             lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
@@ -8640,7 +11384,7 @@ def parse_InstructionList(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote add"):
+        elif lcl_2 == prim__tk__id("quote alloca"):
             lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
@@ -8656,8 +11400,8 @@ def parse_InstructionList(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("localIdent"):
-            lcl_2 = parse_LocalName(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("quote add"):
+            lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_2, False)
@@ -8667,46 +11411,62 @@ def parse_InstructionList(prim__state, prim__tokens):
                 lcl_3 = _slot_0_check[1]
                 lcl_3 = prim__to__result(lcl_3)
                 _slot_0 = lcl_3
-                lcl_3 = prim__tk__id("quote =")
-                lcl_3 = prim__match__tk(prim__tokens, lcl_3)
-                _slot_1 = lcl_3
-                lcl_3 = prim__is__null(_slot_1)
-                if lcl_3:
-                    lcl_3 = prim__tokens.offset
-                    lcl_3 = (lcl_3, "quote = not match")
-                    lcl_3 = prim__cons(lcl_3, prim__nil)
-                    lcl_3 = prim__to__any(lcl_3)
-                    lcl_3 = (False, lcl_3)
-                else:
-                    lcl_3 = (_slot_0, _slot_1)
-                    _slot_local__1 = lcl_3
-                    lcl_3 = parse_ValueInstruction(prim__state, prim__tokens)
-                    _slot_2_check = lcl_3
-                    lcl_3 = _slot_2_check[0]
-                    lcl_3 = prim__eq(lcl_3, False)
-                    if lcl_3:
-                        lcl_3 = _slot_2_check
-                    else:
-                        lcl_3 = _slot_2_check[1]
-                        lcl_3 = prim__to__result(lcl_3)
-                        _slot_2 = lcl_3
-                        lcl_3 = (_slot_local__1, _slot_2)
-                        lcl_3 = prim__mk__ast("InstructionList", lcl_3)
-                        _slot_local__2 = lcl_3
-                        lcl_3 = (True, _slot_local__2)
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("InstructionList", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("localIdent"):
+            lcl_2 = parse_LocalName(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = prim__tk__id("quote =")
+                lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                _slot_1 = lcl_2
+                lcl_2 = prim__is__null(_slot_1)
+                if lcl_2:
+                    lcl_2 = prim__tokens.offset
+                    lcl_2 = (lcl_2, "quote = not match")
+                    lcl_2 = prim__cons(lcl_2, prim__nil)
+                    lcl_2 = prim__to__any(lcl_2)
+                    lcl_2 = (False, lcl_2)
+                else:
+                    lcl_2 = (_slot_0, _slot_1)
+                    _slot_local__1 = lcl_2
+                    lcl_2 = parse_ValueInstruction(prim__state, prim__tokens)
+                    _slot_2_check = lcl_2
+                    lcl_2 = _slot_2_check[0]
+                    lcl_2 = prim__eq(lcl_2, False)
+                    if lcl_2:
+                        lcl_2 = _slot_2_check
+                    else:
+                        lcl_2 = _slot_2_check[1]
+                        lcl_2 = prim__to__result(lcl_2)
+                        _slot_2 = lcl_2
+                        lcl_2 = (_slot_local__1, _slot_2)
+                        lcl_2 = prim__mk__ast("InstructionList", lcl_2)
+                        _slot_local__2 = lcl_2
+                        lcl_2 = (True, _slot_local__2)
             lcl_1 = lcl_2
         else:
             lcl_2 = (_off_0, "InstructionList lookahead failed")
-            lcl_3 = prim__cons(lcl_2, prim__nil)
-            lcl_2 = prim__to__any(lcl_3)
+            lcl_2 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_2)
             lcl_2 = (False, lcl_2)
             lcl_1 = lcl_2
         lcl_0 = lcl_1
     else:
         lcl_1 = (_off_0, "InstructionList got EOF")
-        lcl_1 = prim__cons(lcl_1, prim__nil)
-        lcl_1 = prim__to__any(lcl_1)
+        lcl_2 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_2)
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
     return lcl_0
@@ -8821,6 +11581,1025 @@ def parse_LabelType(prim__state, prim__tokens):
         lcl_0 = prim__mk__ast("LabelType", lcl_0)
         _slot_local__1 = lcl_0
         lcl_0 = (True, _slot_local__1)
+    return lcl_0
+def parse_LoadInst(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote load")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote load not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = prim__tokens.offset
+        _off_1 = lcl_0
+        lcl_0 = prim__peekable(prim__tokens, 0)
+        if lcl_0:
+            # switch
+            lcl_1 = prim__peek(prim__tokens, 0)
+            lcl_1 = lcl_1.idint
+            if lcl_1 == prim__tk__id("quote {"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_1 = _slot_1_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote volatile"):
+                lcl_1 = prim__mv__forward(prim__tokens)
+                _slot_1 = lcl_1
+                lcl_2 = parse_Type(prim__state, prim__tokens)
+                _slot_2_check = lcl_2
+                lcl_3 = _slot_2_check[0]
+                lcl_1 = prim__eq(lcl_3, False)
+                if lcl_1:
+                    lcl_1 = _slot_2_check
+                else:
+                    lcl_1 = _slot_2_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_3 = lcl_1
+                    lcl_1 = prim__is__null(_slot_3)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_4_check = lcl_1
+                        lcl_1 = _slot_4_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_4_check
+                        else:
+                            lcl_2 = _slot_4_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_4 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_5 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_6_check = lcl_4
+                                    lcl_4 = _slot_6_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_6_check
+                                    else:
+                                        lcl_5 = _slot_6_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_6 = lcl_5
+                                        lcl_5 = (_slot_5, _slot_6)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote void"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote label"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_4 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                    lcl_4 = lcl_1
+                lcl_0 = lcl_4
+            elif lcl_1 == prim__tk__id("quote i8"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote i64"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_4 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                    lcl_4 = lcl_1
+                lcl_0 = lcl_4
+            elif lcl_1 == prim__tk__id("quote i32"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote i16"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_4 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                    lcl_4 = lcl_1
+                lcl_0 = lcl_4
+            elif lcl_1 == prim__tk__id("quote i1"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote f64"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_4 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                    lcl_4 = lcl_1
+                lcl_0 = lcl_4
+            elif lcl_1 == prim__tk__id("quote f32"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            elif lcl_1 == prim__tk__id("quote ["):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_4 = _slot_1_check
+                else:
+                    lcl_1 = _slot_1_check[1]
+                    lcl_1 = prim__to__result(lcl_1)
+                    _slot_1 = lcl_1
+                    lcl_1 = prim__tk__id("quote ,")
+                    lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+                    _slot_2 = lcl_1
+                    lcl_1 = prim__is__null(_slot_2)
+                    if lcl_1:
+                        lcl_1 = prim__tokens.offset
+                        lcl_1 = (lcl_1, "quote , not match")
+                        lcl_1 = prim__cons(lcl_1, prim__nil)
+                        lcl_1 = prim__to__any(lcl_1)
+                        lcl_1 = (False, lcl_1)
+                    else:
+                        lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_1
+                        lcl_1 = _slot_3_check[0]
+                        lcl_1 = prim__eq(lcl_1, False)
+                        if lcl_1:
+                            lcl_1 = _slot_3_check
+                        else:
+                            lcl_2 = _slot_3_check[1]
+                            lcl_2 = prim__to__result(lcl_2)
+                            _slot_3 = lcl_2
+                            lcl_2 = prim__tokens.offset
+                            _off_3 = lcl_2
+                            lcl_2 = prim__peekable(prim__tokens, 0)
+                            if lcl_2:
+                                # switch
+                                lcl_4 = prim__peek(prim__tokens, 0)
+                                lcl_4 = lcl_4.idint
+                                if lcl_4 == prim__tk__id("quote ,"):
+                                    lcl_4 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_4
+                                    lcl_4 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_4
+                                    lcl_4 = _slot_5_check[0]
+                                    lcl_4 = prim__eq(lcl_4, False)
+                                    if lcl_4:
+                                        lcl_4 = _slot_5_check
+                                    else:
+                                        lcl_5 = _slot_5_check[1]
+                                        lcl_5 = prim__to__result(lcl_5)
+                                        _slot_5 = lcl_5
+                                        lcl_5 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_5
+                                        lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                        _slot_local__2 = lcl_5
+                                        lcl_5 = (True, _slot_local__2)
+                                        lcl_4 = lcl_5
+                                    lcl_3 = lcl_4
+                                else:
+                                    lcl_4 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_4 = prim__mk__ast("LoadInst", lcl_4)
+                                    _slot_local__1 = lcl_4
+                                    lcl_4 = (True, _slot_local__1)
+                                    lcl_3 = lcl_4
+                                lcl_2 = lcl_3
+                            else:
+                                lcl_3 = (_off_3, "LoadInst got EOF")
+                                lcl_3 = prim__cons(lcl_3, prim__nil)
+                                lcl_3 = prim__to__any(lcl_3)
+                                lcl_3 = (False, lcl_3)
+                                lcl_2 = lcl_3
+                            lcl_1 = lcl_2
+                    lcl_4 = lcl_1
+                lcl_0 = lcl_4
+            elif lcl_1 == prim__tk__id("localIdent"):
+                lcl_1 = parse_Type(prim__state, prim__tokens)
+                _slot_1_check = lcl_1
+                lcl_2 = _slot_1_check[0]
+                lcl_3 = prim__eq(lcl_2, False)
+                if lcl_3:
+                    lcl_1 = _slot_1_check
+                else:
+                    lcl_2 = _slot_1_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_1 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_2 = lcl_2
+                    lcl_2 = prim__is__null(_slot_2)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_3_check = lcl_2
+                        lcl_2 = _slot_3_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_3_check
+                        else:
+                            lcl_3 = _slot_3_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_3 = lcl_3
+                            lcl_3 = prim__tokens.offset
+                            _off_3 = lcl_3
+                            lcl_3 = prim__peekable(prim__tokens, 0)
+                            if lcl_3:
+                                # switch
+                                lcl_5 = prim__peek(prim__tokens, 0)
+                                lcl_5 = lcl_5.idint
+                                if lcl_5 == prim__tk__id("quote ,"):
+                                    lcl_5 = prim__mv__forward(prim__tokens)
+                                    _slot_4 = lcl_5
+                                    lcl_5 = parse_Alignment(prim__state, prim__tokens)
+                                    _slot_5_check = lcl_5
+                                    lcl_5 = _slot_5_check[0]
+                                    lcl_5 = prim__eq(lcl_5, False)
+                                    if lcl_5:
+                                        lcl_5 = _slot_5_check
+                                    else:
+                                        lcl_6 = _slot_5_check[1]
+                                        lcl_6 = prim__to__result(lcl_6)
+                                        _slot_5 = lcl_6
+                                        lcl_6 = (_slot_4, _slot_5)
+                                        _slot_local__1 = lcl_6
+                                        lcl_6 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_local__1)
+                                        lcl_6 = prim__mk__ast("LoadInst", lcl_6)
+                                        _slot_local__2 = lcl_6
+                                        lcl_6 = (True, _slot_local__2)
+                                        lcl_5 = lcl_6
+                                    lcl_4 = lcl_5
+                                else:
+                                    lcl_5 = (_slot_0, _slot_1, _slot_2, _slot_3)
+                                    lcl_5 = prim__mk__ast("LoadInst", lcl_5)
+                                    _slot_local__1 = lcl_5
+                                    lcl_5 = (True, _slot_local__1)
+                                    lcl_4 = lcl_5
+                                lcl_3 = lcl_4
+                            else:
+                                lcl_4 = (_off_3, "LoadInst got EOF")
+                                lcl_4 = prim__cons(lcl_4, prim__nil)
+                                lcl_4 = prim__to__any(lcl_4)
+                                lcl_4 = (False, lcl_4)
+                                lcl_3 = lcl_4
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
+                lcl_0 = lcl_1
+            else:
+                lcl_1 = (_off_1, "LoadInst lookahead failed")
+                lcl_2 = prim__cons(lcl_1, prim__nil)
+                lcl_3 = prim__to__any(lcl_2)
+                lcl_4 = (False, lcl_3)
+                lcl_0 = lcl_4
+        else:
+            lcl_0 = (_off_1, "LoadInst got EOF")
+            lcl_0 = prim__cons(lcl_0, prim__nil)
+            lcl_0 = prim__to__any(lcl_0)
+            lcl_0 = (False, lcl_0)
     return lcl_0
 def parse_LocalName(prim__state, prim__tokens):
     lcl_0 = prim__tk__id("localIdent")
@@ -10916,6 +14695,82 @@ def parse_Params(prim__state, prim__tokens):
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
     return lcl_0
+def parse_PhiInst(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote phi")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote phi not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = parse_Type(prim__state, prim__tokens)
+        _slot_1_check = lcl_0
+        lcl_0 = _slot_1_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_1_check
+        else:
+            lcl_1 = _slot_1_check[1]
+            lcl_1 = prim__to__result(lcl_1)
+            _slot_1 = lcl_1
+            lcl_1 = parse_IncList(prim__state, prim__tokens)
+            _slot_2_check = lcl_1
+            lcl_1 = _slot_2_check[0]
+            lcl_1 = prim__eq(lcl_1, False)
+            if lcl_1:
+                lcl_1 = _slot_2_check
+            else:
+                lcl_1 = _slot_2_check[1]
+                lcl_1 = prim__to__result(lcl_1)
+                _slot_2 = lcl_1
+                lcl_1 = (_slot_0, _slot_1, _slot_2)
+                lcl_1 = prim__mk__ast("PhiInst", lcl_1)
+                _slot_local__1 = lcl_1
+                lcl_1 = (True, _slot_local__1)
+            lcl_0 = lcl_1
+    return lcl_0
+def parse_PreemptionSpecifier(prim__state, prim__tokens):
+    lcl_0 = prim__tokens.offset
+    _off_0 = lcl_0
+    lcl_0 = prim__peekable(prim__tokens, 0)
+    if lcl_0:
+        # switch
+        lcl_2 = prim__peek(prim__tokens, 0)
+        lcl_2 = lcl_2.idint
+        if lcl_2 == prim__tk__id("quote dso_preemptable"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("PreemptionSpecifier", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote dso_local"):
+            lcl_2 = prim__mv__forward(prim__tokens)
+            _slot_0 = lcl_2
+            lcl_2 = (_slot_0,)
+            lcl_2 = prim__mk__ast("PreemptionSpecifier", lcl_2)
+            _slot_local__1 = lcl_2
+            lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
+        else:
+            lcl_2 = (_off_0, "PreemptionSpecifier lookahead failed")
+            lcl_2 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_2)
+            lcl_2 = (False, lcl_2)
+            lcl_1 = lcl_2
+        lcl_0 = lcl_1
+    else:
+        lcl_1 = (_off_0, "PreemptionSpecifier got EOF")
+        lcl_1 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_1)
+        lcl_1 = (False, lcl_1)
+        lcl_0 = lcl_1
+    return lcl_0
 def parse_START(prim__state, prim__tokens):
     lcl_0 = prim__tk__id("BOF")
     lcl_0 = prim__match__tk(prim__tokens, lcl_0)
@@ -10928,7 +14783,7 @@ def parse_START(prim__state, prim__tokens):
         lcl_0 = prim__to__any(lcl_0)
         lcl_0 = (False, lcl_0)
     else:
-        lcl_0 = parse_TopLevelEntity(prim__state, prim__tokens)
+        lcl_0 = parse_TopLevelEntityList(prim__state, prim__tokens)
         _slot_1_check = lcl_0
         lcl_0 = _slot_1_check[0]
         lcl_0 = prim__eq(lcl_0, False)
@@ -10953,6 +14808,78 @@ def parse_START(prim__state, prim__tokens):
                 lcl_1 = prim__mk__ast("START", lcl_1)
                 _slot_local__1 = lcl_1
                 lcl_1 = (True, _slot_local__1)
+            lcl_0 = lcl_1
+    return lcl_0
+def parse_SelectInst(prim__state, prim__tokens):
+    lcl_0 = prim__tk__id("quote select")
+    lcl_0 = prim__match__tk(prim__tokens, lcl_0)
+    _slot_0 = lcl_0
+    lcl_0 = prim__is__null(_slot_0)
+    if lcl_0:
+        lcl_0 = prim__tokens.offset
+        lcl_0 = (lcl_0, "quote select not match")
+        lcl_0 = prim__cons(lcl_0, prim__nil)
+        lcl_0 = prim__to__any(lcl_0)
+        lcl_0 = (False, lcl_0)
+    else:
+        lcl_0 = parse_TypeValue(prim__state, prim__tokens)
+        _slot_1_check = lcl_0
+        lcl_0 = _slot_1_check[0]
+        lcl_0 = prim__eq(lcl_0, False)
+        if lcl_0:
+            lcl_0 = _slot_1_check
+        else:
+            lcl_1 = _slot_1_check[1]
+            lcl_1 = prim__to__result(lcl_1)
+            _slot_1 = lcl_1
+            lcl_1 = prim__tk__id("quote ,")
+            lcl_1 = prim__match__tk(prim__tokens, lcl_1)
+            _slot_2 = lcl_1
+            lcl_1 = prim__is__null(_slot_2)
+            if lcl_1:
+                lcl_1 = prim__tokens.offset
+                lcl_1 = (lcl_1, "quote , not match")
+                lcl_1 = prim__cons(lcl_1, prim__nil)
+                lcl_1 = prim__to__any(lcl_1)
+                lcl_1 = (False, lcl_1)
+            else:
+                lcl_1 = parse_TypeValue(prim__state, prim__tokens)
+                _slot_3_check = lcl_1
+                lcl_1 = _slot_3_check[0]
+                lcl_1 = prim__eq(lcl_1, False)
+                if lcl_1:
+                    lcl_1 = _slot_3_check
+                else:
+                    lcl_2 = _slot_3_check[1]
+                    lcl_2 = prim__to__result(lcl_2)
+                    _slot_3 = lcl_2
+                    lcl_2 = prim__tk__id("quote ,")
+                    lcl_2 = prim__match__tk(prim__tokens, lcl_2)
+                    _slot_4 = lcl_2
+                    lcl_2 = prim__is__null(_slot_4)
+                    if lcl_2:
+                        lcl_2 = prim__tokens.offset
+                        lcl_2 = (lcl_2, "quote , not match")
+                        lcl_2 = prim__cons(lcl_2, prim__nil)
+                        lcl_2 = prim__to__any(lcl_2)
+                        lcl_2 = (False, lcl_2)
+                    else:
+                        lcl_2 = parse_TypeValue(prim__state, prim__tokens)
+                        _slot_5_check = lcl_2
+                        lcl_2 = _slot_5_check[0]
+                        lcl_2 = prim__eq(lcl_2, False)
+                        if lcl_2:
+                            lcl_2 = _slot_5_check
+                        else:
+                            lcl_3 = _slot_5_check[1]
+                            lcl_3 = prim__to__result(lcl_3)
+                            _slot_5 = lcl_3
+                            lcl_3 = (_slot_0, _slot_1, _slot_2, _slot_3, _slot_4, _slot_5)
+                            lcl_3 = prim__mk__ast("SelectInst", lcl_3)
+                            _slot_local__1 = lcl_3
+                            lcl_3 = (True, _slot_local__1)
+                            lcl_2 = lcl_3
+                    lcl_1 = lcl_2
             lcl_0 = lcl_1
     return lcl_0
 def parse_SepTypeValueList(prim__state, prim__tokens):
@@ -13722,6 +17649,23 @@ def parse_TopLevelEntity(prim__state, prim__tokens):
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
     return lcl_0
+def parse_TopLevelEntityList(prim__state, prim__tokens):
+    lcl_0 = parse_TopLevelEntity(prim__state, prim__tokens)
+    _slot_0_check = lcl_0
+    lcl_0 = _slot_0_check[0]
+    lcl_0 = prim__eq(lcl_0, False)
+    if lcl_0:
+        lcl_0 = _slot_0_check
+    else:
+        lcl_0 = _slot_0_check[1]
+        lcl_0 = prim__to__result(lcl_0)
+        _slot_0 = lcl_0
+        lcl_0 = (_slot_0,)
+        lcl_0 = prim__mk__ast("TopLevelEntityList", lcl_0)
+        _slot_local__1 = lcl_0
+        lcl_0 = lr_loop_TopLevelEntityList(_slot_local__1, prim__state, prim__tokens)
+        lcl_0 = (True, lcl_0)
+    return lcl_0
 def parse_Type(prim__state, prim__tokens):
     lcl_0 = prim__tokens.offset
     _off_0 = lcl_0
@@ -15113,8 +19057,41 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote select"):
+            lcl_2 = parse_SelectInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("ValueInstruction", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote sdiv"):
             lcl_2 = parse_BinInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("ValueInstruction", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote phi"):
+            lcl_2 = parse_PhiInst(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_3, False)
@@ -15179,8 +19156,41 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote load"):
+            lcl_2 = parse_LoadInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("ValueInstruction", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote insertvalue"):
             lcl_2 = parse_InsValInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("ValueInstruction", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote icmp"):
+            lcl_2 = parse_CmpInst(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_3, False)
@@ -15261,8 +19271,8 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote fadd"):
-            lcl_2 = parse_BinInst(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("quote fcmp"):
+            lcl_2 = parse_CmpInst(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_2, False)
@@ -15278,8 +19288,41 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote fadd"):
+            lcl_2 = parse_BinInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("ValueInstruction", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         elif lcl_2 == prim__tk__id("quote extractvalue"):
             lcl_2 = parse_ExtValInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_2 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_2, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_3 = _slot_0_check[1]
+                lcl_3 = prim__to__result(lcl_3)
+                _slot_0 = lcl_3
+                lcl_3 = (_slot_0,)
+                lcl_3 = prim__mk__ast("ValueInstruction", lcl_3)
+                _slot_local__1 = lcl_3
+                lcl_3 = (True, _slot_local__1)
+                lcl_2 = lcl_3
+            lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote bitcast"):
+            lcl_2 = parse_BitcastInst(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_3 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_3, False)
@@ -15327,8 +19370,8 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 _slot_local__1 = lcl_2
                 lcl_2 = (True, _slot_local__1)
             lcl_1 = lcl_2
-        elif lcl_2 == prim__tk__id("quote add"):
-            lcl_2 = parse_BinInst(prim__state, prim__tokens)
+        elif lcl_2 == prim__tk__id("quote alloca"):
+            lcl_2 = parse_AllocaInst(prim__state, prim__tokens)
             _slot_0_check = lcl_2
             lcl_2 = _slot_0_check[0]
             lcl_2 = prim__eq(lcl_2, False)
@@ -15344,17 +19387,33 @@ def parse_ValueInstruction(prim__state, prim__tokens):
                 lcl_3 = (True, _slot_local__1)
                 lcl_2 = lcl_3
             lcl_1 = lcl_2
+        elif lcl_2 == prim__tk__id("quote add"):
+            lcl_2 = parse_BinInst(prim__state, prim__tokens)
+            _slot_0_check = lcl_2
+            lcl_3 = _slot_0_check[0]
+            lcl_2 = prim__eq(lcl_3, False)
+            if lcl_2:
+                lcl_2 = _slot_0_check
+            else:
+                lcl_2 = _slot_0_check[1]
+                lcl_2 = prim__to__result(lcl_2)
+                _slot_0 = lcl_2
+                lcl_2 = (_slot_0,)
+                lcl_2 = prim__mk__ast("ValueInstruction", lcl_2)
+                _slot_local__1 = lcl_2
+                lcl_2 = (True, _slot_local__1)
+            lcl_1 = lcl_2
         else:
             lcl_2 = (_off_0, "ValueInstruction lookahead failed")
-            lcl_3 = prim__cons(lcl_2, prim__nil)
-            lcl_2 = prim__to__any(lcl_3)
+            lcl_2 = prim__cons(lcl_2, prim__nil)
+            lcl_2 = prim__to__any(lcl_2)
             lcl_2 = (False, lcl_2)
             lcl_1 = lcl_2
         lcl_0 = lcl_1
     else:
         lcl_1 = (_off_0, "ValueInstruction got EOF")
-        lcl_1 = prim__cons(lcl_1, prim__nil)
-        lcl_1 = prim__to__any(lcl_1)
+        lcl_2 = prim__cons(lcl_1, prim__nil)
+        lcl_1 = prim__to__any(lcl_2)
         lcl_1 = (False, lcl_1)
         lcl_0 = lcl_1
     return lcl_0
