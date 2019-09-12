@@ -56,6 +56,13 @@ for source in [
         %i = getelementptr i32*, i32* %j, i32 1
         ret void
     }
+    
+    define i32* @f(void (void*)* %g){
+        %a = alloca i8, align 4
+        %b = bitcast i8* %a to void*
+        ret i32* %add
+        
+    }
     """
 ]:
     tokens = list(run_lexer("xxx", source))

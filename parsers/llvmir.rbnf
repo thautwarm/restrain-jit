@@ -281,8 +281,11 @@ BasicBlockList : [BasicBlockList] BasicBlock
 BasicBlock : [name] [InstructionList] Terminator
 ;
 
-InstructionList : StoreInst
-                | [LocalName "="] ValueInstruction
+InstructionList : [InstructionList] Instruction
+;
+
+Instruction : StoreInst
+             | [LocalName "="] ValueInstruction
 ;
 
 StoreInst : 'store' ['volatile'] Type Value ',' Type Value [',' Alignment]
@@ -292,7 +295,9 @@ StoreInst : 'store' ['volatile'] Type Value ',' Type Value [',' Alignment]
 Terminator :  RetTerm | BrTerm | SwitchTerm
 ;
 
-RetTerm : 'ret' (VoidType| FirstClassType Value)
+
+# don't know why there is reduce-reduce conflict
+RetTerm   : 'ret' Type [Value]
 ;
 
 BrTerm  : "br" TypeValue LocalName
