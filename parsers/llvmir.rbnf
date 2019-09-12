@@ -286,11 +286,30 @@ InstructionList : StoreInst
 ;
 
 StoreInst : 'store' ['volatile'] Type Value ',' Type Value [',' Alignment]
-; # TODO
+;
 
 
-Terminator : 'ret' 'void'
-; # TODO
+Terminator :  RetTerm | BrTerm | SwitchTerm
+;
+
+RetTerm : 'ret' (VoidType| FirstClassType Value)
+;
+
+BrTerm  : "br" TypeValue LocalName
+; BrTerm  : "br" TypeValue ',' LabelType LocalName ',' LabelType LocalName
+;
+
+SwitchTerm : "switch" TypeValue "," LabelType LocalName "[" [Cases] "]"
+;
+
+Cases : CaseList
+;
+
+CaseList : [CaseList] Case
+;
+
+Case : IntType IntConst ',' LabelType LocalName
+;
 
 Value : Constant | LocalName
 ;
@@ -305,13 +324,7 @@ ValueInstruction : BinInst
                  | CmpInst
                  | PhiInst
                  | SelectInst
-; # TODO
-
-#
-#                 |
-#                 | SelectInst
-#                 | CallInst
-
+;
 
 BinInst : BinOp BinOpQualifier TypeValue ',' Value
 ;
