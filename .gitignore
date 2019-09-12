@@ -1,0 +1,6 @@
+**__pycache__/
+dev_test/
+Digraph.gv*
+.idea/
+.spyproject/
+**~

@@ -1,0 +1,423 @@
+# This is the formal grammar description in RBNF for a subset of LLVM IR.
+# By Thautwarm(Taine Zhao), 2019/09/11
+# License: MIT
+
+# named token: identifier, float, int, whitespace, quoteStr
+# "_"
+START         ::= <BOF> TopLevelEntity <EOF>
+;
+
+
+decimals         ::= <int>
+;
+name             ::= <identifier>
+;
+# "%" "@"
+LocalName        ::= <localIdent>
+;
+GlobalName       ::= <globalIdent>
+;
+# "+" "-"
+Sign             ::= ('+' | '-')
+;
+StrLit           ::= <str>
+;
+IntLit           ::= <int>
+;
+# "E" "."
+Sci              ::= 'E' ['+' | '-'] decimals
+;
+FloatLit         ::= <float>
+;
+
+TopLevelEntity   ::= SourceFilename
+                   | TypeDef
+                   | Global
+                   | FunctionDecl
+                   | FunctionDef
+;
+
+# "="
+SourceFilename ::= "source_filename" "=" StrLit
+;
+OpaqueType     ::= "opaque"
+;
+TypeDef        ::= LocalName "=" "type" (OpaqueType | Type)
+;
+
+    Type           ::= VoidType
+    ;
+        VoidType       ::= "void"
+        ;
+
+    Type           ::= FuncType
+    ;
+        FuncType   ::= Type '(' [Params] ')'
+        ;
+        Params     ::= "..."
+                       | ParamList [',' '...']
+        ;
+        ParamList  ::= [ParamList] Param
+        ;
+        Param      ::= Type [ParamAttrs] [LocalName]
+        ;
+
+        Alignment       ::= "align" IntLit
+        ;
+        Dereferenceable ::= "dereferenceable" "(" IntLit ")"
+                        | "dereferenceable_or_null" "(" IntLit ")"
+        ;
+
+
+    Type           ::= FirstClassType
+    ;
+        IntType        ::= 'i1' | 'i8' | 'i16' | 'i32' | 'i64'
+        ;
+        FirstClassType ::= IntType
+        ;
+
+        FloatType      ::= 'f32' | 'f64'
+        ;
+        FirstClassType ::= FloatType
+        ;
+        PtrType        ::= Type ([AddrSpace] '*')
+        ;
+        AddrSpace   ::= 'addrspace' '(' IntLit ')'
+        ;
+        FirstClassType ::= PtrType
+        ;
+        LabelType      ::= "label"
+        ;
+        FirstClassType ::= LabelType
+        ;
+        ArrayType      ::= '[' IntLit 'x' Type ']'
+        ;
+        FirstClassType ::= ArrayType
+        ;
+        StructType     ::= '{' '}'
+        ;
+        StructType     ::= '{' TypeList '}'
+        ;
+        TypeList       ::= Type | TypeList ',' Type
+        ;
+        FirstClassType ::= StructType
+        ;
+        NamedType      ::= LocalName
+        ;
+        FirstClassType ::= NamedType
+        ;
+
+
+Global ::= GlobalName "=" (GlobalDef | GlobalDecl)
+;
+
+#    [PreemptionSpecifier]
+#    [Visibility]
+#    [UnnamedAddr]
+#    [AddrSpace]
+
+GlobalDecl :
+    ExternLinkage
+    [UnnamedAddr]
+    Immutable
+    Type
+;
+
+# [GlobalAttrs]
+# [FuncAttrs]
+
+#    [Linkage]
+#    [PreemptionSpecifier]
+#    [Visibility]
+#    [UnnamedAddr]
+#    [AddrSpace]
+#    [ExternallyInitialized]
+
+GlobalDef :
+    [UnnamedAddr]
+    Immutable
+    Type
+    Constant
+;
+
+#    [GlobalAttrs]
+#    [FuncAttrs]
+
+
+Constant
+	: BoolConst
+	| IntConst
+	| FloatConst
+	| NullConst
+	| NoneConst
+	| StructConst
+	| ArrayConst
+	| CharArrayConst
+	| ZeroInitializerConst
+	| GlobalName
+	| UndefConst
+	| BlockAddressConst
+	| ConstantExpr
+;
+
+BoolConst : BoolLit
+;
+BoolLit    : 'true' | 'false'
+;
+IntConst    : IntLit
+;
+FloatConst  : FloatLit
+;
+NullConst	: "null"
+;
+NoneConst   : "none"
+;
+
+StructConst
+	: "{" "}"
+	| "{" TypeConstList "}"
+	| "<" "{" "}" ">"
+	| "<" "{" TypeConstList "}" ">"
+;
+
+ArrayConst : "[" [TypeConstList] "]"
+;
+
+CharArrayConst : "c" StrLit
+;
+
+ZeroInitializerConst : "zeroinitializer"
+;
+
+UndefConst : "undef"
+;
+
+BlockAddressConst : "blockaddress" "(" GlobalName "," LocalName ")"
+;
+
+ConstantOperand2  : '(' TypeConstant ',' Type Constant ')'
+;
+
+ConstantExpr      : binOp BinOpQualifier ConstantOperand2
+;
+
+
+    BinOpQualifier : OverflowFlags | "exact"
+    ;
+
+    OverflowFlags : [OverflowFlags] ("nsw" | "nuw")
+    ;
+
+    binOp : "add" | "fadd" | "sub"  | "fsub" | "mul"  | "fmul"
+          | "udiv"| "sdiv" | "urem" | "srem" | "frem" | "shl"
+          | "lshr"| "ashr" | "and"  | "or"   | "xor"
+    ;
+
+
+ConstantExpr : ExtValExpr
+             | InsValExpr
+             | GEPExpr
+             | BitCastExpr
+;
+
+# | CmpExpr
+# | SelectExpr
+
+
+IndexList
+	: IntLit
+	| IndexList "," IntLit
+;
+
+ExtValExpr : "extractvalue" '(' TypeConstant [',' IndexList] ')'
+;
+
+InsValExpr : "insertvalue" '(' TypeConstant ',' TypeConstant  [',' IndexList] ')'
+;
+
+
+GEPExpr : "getelementptr" ["inbounds"]  '(' Type ',' TypeConstant [',' GEPConstIndexList] ')'
+;
+
+    GEPConstIndexList
+        : GEPConstIndex
+        | GEPConstIndexList "," GEPConstIndex
+    ;
+
+    GEPConstIndex
+        : ["inrange"] IntType IntLit
+    ;
+
+BitCastExpr : 'bitcast' "(" TypeConstant "to" Type ")"
+;
+
+TypeConstList
+	: TypeConstant
+	| TypeConstList "," TypeConstant
+;
+
+TypeConstant
+	: Type Constant
+;
+
+
+FunctionDecl : 'declare' [ExternLinkage] FunctionHeader
+;
+
+FunctionHeader : Type GlobalName '(' Params ')' [UnnamedAddr]
+;
+
+FunctionDef : 'define' FunctionHeader FunctionBody
+;
+
+FunctionBody : '{' '}'
+;
+
+# we wouldn't use ...
+
+Linkage
+	: "appending"
+	| "available_externally"
+	| "common"
+	| "internal"
+	| "linkonce"
+	| "linkonce_odr"
+	| "private"
+	| "weak"
+	| "weak_odr"
+;
+
+ExternLinkage ::= "extern_weak"
+	            | "external"
+;
+
+PreemptionSpecifier : "dso_local" | "dso_preemptable"
+;
+
+Visibility : "default" | "hidden" | "protected"
+;
+
+UnnamedAddr : "local_unnamed_addr" | "unnamed_addr"
+;
+
+ExternallyInitialized : "externally_initialized"
+;
+
+Immutable : "constant" | "global"
+;
+
+
+AllocSize
+	: "allocsize" "(" IntLit ")"
+	| "allocsize" "(" IntLit "," IntLit ")"
+;
+
+StackAlignment
+	: "alignstack" "(" IntLit ")"
+;
+
+AttrGroupID ::= <attr_group_id>
+;
+
+Comdat
+	: "comdat"
+	| "comdat" "(" '$' name ")"
+;
+
+Section
+	: "section" StrLit
+;
+
+
+ParamAttrs : ParamAttrList
+;
+    ParamAttrList : [ParamAttrList] ParamAttr
+    ;
+        ParamAttr  ::=
+              Alignment
+            | Dereferenceable
+            | StrLit
+            | "byval"
+            | "inalloca"
+            | "inreg"
+            | "nest"
+            | "noalias"
+            | "nocapture"
+            | "nonnull"
+            | "readnone"
+            | "readonly"
+            | "returned"
+            | "signext"
+            | "sret"
+            | "swifterror"
+            | "swiftself"
+            | "writeonly"
+            | "zeroext"
+        ;
+
+FuncAttrs : FuncAttrList
+;
+
+    FuncAttrList
+        : FuncAttr
+        | FuncAttrList FuncAttr
+    ;
+        FuncAttr
+            : AttrGroupID
+            | "align" "=" IntLit
+            | "alignstack" "=" IntLit
+            | Alignment
+            | AllocSize
+            | StackAlignment
+            | StrLit
+            | StrLit "=" StrLit
+            | "alwaysinline"
+            | "argmemonly"
+            | "builtin"
+            | "cold"
+            | "convergent"
+            | "inaccessiblemem_or_argmemonly"
+            | "inaccessiblememonly"
+            | "inlinehint"
+            | "jumptable"
+            | "minsize"
+            | "naked"
+            | "nobuiltin"
+            | "noduplicate"
+            | "noimplicitfloat"
+            | "noinline"
+            | "nonlazybind"
+            | "norecurse"
+            | "noredzone"
+            | "noreturn"
+            | "nounwind"
+            | "optnone"
+            | "optsize"
+            | "readnone"
+            | "readonly"
+            | "returns_twice"
+            | "safestack"
+            | "sanitize_address"
+            | "sanitize_hwaddress"
+            | "sanitize_memory"
+            | "sanitize_thread"
+            | "speculatable"
+            | "ssp"
+            | "sspreq"
+            | "sspstrong"
+            | "strictfp"
+            | "uwtable"
+            | "writeonly"
+        ;
+
+GlobalAttrs : "," GlobalAttrList
+;
+
+    GlobalAttrList : GlobalAttr | GlobalAttrList "," GlobalAttr
+    ;
+
+        GlobalAttr
+            : Section
+            | Comdat
+            | Alignment
+        ;
