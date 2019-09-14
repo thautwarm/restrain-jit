@@ -1,0 +1,3 @@
+abc Repr;
+data Reg(Repr) n:str;
+data Const(Repr) val:object;
