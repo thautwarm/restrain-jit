@@ -1,22 +1,16 @@
 import restrain_jit.ir.representations;
 
-enum VarScope Unknown Local Global Free;
 
 abc Instr;
-data App(Instr) argn:int;
-data Var(Instr) name:str scope:VarScope;
-data Val(Instr) val:object;
-data Ass(Instr) name:str scope:VarScope;
-data Ref(Instr) name:str;
-data Deref(Instr) name:str;
-data Setref(Instr) name:str;
-data JmpIf(Instr) label:str cond:t.Union[Reg,Const];
-data JmpIfPush(Instr) label:str cond:t.Union[Reg,Const] leave:t.Union[Reg, Const];
+data App(Instr) f:Repr args:t.List[Repr];
+data Ass(Instr) reg:Reg val:Repr;
+data Load(Instr) reg:Reg;
+data Store(Instr) reg:Reg val:Repr;
+data JmpIf(Instr) label:str cond:Repr;
+data JmpIfPush(Instr) label:str cond:Repr leave:Repr;
 data Jmp(Instr) label:str;
 data Label(Instr) label:str;
-data Dup(Instr);
 data Peek(Instr) offset:int;
 data Return(Instr) ;
-data Yield(Instr) ;
-data YieldFrom(Instr) ;
-data YieldFrom(Instr) ;
+data Push(Instr) val:Repr;
+data Pop(Instr) ;

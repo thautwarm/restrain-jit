@@ -2,23 +2,10 @@ from dataclasses import dataclass
 import bytecode as bc
 import typing as t
 from bytecode import Bytecode
-from restrain_jit.ir import instructions as Instr, representations as Repr
+# from restrain_jit.ir import instructions as Instr, representations as Repr
 from restrain_jit.ir import instrnames as InstrNames
 from restrain_jit.ir import primitives as Prim
 from restrain_jit.ir import py_apis as RT
-
-
-@dataclass
-class VMFunc:
-    # stack
-    st: t.List[Repr.Repr]
-    # instructions
-    instrs: t.List[Instr.Instr]
-
-    # allocated temporary
-    used: t.Set[str]
-    unsed: t.Set[str]
-    blocks: t.List[str]
 
 
 def label_to_name(label: t.Union[bc.Label, bc.BasicBlock]):
@@ -94,16 +81,16 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
         yield from RT.py_printexpr(tos)
     elif b.name == InstrNames.SET_ADD:
         tos = yield Prim.pop()
-        subj = yield Prim.tmp(Instr.Peek(b.arg))
+        subj = yield Prim.add_instr(Instr.Peek(b.arg))
         yield from RT.py_set_add(subj, tos)
     elif b.name == InstrNames.LIST_APPEND:
         tos = yield Prim.pop()
-        subj = yield Prim.tmp(Instr.Peek(b.arg))
+        subj = yield Prim.add_instr(Instr.Peek(b.arg))
         yield from RT.py_list_append(subj, tos)
     elif b.name == InstrNames.MAP_ADD:
         tos = yield Prim.pop()
         tos1 = yield Prim.pop()
-        subj = yield Prim.tmp(Instr.Peek(b.arg))
+        subj = yield Prim.add_instr(Instr.Peek(b.arg))
         yield from RT.py_map_add(subj, tos, tos1)
     elif b.name == InstrNames.RETURN_VALUE:
         yield Prim.add_instr(Instr.Return())
@@ -363,7 +350,7 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
         yield Prim.push(a)
 
     elif b.name == InstrNames.GET_ITER:
-        f = yield Prim.tmp(Instr.Peek(1))
+        f = yield Prim.add_instr(Instr.Peek(1))
         a = yield from RT.py_call_func(f)
         yield Prim.push(a)
 

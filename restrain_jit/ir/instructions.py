@@ -7,75 +7,49 @@ from dataclasses import dataclass
 from restrain_jit.ir.representations import *
 
 
-class VarScope(Enum):
-    Unknown = _auto()
-    Local = _auto()
-    Global = _auto()
-    Free = _auto()
-    pass
-
-
 class Instr:
     pass
 
 
 @dataclass
 class App(Instr):
-    argn:int
-    pass
-
-
-@dataclass
-class Var(Instr):
-    name:str
-    scope:VarScope
-    pass
-
-
-@dataclass
-class Val(Instr):
-    val:object
+    f:Repr
+    args:t.List[Repr]
     pass
 
 
 @dataclass
 class Ass(Instr):
-    name:str
-    scope:VarScope
+    reg:Reg
+    val:Repr
     pass
 
 
 @dataclass
-class Ref(Instr):
-    name:str
+class Load(Instr):
+    reg:Reg
     pass
 
 
 @dataclass
-class Deref(Instr):
-    name:str
-    pass
-
-
-@dataclass
-class Setref(Instr):
-    name:str
+class Store(Instr):
+    reg:Reg
+    val:Repr
     pass
 
 
 @dataclass
 class JmpIf(Instr):
     label:str
-    cond:t.Union[Reg,Const]
+    cond:Repr
     pass
 
 
 @dataclass
 class JmpIfPush(Instr):
     label:str
-    cond:t.Union[Reg,Const]
-    leave:t.Union[Reg,
-    Const]
+    cond:Repr
+    leave:Repr
     pass
 
 
@@ -92,11 +66,6 @@ class Label(Instr):
 
 
 @dataclass
-class Dup(Instr):
-    pass
-
-
-@dataclass
 class Peek(Instr):
     offset:int
     pass
@@ -108,15 +77,11 @@ class Return(Instr):
 
 
 @dataclass
-class Yield(Instr):
+class Push(Instr):
+    val:Repr
     pass
 
 
 @dataclass
-class YieldFrom(Instr):
-    pass
-
-
-@dataclass
-class YieldFrom(Instr):
+class Pop(Instr):
     pass
