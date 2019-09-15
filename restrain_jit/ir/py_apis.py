@@ -324,13 +324,14 @@ def py_del_attr(subj: Repr, attr: str):
 
 def py_call_method(*params: Repr):
     fn = yield from_lower(NS.RestrainJIT, py_call_method.__name__)
-    a = yield app(fn, *params)
+    a = yield app(fn, list(params))
     return a
 
 
 def py_mk_closure(closure_vars: t.List[Repr], native_fn_ptr: Repr):
     tp = yield from py_mk_tuple(closure_vars)
-    mk_closure = yield from_lower(NS.RestrainJIT, py_mk_closure.__name__)
+    mk_closure = yield from_lower(NS.RestrainJIT,
+                                  py_mk_closure.__name__)
     a = yield app(mk_closure, [tp, native_fn_ptr])
     return a
 
@@ -343,7 +344,8 @@ class Indirect:
 
 
 def py_mk_func(fname: Repr, code: types.CodeType):
-    code = bc.ControlFlowGraph.from_bytecode(bc.Bytecode.from_code(code))
+    code = bc.ControlFlowGraph.from_bytecode(
+        bc.Bytecode.from_code(code))
     a = yield from Indirect.f(code)
     return a
 
@@ -402,9 +404,75 @@ def py_cat_strs(vs: t.List[Repr]):
     return a
 
 
+def py_is_none(v: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_is_none.__name__)
+    a = yield app(fn, [v])
+    return a
+
+
 def yield_val(a: Repr):
     raise NotImplemented
 
 
 def yield_from(a: Repr):
     raise NotImplemented
+
+
+def py_eq(a: Repr, b: Repr):
+    fn = from_lower(NS.RestrainJIT, py_eq.__name__)
+    a = yield from app(fn, [a])
+    return a
+
+
+def py_neq(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_neq.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_is(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_is.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_is_not(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_is_not.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_lt(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_lt.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_le(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_le.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_gt(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_gt.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_ge(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ge.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_in(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_in.__name__)
+    a = yield app(fn, [a, b])
+    return a
+
+
+def py_not_in(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_not_in.__name__)
+    a = yield app(fn, [a, b])
+    return a

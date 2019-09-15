@@ -6,8 +6,8 @@ from restrain_jit.vm import am
 from restrain_jit.ir import py_apis as RT
 
 
-def label_to_name(label: t.Union[bc.Label, bc.BasicBlock]):
-    return f"repy {id(label)}"
+def label_to_name(label: t.Union[bc.BasicBlock]):
+    return f"block-{id(label):x}"
 
 
 def pop_n(n: int):
@@ -19,11 +19,10 @@ def pop_n(n: int):
     return xs
 
 
-def abs_i(b: t.Union[bc.Instr, bc.Label]):
-    if isinstance(b, bc.Label):
-        yield am.label(label_to_name(b))
-
-    elif b.has_jump():
+def abs_i(b: t.Union[bc.Instr]):
+    if b.name == InstrNames.COMPARE_OP:
+        yield from abs_i_cmp(b)
+    elif "JUMP" in b.name:
         yield from abs_i_jump(b)
     elif b.name.startswith('UNARY'):
         yield from abs_i_unary(b)
@@ -295,14 +294,32 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
         yield am.push(a)
 
     elif b.name == InstrNames.FOR_ITER:
+        f = yield am.pop()
+        a = yield from RT.py_call_func(f)
+        label = b.arg
+        assert isinstance(label, bc.BasicBlock)
+        check_if_nothing = yield from RT.py_is_none(a)
+        yield am.jump_if(label_to_name(label), check_if_nothing)
+        _0 = yield am.const(0)
+        _1 = yield am.const(1)
+        elt = yield from RT.py_subscr(a, _0)
+        st = yield from RT.py_subscr(a, _1)
+        yield am.push(st)
+        yield am.push(elt)
+
+    elif b.name == InstrNames.GET_ITER:
         a = yield am.pop()
         a = yield from RT.py_get_attr(a, "__next__")
         yield am.push(a)
 
-    elif b.name == InstrNames.GET_ITER:
-        f = yield am.peek(0)
-        a = yield from RT.py_call_func(f)
-        yield am.push(a)
+    elif b.name == InstrNames.SETUP_LOOP:
+        pass
+    elif b.name == InstrNames.POP_BLOCK:
+        pass
+    elif b.name == InstrNames.POP_TOP:
+        yield am.pop()
+    else:
+        raise NotImplementedError(f"instruction {b} not supported yet")
 
 
 u_map = {
@@ -398,6 +415,42 @@ def abs_i_inplace_binary(b: bc.Instr):
         raise ValueError(f"unknown binary instruction {b}")
     c = yield from f(a1, a2)
     yield am.push(c)
+
+
+def just_raise(*args):
+    raise ValueError
+
+
+cmp_map = {
+    bc.Compare.EQ: RT.py_eq,
+    bc.Compare.NE: RT.py_neq,
+    bc.Compare.IS: RT.py_is,
+    bc.Compare.IS_NOT: RT.py_is_not,
+    bc.Compare.LT: RT.py_lt,
+    bc.Compare.LE: RT.py_le,
+    bc.Compare.GT: RT.py_gt,
+    bc.Compare.GE: RT.py_ge,
+    bc.Compare.IN: RT.py_in,
+    bc.Compare.NOT_IN: RT.py_not_in,
+    bc.Compare.EXC_MATCH: just_raise
+}
+
+
+def abs_i_cmp(b: bc.Instr):
+    arg: bc.Compare = b.arg
+    f = cmp_map[arg]
+    a2 = yield am.pop()
+    a1 = yield am.pop()
+    a = yield from f(a1, a2)
+    yield am.push(a)
+
+
+def abs_i_cfg(b: bc.ControlFlowGraph):
+    for each in b:
+        assert isinstance(each, bc.BasicBlock)
+        yield am.label(label_to_name(each))
+        for instr in each:
+            yield from abs_i(instr)
 
 
 """

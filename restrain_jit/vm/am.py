@@ -13,6 +13,7 @@ Repr = t.TypeVar("Repr")
 
 
 class AM(t.Generic[Instr, Repr]):
+
     @classmethod
     @abc.abstractmethod
     def reg_of(cls, n: str):
@@ -120,6 +121,7 @@ def alloc():
 
 
 def add_instr(instr: Instr):
+
     def apply(vm):
         a = vm.alloc()
         vm.add_instr(a, instr)
@@ -184,8 +186,7 @@ def run_machine(gen: t.Generator, vm: AM):
     """
     top level of abstract interpretion
     """
-    binder = gen.send(None)
-    v = binder(vm)
+    v = None
     try:
         while True:
             binder = gen.send(v)

@@ -1,6 +1,6 @@
 from restrain_jit.vm.julia_vm import JuVM
 from restrain_jit.vm.am import run_machine, Symbol
-from restrain_jit.ir.from_bc import abs_i
+from restrain_jit.ir.from_bc import abs_i, abs_i_cfg
 from restrain_jit.ir.instructions import *
 import bytecode as bc
 import typing as t
@@ -24,17 +24,14 @@ def show_block(x):
                 print(j)
 
 
-def g(block):
-    for e in block:
-        yield from abs_i(e)
-
-
 jvm = JuVM([], [], set(), set())
 
 
 def f(x):
-    a = x + 1
-    return k(a).d
+    for each in x:
+        a = each + 1
+        if a < 2:
+            k(a).d()
 
 
 code = bc.Bytecode.from_code(f.__code__)
@@ -42,7 +39,7 @@ cfg = bc.ControlFlowGraph.from_bytecode(code)
 show_block(cfg)
 block1: t.List[bc.Instr] = list(cfg[0])
 
-run_machine(g(block1), jvm)
+run_machine(abs_i_cfg(cfg), jvm)
 jvm.pass_push_pop_inline()
 print('=============')
 
@@ -51,17 +48,3 @@ for k, v in jvm.instrs:
         print(v)
     else:
         print(k, '=', v)
-
-assert jvm.instrs == [
-    ('tmp-0', PyGlob(qual='RestrainJIT', name='py_add')),
-    ('tmp-1', App(f=Reg(n='tmp-0'), args=[Reg(n='x'),
-                                          Const(val=1)])),
-    (None, Ass(reg=Reg(n='a'), val=Reg(n='tmp-1'))),
-    ('tmp-2', PyGlob(qual='', name='k')),
-    ('tmp-3', App(f=Reg(n='tmp-2'), args=[Reg(n='a')])),
-    ('tmp-4', PyGlob(qual='RestrainJIT', name='py_get_attr')),
-    ('tmp-5',
-     App(f=Reg(n='tmp-4'),
-         args=[Reg(n='tmp-3'), Const(val=Symbol(s='d'))])),
-    (None, Return(val=Reg(n='tmp-5')))
-]

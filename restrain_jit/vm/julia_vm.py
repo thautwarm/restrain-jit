@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 @dataclass
 class JuVM(AM[Instr, Repr]):
+
     def from_const(self, val: Repr) -> object:
         assert isinstance(val, Const)
         return val.val
@@ -28,7 +29,7 @@ class JuVM(AM[Instr, Repr]):
 
     def from_lower(self, qualifier: str, name: str):
         regname = self.alloc()
-        self.add_instr(regname, PyGlob(qualifier, name))
+        self.add_instr(regname, JlGlob(qualifier, name))
         return Reg(regname)
 
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
@@ -128,7 +129,7 @@ class JuVM(AM[Instr, Repr]):
                 break
             if k is None and isinstance(v, Pop):
                 j = i - 1
-                while k is None and isinstance(v, Pop):
+                while True:
                     k, v = instrs[j]
                     if k is None and isinstance(v, Push):
                         blacklist.add(j)
@@ -139,8 +140,12 @@ class JuVM(AM[Instr, Repr]):
                             k, v = instrs[i]
                         except IndexError:
                             break
+                        if k is None and isinstance(v, Pop):
+                            continue
+                        break
 
                     else:
+                        i += 1
                         break
             else:
                 i = i + 1
