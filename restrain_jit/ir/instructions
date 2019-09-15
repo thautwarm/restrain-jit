@@ -1,6 +1,6 @@
 import restrain_jit.ir.representations;
 
-
+enum BackEnd JlEnd PyEnd;
 abc Instr;
 data App(Instr) f:Repr args:t.List[Repr];
 data Ass(Instr) reg:Reg val:Repr;
@@ -11,6 +11,8 @@ data JmpIfPush(Instr) label:str cond:Repr leave:Repr;
 data Jmp(Instr) label:str;
 data Label(Instr) label:str;
 data Peek(Instr) offset:int;
-data Return(Instr) ;
+data Return(Instr) val:Repr;
 data Push(Instr) val:Repr;
 data Pop(Instr) ;
+data PyGlob(Instr) qual:str name:str;
+data JlGlob(Instr) qual:str name:str;

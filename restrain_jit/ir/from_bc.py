@@ -1,10 +1,8 @@
-from dataclasses import dataclass
+import types
 import bytecode as bc
 import typing as t
-from bytecode import Bytecode
-# from restrain_jit.ir import instructions as Instr, representations as Repr
 from restrain_jit.ir import instrnames as InstrNames
-from restrain_jit.ir import primitives as Prim
+from restrain_jit.vm import am
 from restrain_jit.ir import py_apis as RT
 
 
@@ -12,126 +10,134 @@ def label_to_name(label: t.Union[bc.Label, bc.BasicBlock]):
     return f"repy {id(label)}"
 
 
-def is_pushing_block(b: bc.Instr):
-    return b.name in (InstrNames.SETUP_EXCEPT, InstrNames.SETUP_FINALLY,
-                      InstrNames.SETUP_FINALLY, InstrNames.SETUP_WITH)
-
-
-def is_poping_block(b: bc.Instr):
-    return b.name in (InstrNames.POP_BLOCK, InstrNames.POP_EXCEPT,
-                      InstrNames.END_FINALLY)
+def pop_n(n: int):
+    xs = []
+    for i in range(n):
+        a = yield am.pop()
+        xs.append(a)
+    xs.reverse()
+    return xs
 
 
 def abs_i(b: t.Union[bc.Instr, bc.Label]):
     if isinstance(b, bc.Label):
-        yield Prim.add_instr(Instr.Label(label_to_name(b)))
+        yield am.label(label_to_name(b))
+
     elif b.has_jump():
         yield from abs_i_jump(b)
     elif b.name.startswith('UNARY'):
         yield from abs_i_unary(b)
-
     elif b.name.startswith('BINARY'):
         yield from abs_i_binary(b)
     elif b.name.startswith('INPLACE'):
         yield from abs_i_inplace_binary(b)
     elif b.name == InstrNames.ROT_TWO:
-        a1 = yield Prim.pop()
-        a2 = yield Prim.pop()
-        yield Prim.push(a2)
-        yield Prim.push(a1)
+        a1 = yield am.pop()
+        a2 = yield am.pop()
+        yield am.push(a2)
+        yield am.push(a1)
     elif b.name == InstrNames.ROT_THREE:
-        a1 = yield Prim.pop()
-        a2 = yield Prim.pop()
-        a3 = yield Prim.pop()
-        yield Prim.push(a3)
-        yield Prim.push(a1)
-        yield Prim.push(a2)
+        a1 = yield am.pop()
+        a2 = yield am.pop()
+        a3 = yield am.pop()
+        yield am.push(a3)
+        yield am.push(a1)
+        yield am.push(a2)
     elif b.name == InstrNames.NOP:
         pass
     elif b.name == InstrNames.DUP_TOP:
-        a = yield Prim.pop()
-        yield Prim.push(a)
-        yield Prim.push(a)
+        a = yield am.pop()
+        yield am.push(a)
+        yield am.push(a)
     elif b.name == InstrNames.DUP_TOP_TWO:
-        a = yield Prim.pop()
-        yield Prim.push(a)
-        yield Prim.push(a)
-        yield Prim.push(a)
+        a = yield am.peek(0)
+        yield am.push(a)
+        yield am.push(a)
 
     elif b.name == InstrNames.GET_ITER:
-        a = yield Prim.pop()
+        a = yield am.pop()
         a = yield from RT.py_iter(a)
-        yield Prim.push(a)
+        yield am.push(a)
 
     elif b.name == InstrNames.GET_YIELD_FROM_ITER:
-        a = yield Prim.pop()
+        a = yield am.pop()
         a = yield from RT.py_iter(a)
-        yield Prim.push(a)
+        yield am.push(a)
     elif b.name == InstrNames.STORE_SUBSCR:
-        tos = yield Prim.pop()
-        tos1 = yield Prim.pop()
-        tos2 = yield Prim.pop()
+        tos = yield am.pop()
+        tos1 = yield am.pop()
+        tos2 = yield am.pop()
         yield from RT.py_setitem(tos1, tos, tos2)
     elif b.name == InstrNames.DELETE_SUBSCR:
-        tos = yield Prim.pop()
-        tos1 = yield Prim.pop()
+        tos = yield am.pop()
+        tos1 = yield am.pop()
         yield from RT.py_delitem(tos1, tos)
     elif b.name == InstrNames.PRINT_EXPR:
-        tos = yield Prim.pop()
+        tos = yield am.pop()
         yield from RT.py_printexpr(tos)
     elif b.name == InstrNames.SET_ADD:
-        tos = yield Prim.pop()
-        subj = yield Prim.add_instr(Instr.Peek(b.arg))
+        tos = yield am.pop()
+        subj = yield am.peek(b.arg - 1)  # TODO: check correctness
         yield from RT.py_set_add(subj, tos)
     elif b.name == InstrNames.LIST_APPEND:
-        tos = yield Prim.pop()
-        subj = yield Prim.add_instr(Instr.Peek(b.arg))
+        tos = yield am.pop()
+        subj = yield am.peek(b.arg - 1)
         yield from RT.py_list_append(subj, tos)
     elif b.name == InstrNames.MAP_ADD:
-        tos = yield Prim.pop()
-        tos1 = yield Prim.pop()
-        subj = yield Prim.add_instr(Instr.Peek(b.arg))
+        tos = yield am.pop()
+        tos1 = yield am.pop()
+        subj = yield am.peek(b.arg - 1)
         yield from RT.py_map_add(subj, tos, tos1)
     elif b.name == InstrNames.RETURN_VALUE:
-        yield Prim.add_instr(Instr.Return())
+        a = yield am.pop()
+        yield am.ret(a)
     elif b.name == InstrNames.YIELD_VALUE:
-        yield Prim.add_instr(Instr.Yield())
+        a = yield am.pop()
+        yield from RT.yield_val(a)
+
     elif b.name == InstrNames.YIELD_FROM:
-        yield Prim.add_instr(Instr.YieldFrom())
+        a = yield am.pop()
+        yield from RT.yield_from(a)
     elif b.name == InstrNames.STORE_NAME:
         assert isinstance(b.arg, str)
-        yield Prim.add_instr(Instr.Ass(b.arg, Instr.VarScope.Unknown))
+        raise NotImplemented
     elif b.name == InstrNames.DELETE_NAME:
-        pass
+        raise NotImplemented
     elif b.name == InstrNames.UNPACK_SEQUENCE:
-        val = yield Prim.pop()
+        val = yield am.pop()
         val = yield from RT.py_to_tuple(val)
         for idx in range(b.arg):
+            idx = yield am.const(idx)
             a = yield from RT.py_subscr(val, idx)
-            yield Prim.push(a)
+            yield am.push(a)
     elif b.name == InstrNames.UNPACK_EX:
-        val = yield Prim.pop()
+        val = yield am.pop()
         val = yield from RT.py_to_tuple(val)
         n = yield from RT.py_len(val)
         tail = b.arg // 256
         init = b.arg % 256
         start_idx = None
         for start_idx in range(init):
+            start_idx = am.const(start_idx)
             a = yield from RT.py_subscr(val, start_idx)
-            yield Prim.push(a)
+            yield am.push(a)
 
-        start_idx = Repr.Const(start_idx)
-        end_idx = yield from RT.py_sub(n, Repr.Const(tail))
-        a = yield from RT.py_build_slice(start_idx, Repr.Const(1), end_idx)
-        yield Prim.push(a)
+        start_idx = yield am.const(start_idx)
+
+        tail = yield am.const(tail)
+        _1 = yield am.const(1)
+        end_idx = yield from RT.py_sub(n, tail)
+        a = yield from RT.py_build_slice(start_idx, _1, end_idx)
+        yield am.push(a)
 
         for end_idx in range(init):
-            end_idx = yield from RT.py_sub(n, Repr.Const(end_idx + 1))
+            off = yield am.const(end_idx + 1)
+            end_idx = yield from RT.py_sub(n, off)
             a = yield from RT.py_subscr(val, end_idx)
-            yield Prim.push(a)
+            yield am.push(a)
 
     elif b.name == InstrNames.FORMAT_VALUE:
-        a = yield Prim.pop()
+        a = yield am.pop()
         if b.arg & 0x03 == 0x00:
             a = yield from RT.py_format(a)
         elif b.arg & 0x03 == 0x01:
@@ -148,25 +154,20 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
             a = yield from RT.py_format(a)
         else:
             raise ValueError(f"invalid format flag {b.arg}")
-        yield Prim.push(a)
+        yield am.push(a)
     elif b.name == InstrNames.BUILD_SLICE:
-        tos = yield Prim.pop()
-        tos1 = yield Prim.pop()
-        tos2 = yield Prim.pop()
+        tos = yield am.pop()
+        tos1 = yield am.pop()
+        tos2 = yield am.pop()
         a = yield from RT.py_build_slice(tos2, tos1, tos)
-        yield Prim.push(a)
+        yield am.push(a)
     elif b.name == InstrNames.LOAD_METHOD:
-        a = yield Prim.pop()
-        a = yield from RT.py_load_method_(a, b.arg)
-        yield Prim.push(a)
+        a = yield am.pop()
+        yield from RT.py_load_method_(a, b.arg)
     elif b.name == InstrNames.CALL_METHOD:
-        xs = []
-        for i in range(b.arg + 2):
-            a = yield Prim.pop()
-            xs.append(a)
-        xs.reverse()
+        xs = yield from pop_n(b.arg + 2)
         a = yield from RT.py_call_method(*xs)
-        yield Prim.push(a)
+        yield am.push(a)
     elif b.name == InstrNames.MAKE_FUNCTION:
         arg = b.arg
         if arg & 0x01:
@@ -176,18 +177,242 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
         if arg & 0x04:
             raise NotImplemented
         if arg & 0x08:
-            name = yield Prim.pop()
-            code = yield Prim.pop()
-            closure = yield Prim.pop()
-            a = yield from RT.py_mk_closure(name, code, closure)
+            name = yield am.pop()
+            code = yield am.pop()
+            code = yield am.from_const(code)
+            assert isinstance(code, types.CodeType)
+            closure = yield am.pop()
+            fpr = yield from RT.py_mk_func(name, code)
+            a = yield from RT.py_mk_closure(closure, fpr)
 
         else:
-            name = yield Prim.pop()
-            code = yield Prim.pop()
+            name = yield am.pop()
+            code = yield am.pop()
+            code = yield am.from_const(code)
+            assert isinstance(code, types.CodeType)
             a = yield from RT.py_mk_func(name, code)
-        yield Prim.push(a)
+        yield am.push(a)
+
+    elif b.name == InstrNames.CALL_FUNCTION:
+        c = b.arg
+        xs = yield from pop_n(c)
+        f = yield am.pop()
+        a = yield from RT.py_call_func(f, *xs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.LOAD_CLOSURE:
+        arg = b.arg
+        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
+        a = yield am.reg_of(arg.name)
+        am.push(a)
+
+    elif b.name == InstrNames.LOAD_DEREF:
+        arg = b.arg
+        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
+        reg = yield am.reg_of(arg.name)
+        a = yield am.load(reg)
+        yield am.push(a)
+
+    elif b.name == InstrNames.STORE_DEREF:
+        arg = b.arg
+        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
+
+        a = yield am.pop()
+        yield am.store(arg.name, a)
+
+    elif b.name == InstrNames.LOAD_FAST:
+        assert isinstance(b.arg, str)
+        reg = yield am.reg_of(b.arg)
+        yield am.push(reg)
+
+    elif b.name == InstrNames.STORE_FAST:
+        assert isinstance(b.arg, str)
+        v = yield am.pop()
+        yield am.assign(b.arg, v)
+
+    elif b.name == InstrNames.LOAD_GLOBAL:
+        arg = b.arg
+        assert isinstance(arg, str)
+        a = yield am.from_higher("", arg)
+        yield am.push(a)
+
+    elif b.name == InstrNames.STORE_GLOBAL:
+        raise NotImplemented
+
+    elif b.name == InstrNames.LOAD_CONST:
+        arg = b.arg
+        a = yield am.const(arg)
+        yield am.push(a)
+
+    elif b.name == InstrNames.STORE_ATTR:
+        tos = yield am.pop()
+        val = yield am.pop()
+        yield from RT.py_store_attr(tos, val, b.arg)
+
+    elif b.name == InstrNames.LOAD_ATTR:
+        tos = yield am.pop()
+        a = yield from RT.py_get_attr(tos, b.arg)
+        yield am.push(a)
+
+    elif b.name == InstrNames.DELETE_ATTR:
+        tos = yield am.pop()
+        yield from RT.py_del_attr(tos, b.arg)
+
+    elif b.name == InstrNames.BUILD_TUPLE:
+        xs = yield from pop_n(b.arg)
+        a = yield from RT.py_mk_tuple(xs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.BUILD_LIST:
+        xs = yield from pop_n(b.arg)
+        a = yield from RT.py_mk_list(xs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.BUILD_SET:
+        xs = yield from pop_n(b.arg)
+        a = yield from RT.py_mk_set(xs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.BUILD_MAP:
+        xs = yield from pop_n(2 * b.arg)
+        ks = xs[::2]
+        vs = xs[1::2]
+        ks = yield from RT.py_mk_tuple(ks)
+        vs = yield from RT.py_mk_tuple(vs)
+        a = yield from RT.py_mk_map(ks, vs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.BUILD_CONST_KEY_MAP:
+        ks = yield am.pop()
+        vs = yield from pop_n(b.arg)
+        vs = yield from RT.py_mk_tuple(vs)
+        a = yield from RT.py_mk_map(ks, vs)
+        yield a.push(a)
+
+    elif b.name == InstrNames.BUILD_STRING:
+        xs = yield from pop_n(b.arg)
+        a = yield from RT.py_cat_strs(xs)
+        yield am.push(a)
+
+    elif b.name == InstrNames.FOR_ITER:
+        a = yield am.pop()
+        a = yield from RT.py_get_attr(a, "__next__")
+        yield am.push(a)
+
+    elif b.name == InstrNames.GET_ITER:
+        f = yield am.peek(0)
+        a = yield from RT.py_call_func(f)
+        yield am.push(a)
+
+
+u_map = {
+    InstrNames.UNARY_POSITIVE: RT.py_pos,
+    InstrNames.UNARY_NEGATIVE: RT.py_neg,
+    InstrNames.UNARY_NOT: RT.py_not,
+    InstrNames.UNARY_INVERT: RT.py_inv
+}
+
+
+def abs_i_unary(b: bc.Instr):
+    a = yield am.pop()
+    f = u_map.get(b.name, None)
+    if f is None:
+        raise ValueError(f"unknown unary instruction {b}")
+    a = yield from f(a)
+    yield am.push(a)
+
+
+def abs_i_jump(b: bc.Instr):
+    label_name = label_to_name(b.arg)
+    if b.name in (InstrNames.JUMP_FORWARD, InstrNames.JUMP_ABSOLUTE):
+        yield am.jump(label_name)
+
+    elif b.name == InstrNames.POP_JUMP_IF_FALSE:
+        a = yield am.pop()
+        a = yield from RT.py_not(a)
+        yield am.jump_if(label_name, a)
+    elif b.name == InstrNames.POP_JUMP_IF_TRUE:
+        a = yield am.pop()
+        yield am.jump_if(label_name, a)
+    elif b.name == InstrNames.JUMP_IF_FALSE_OR_POP:
+        a = yield am.pop()
+        o = yield from RT.py_not(a)
+        yield am.jump_if_push(label_name, o, a)
+    elif b.name == InstrNames.JUMP_IF_TRUE_OR_POP:
+        a = yield am.pop()
+        yield am.jump_if_push(label_name, a, a)
+    else:
+        raise ValueError(f"unknown jump instruction {b}")
+
+
+bin_map = {
+    InstrNames.BINARY_POWER: RT.py_pow,
+    InstrNames.BINARY_MULTIPLY: RT.py_mul,
+    InstrNames.BINARY_MATRIX_MULTIPLY: RT.py_matmul,
+    InstrNames.BINARY_FLOOR_DIVIDE: RT.py_floordiv,
+    InstrNames.BINARY_TRUE_DIVIDE: RT.py_truediv,
+    InstrNames.BINARY_MODULO: RT.py_mod,
+    InstrNames.BINARY_ADD: RT.py_add,
+    InstrNames.BINARY_SUBTRACT: RT.py_sub,
+    InstrNames.BINARY_SUBSCR: RT.py_subscr,
+    InstrNames.BINARY_LSHIFT: RT.py_lsh,
+    InstrNames.BINARY_RSHIFT: RT.py_rsh,
+    InstrNames.BINARY_AND: RT.py_and,
+    InstrNames.BINARY_XOR: RT.py_xor,
+    InstrNames.BINARY_OR: RT.py_or,
+}
+
+
+def abs_i_binary(b: bc.Instr):
+    a2 = yield am.pop()
+    a1 = yield am.pop()
+    f = bin_map.get(b.name, None)
+    if f is None:
+        raise ValueError(f"unknown binary instruction {b}")
+    c = yield from f(a1, a2)
+    yield am.push(c)
+
+
+ibin_map = {
+    InstrNames.INPLACE_POWER: RT.py_ipow,
+    InstrNames.INPLACE_MULTIPLY: RT.py_imul,
+    InstrNames.INPLACE_MATRIX_MULTIPLY: RT.py_imatmul,
+    InstrNames.INPLACE_FLOOR_DIVIDE: RT.py_ifloordiv,
+    InstrNames.INPLACE_TRUE_DIVIDE: RT.py_itruediv,
+    InstrNames.INPLACE_MODULO: RT.py_imod,
+    InstrNames.INPLACE_ADD: RT.py_iadd,
+    InstrNames.INPLACE_SUBTRACT: RT.py_isub,
+    InstrNames.INPLACE_LSHIFT: RT.py_ilsh,
+    InstrNames.INPLACE_RSHIFT: RT.py_irsh,
+    InstrNames.INPLACE_AND: RT.py_iand,
+    InstrNames.INPLACE_XOR: RT.py_ixor,
+    InstrNames.INPLACE_OR: RT.py_ior,
+}
+
+
+def abs_i_inplace_binary(b: bc.Instr):
+    a2 = yield am.pop()
+    a1 = yield am.pop()
+    f = ibin_map.get(b.name, None)
+    if f is None:
+        raise ValueError(f"unknown binary instruction {b}")
+    c = yield from f(a1, a2)
+    yield am.push(c)
+
+
+"""
+
+    elif b.name == InstrNames.RAISE_VARARGS:
+        c = b.arg
+        xs = []
+        for _ in range(c):
+            a = yield Prim.pop()
+            xs.append(a)
+        xs.reverse()
+        yield from RT.py_raise(*xs)
+        
     elif b.name == InstrNames.CALL_FUNCTION_EX:
-        a = yield Prim.pop()
+        a = yield am.pop()
         arg = b.arg
         if arg is 0:
             f = yield Prim.pop()
@@ -214,280 +439,4 @@ def abs_i(b: t.Union[bc.Instr, bc.Label]):
         f = yield Prim.pop()
         a = yield from RT.py_call_func_kwargs(f, attrs, *xs)
         yield Prim.push(a)
-    elif b.name == InstrNames.CALL_FUNCTION:
-        c = b.arg
-        xs = []
-        for i in range(c):
-            a = yield Prim.pop()
-            xs.append(a)
-        xs.reverse()
-        f = yield Prim.pop()
-        a = yield from RT.py_call_func(f, *xs)
-        yield Prim.push(a)
-    elif b.name == InstrNames.RAISE_VARARGS:
-        c = b.arg
-        xs = []
-        for _ in range(c):
-            a = yield Prim.pop()
-            xs.append(a)
-        xs.reverse()
-        yield from RT.py_raise(*xs)
-    elif b.name == InstrNames.LOAD_CLOSURE:
-        arg = b.arg
-        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
-        yield Prim.add_instr(Instr.Ref(arg.name))
-    elif b.name == InstrNames.LOAD_DEREF:
-        arg = b.arg
-        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
-        yield Prim.add_instr(Instr.Deref(arg.name))
-    elif b.name == InstrNames.STORE_DEREF:
-        arg = b.arg
-        assert isinstance(arg, (bc.CellVar, bc.FreeVar))
-        yield Prim.add_instr(Instr.Setref(arg.name))
-    elif b.name == InstrNames.LOAD_FAST:
-        arg = b.arg
-        assert isinstance(arg, str)
-        yield Prim.add_instr(Instr.Var(arg, Instr.VarScope.Local))
-    elif b.name == InstrNames.STORE_FAST:
-        arg = b.arg
-        assert isinstance(arg, str)
-        yield Prim.add_instr(Instr.Ass(arg, Instr.VarScope.Local))
-
-    elif b.name == InstrNames.LOAD_GLOBAL:
-        arg = b.arg
-        assert isinstance(arg, str)
-        yield Prim.add_instr(Instr.Var(arg, Instr.VarScope.Global))
-    elif b.name == InstrNames.STORE_GLOBAL:
-        arg = b.arg
-        assert isinstance(arg, str)
-        yield Prim.add_instr(Instr.Ass(arg, Instr.VarScope.Global))
-
-    elif b.name == InstrNames.LOAD_CONST:
-        arg = b.arg
-        yield Prim.add_instr(Instr.Val(arg))
-
-    elif b.name == InstrNames.STORE_ATTR:
-        val = yield Prim.pop()
-        subj = yield Prim.pop()
-        a = yield from RT.py_store_attr(subj, val, b.arg)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.LOAD_ATTR:
-        subj = yield Prim.pop()
-        a = yield from RT.py_get_attr(subj, b.arg)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.DELETE_ATTR:
-        subj = yield Prim.pop()
-        a = yield from RT.py_del_attr(subj, b.arg)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_TUPLE:
-        xs = []
-        for i in range(b.arg):
-            a = yield from Prim.pop()
-            xs.append(a)
-        xs.reverse()
-        a = yield from RT.py_mk_tuple(xs)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_LIST:
-        xs = []
-        for i in range(b.arg):
-            a = yield from Prim.pop()
-            xs.append(a)
-        xs.reverse()
-        a = yield from RT.py_mk_list(xs)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_SET:
-        xs = []
-        for i in range(b.arg):
-            a = yield from Prim.pop()
-            xs.append(a)
-        xs.reverse()
-        a = yield from RT.py_mk_set(xs)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_MAP:
-        vs = []
-        ks = []
-        for i in range(2 * b.arg):
-            a = yield from Prim.pop()
-            vs.append(a)
-            a = yield from Prim.pop()
-            ks.append(a)
-
-        vs.reverse()
-        ks.reverse()
-        a = yield from RT.py_mk_map(list(zip(ks, vs)))
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_CONST_KEY_MAP:
-        ks = yield Prim.pop()
-        vs = []
-        for i in range(2 * b.arg):
-            a = yield from Prim.pop()
-            vs.append(a)
-
-        vs.reverse()
-        a = yield from RT.py_mk_const_key_map(ks, vs)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.BUILD_STRING:
-        vs = []
-        for i in range(2 * b.arg):
-            a = yield from Prim.pop()
-            vs.append(a)
-
-        vs.reverse()
-        a = yield from RT.py_cat_strs(vs)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.FOR_ITER:
-        a = yield Prim.pop()
-        a = yield from RT.py_get_attr(a, "__next__")
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.GET_ITER:
-        f = yield Prim.add_instr(Instr.Peek(1))
-        a = yield from RT.py_call_func(f)
-        yield Prim.push(a)
-
-
-def abs_i_unary(b: bc.Instr):
-    a = yield Prim.pop()
-    if b.name == InstrNames.UNARY_POSITIVE:
-        a = yield from RT.py_pos(a)
-        yield Prim.push(a)
-    elif b.name == InstrNames.UNARY_NEGATIVE:
-        a = yield from RT.py_neg(a)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.UNARY_NOT:
-        a = yield from RT.py_not(a)
-        yield Prim.push(a)
-
-    elif b.name == InstrNames.UNARY_INVERT:
-        a = yield from RT.py_inv(a)
-        yield Prim.push(a)
-    else:
-        raise ValueError(f"unknown unary instruction {b}")
-
-
-def abs_i_jump(b: bc.Instr):
-    label_name = label_to_name(b.arg)
-    if b.name in (InstrNames.JUMP_FORWARD, InstrNames.JUMP_ABSOLUTE):
-        yield Prim.add_instr(Instr.Jmp(label_name))
-
-    elif b.name == InstrNames.POP_JUMP_IF_FALSE:
-        a = yield Prim.pop()
-        a = yield from RT.py_not(a)
-        yield Prim.add_instr(Instr.JmpIf(label_name, a))
-    elif b.name == InstrNames.POP_JUMP_IF_TRUE:
-        a = yield Prim.pop()
-        yield Prim.add_instr(Instr.JmpIf(label_name, a))
-    elif b.name == InstrNames.JUMP_IF_FALSE_OR_POP:
-        a = yield Prim.pop()
-        o = yield from RT.py_not(a)
-        yield Prim.add_instr(Instr.JmpIfPush(label_name, o, a))
-    elif b.name == InstrNames.JUMP_IF_TRUE_OR_POP:
-        a = yield Prim.pop()
-        yield Prim.add_instr(Instr.JmpIfPush(label_name, a, a))
-    else:
-        raise ValueError(f"unknown jump instruction {b}")
-
-
-def abs_i_binary(b: bc.Instr):
-    a2 = yield Prim.pop()
-    a1 = yield Prim.pop()
-    if b.name == InstrNames.BINARY_POWER:
-        c = yield from RT.py_pow(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_MULTIPLY:
-        c = yield from RT.py_mul(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_MATRIX_MULTIPLY:
-        c = yield from RT.py_matmul(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_FLOOR_DIVIDE:
-        c = yield from RT.py_floordiv(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_TRUE_DIVIDE:
-        c = yield from RT.py_truediv(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_MODULO:
-        c = yield from RT.py_mod(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_ADD:
-        c = yield from RT.py_add(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_SUBTRACT:
-        c = yield from RT.py_sub(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_SUBSCR:
-        c = yield from RT.py_subscr(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_LSHIFT:
-        c = yield from RT.py_lsh(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_RSHIFT:
-        c = yield from RT.py_rsh(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_AND:
-        c = yield from RT.py_and(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_XOR:
-        c = yield from RT.py_xor(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.BINARY_OR:
-        c = yield from RT.py_or(a1, a2)
-        yield Prim.push(c)
-    else:
-        raise ValueError(f"unknown binary instruction {b}")
-
-
-def abs_i_inplace_binary(b: bc.Instr):
-    a2 = yield Prim.pop()
-    a1 = yield Prim.pop()
-    if b.name == InstrNames.INPLACE_POWER:
-        c = yield from RT.py_ipow(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_MULTIPLY:
-        c = yield from RT.py_imul(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_MATRIX_MULTIPLY:
-        c = yield from RT.py_imatmul(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_FLOOR_DIVIDE:
-        c = yield from RT.py_ifloordiv(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_TRUE_DIVIDE:
-        c = yield from RT.py_itruediv(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_MODULO:
-        c = yield from RT.py_imod(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_ADD:
-        c = yield from RT.py_iadd(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_SUBTRACT:
-        c = yield from RT.py_isub(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_LSHIFT:
-        c = yield from RT.py_ilsh(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_RSHIFT:
-        c = yield from RT.py_irsh(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_AND:
-        c = yield from RT.py_iand(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_XOR:
-        c = yield from RT.py_ixor(a1, a2)
-        yield Prim.push(c)
-    elif b.name == InstrNames.INPLACE_OR:
-        c = yield from RT.py_ior(a1, a2)
-        yield Prim.push(c)
-    else:
-        raise ValueError(f"unknown binary instruction {b}")
+"""

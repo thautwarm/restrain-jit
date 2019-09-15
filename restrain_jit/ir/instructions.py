@@ -7,6 +7,12 @@ from dataclasses import dataclass
 from restrain_jit.ir.representations import *
 
 
+class BackEnd(Enum):
+    JlEnd = _auto()
+    PyEnd = _auto()
+    pass
+
+
 class Instr:
     pass
 
@@ -73,6 +79,7 @@ class Peek(Instr):
 
 @dataclass
 class Return(Instr):
+    val:Repr
     pass
 
 
@@ -84,4 +91,18 @@ class Push(Instr):
 
 @dataclass
 class Pop(Instr):
+    pass
+
+
+@dataclass
+class PyGlob(Instr):
+    qual:str
+    name:str
+    pass
+
+
+@dataclass
+class JlGlob(Instr):
+    qual:str
+    name:str
     pass

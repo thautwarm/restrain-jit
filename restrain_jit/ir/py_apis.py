@@ -1,270 +1,410 @@
-import typing as t
-from restrain_jit.ir import instructions as Instr, representations as Repr
-from restrain_jit.ir import instrnames as InstrNames
+import types
+import bytecode as bc
+from restrain_jit.vm.am import *
 
 
-def py_not(a: Repr.Repr):
-    raise NotImplemented
+class NS:
+    RestrainJIT = "RestrainJIT"
 
 
-def py_pos(a: Repr.Repr):
-    raise NotImplemented
+def py_not(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_not.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_is_true(a: Repr.Repr):
-    raise NotImplemented
+def py_pos(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_pos.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_inv(a: Repr.Repr):
-    raise NotImplemented
+def py_is_true(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_is_true.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_neg(a: Repr.Repr):
-    raise NotImplemented
+def py_inv(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_inv.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_iter(a: Repr.Repr):
-    raise NotImplemented
+def py_neg(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_neg.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_pow(a1, a2):
-    raise NotImplemented
+def py_iter(a: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_iter.__name__)
+    a = yield app(fn, [a])
+    return a
 
 
-def py_mul(a1, a2):
-    return None
+def py_pow(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_pow.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_matmul(a1, a2):
-    return None
+def py_mul(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_mul.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_floordiv(a1, a2):
-    return None
+def py_matmul(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_matmul.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_truediv(a1, a2):
-    return None
+def py_floordiv(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_floordiv.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_mod(a1, a2):
-    return None
+def py_truediv(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_truediv.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_add(a1, a2):
-    return None
+def py_mod(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_mod.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_sub(a1, a2):
-    return None
+def py_add(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_add.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_subscr(a1, a2):
-    return None
+def py_sub(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_sub.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_lsh(a1, a2):
-    return None
+def py_subscr(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_subscr.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_rsh(a1, a2):
-    return None
+def py_lsh(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_lsh.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_and(a1, a2):
-    return None
+def py_rsh(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_rsh.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_xor(a1, a2):
-    return None
+def py_and(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_and.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_or(a1, a2):
-    return None
+def py_xor(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_xor.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_ipow(a1, a2):
-    raise NotImplemented
+def py_or(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_or.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_imul(a1, a2):
-    return None
+def py_ipow(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ipow.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_imatmul(a1, a2):
-    return None
+def py_imul(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_imul.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_ifloordiv(a1, a2):
-    return None
+def py_imatmul(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_imatmul.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_itruediv(a1, a2):
-    return None
+def py_ifloordiv(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ifloordiv.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_imod(a1, a2):
-    return None
+def py_itruediv(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_itruediv.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_iadd(a1, a2):
-    return None
+def py_imod(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_imod.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_isub(a1, a2):
-    return None
+def py_iadd(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_iadd.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_isubscr(a1, a2):
-    return None
+def py_isub(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_isub.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_ilsh(a1, a2):
-    return None
+def py_isubscr(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_isubscr.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_irsh(a1, a2):
-    return None
+def py_ilsh(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ilsh.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_iand(a1, a2):
-    return None
+def py_irsh(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_irsh.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_ixor(a1, a2):
-    return None
+def py_iand(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_iand.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_ior(a1, a2):
-    return None
+def py_ixor(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ixor.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_setitem(tos1, tos, tos2):
-    return None
+def py_ior(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_ior.__name__)
+    a = yield app(fn, [a, b])
+    return a
 
 
-def py_delitem(tos1, tos):
-    return None
+def py_setitem(subj, key, val):
+    fn = yield from_lower(NS.RestrainJIT, py_setitem.__name__)
+    yield app(fn, [subj, key, val])
+
+
+def py_delitem(subj, key):
+    fn = yield from_lower(NS.RestrainJIT, py_delitem.__name__)
+    yield app(fn, [subj, key])
 
 
 def py_printexpr(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_printexpr.__name__)
+    yield app(fn, [tos])
 
 
 def py_set_add(subj, tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_set_add.__name__)
+    yield app(fn, [subj, tos])
 
 
 def py_list_append(subj, tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_list_append.__name__)
+    yield app(fn, [subj, tos])
 
 
 def py_map_add(subj, tos, tos1):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_map_add.__name__)
+    yield app(fn, [subj, tos, tos1])
 
 
 def py_to_list(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_to_list.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_to_tuple(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_to_tuple.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_len(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_len.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_build_slice(tos2, tos1, tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_build_slice.__name__)
+    a = yield app(fn, [tos2, tos1, tos])
+    return a
 
 
 def py_to_str(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_to_str.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_to_repr(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_to_repr.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_to_ascii(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_to_ascii.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_format(tos):
-    return None
+    fn = yield from_lower(NS.RestrainJIT, py_format.__name__)
+    a = yield app(fn, [tos])
+    return a
 
 
 def py_load_method_(tos, attr: str):
-    return None
+    attr = yield const(Symbol(attr))
+    fn = yield from_lower(NS.RestrainJIT, py_load_method_.__name__)
+    a = yield app(fn, [tos, attr])
+    _0 = yield const(0)
+    _1 = yield const(1)
+    a1 = yield from py_subscr(a, _0)
+    a2 = yield from py_subscr(a, _1)
+    yield push(a1)
+    yield push(a2)
 
 
-def py_get_attr(tos, attr: str):
-    return None
+def py_get_attr(tos: Repr, attr: str):
+    attr = yield const(Symbol(attr))
+    fn = yield from_lower(NS.RestrainJIT, py_get_attr.__name__)
+    a = yield app(fn, [tos, attr])
+    return a
 
 
-def py_store_attr(tos, val, attr: str):
-    return None
+def py_store_attr(tos: Repr, val: Repr, attr: str):
+    attr = yield const(Symbol(attr))
+    fn = yield from_lower(NS.RestrainJIT, py_store_attr.__name__)
+    a = yield app(fn, [tos, attr, val])
+    return a
 
 
-def py_call_method(*params):
-    return None
+def py_del_attr(subj: Repr, attr: str):
+    attr = yield const(Symbol(attr))
+    fn = yield from_lower(NS.RestrainJIT, py_del_attr.__name__)
+    a = yield app(fn, [subj, attr])
+    return a
 
 
-def py_mk_closure(*params):
-    return None
+def py_call_method(*params: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_call_method.__name__)
+    a = yield app(fn, *params)
+    return a
 
 
-def py_mk_func(*params):
-    return None
+def py_mk_closure(closure_vars: t.List[Repr], native_fn_ptr: Repr):
+    tp = yield from py_mk_tuple(closure_vars)
+    mk_closure = yield from_lower(NS.RestrainJIT, py_mk_closure.__name__)
+    a = yield app(mk_closure, [tp, native_fn_ptr])
+    return a
+
+
+class Indirect:
+    """
+    start a new VM object
+    """
+    f: 't.Callable'
+
+
+def py_mk_func(fname: Repr, code: types.CodeType):
+    code = bc.ControlFlowGraph.from_bytecode(bc.Bytecode.from_code(code))
+    a = yield from Indirect.f(code)
+    return a
 
 
 def py_call_func_varargs(f, a):
-    return None
+    raise NotImplemented
 
 
 def py_call_func_varargs_kwargs(f, a, b):
-    return None
+    raise NotImplemented
 
 
 def py_call_func_kwargs(f, attrs: t.Tuple[str, ...], *args):
-    return None
+    raise NotImplemented
 
 
-def py_call_func(f, *args):
-    return None
+def py_call_func(f: Repr, *args: Repr):
+    a = yield app(f, list(args))
+    return a
 
 
 def py_raise(*xs):
     """
     len(xs) = 0, 1, 2
     """
-    return None
+    raise NotImplemented
 
 
-def py_del_attr(subj, arg):
-    return None
+def py_mk_tuple(xs: t.List[Repr]):
+    fn = yield from_lower(NS.RestrainJIT, py_mk_tuple.__name__)
+    a = yield app(fn, xs)
+    return a
 
 
-def py_mk_tuple(xs):
-    return None
+def py_mk_list(xs: t.List[Repr]):
+    fn = yield from_lower(NS.RestrainJIT, py_mk_list.__name__)
+    a = yield app(fn, xs)
+    return a
 
 
-def py_mk_list(xs):
-    return None
+def py_mk_set(xs: t.List[Repr]):
+    fn = yield from_lower(NS.RestrainJIT, py_mk_set.__name__)
+    a = yield app(fn, xs)
+    return a
 
 
-def py_mk_set(xs):
-    return None
+def py_mk_map(keys: Repr, vals: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_mk_map.__name__)
+    a = yield app(fn, [keys, vals])
+    return a
 
 
-def py_mk_map(param):
-    return None
+def py_cat_strs(vs: t.List[Repr]):
+    fn = yield from_lower(NS.RestrainJIT, py_cat_strs.__name__)
+    a = yield app(fn, vs)
+    return a
 
 
-def py_mk_const_key_map(ks, vs):
-    return None
+def yield_val(a: Repr):
+    raise NotImplemented
 
 
-def py_cat_strs(vs):
-    return None
+def yield_from(a: Repr):
+    raise NotImplemented

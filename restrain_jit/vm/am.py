@@ -1,6 +1,12 @@
 import abc
 import typing as t
-from ast import arg
+from dataclasses import dataclass
+
+
+@dataclass
+class Symbol:
+    s: str
+
 
 Instr = t.TypeVar("Instr")
 Repr = t.TypeVar("Repr")
@@ -13,7 +19,15 @@ class AM(t.Generic[Instr, Repr]):
         raise NotImplemented
 
     @abc.abstractmethod
-    def release(self, name: str) -> None:
+    def from_higher(self, qualifier: str, name: str):
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def from_lower(self, qualifier: str, name: str):
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def release(self, name: Repr) -> None:
         raise NotImplemented
 
     @abc.abstractmethod
@@ -68,12 +82,36 @@ class AM(t.Generic[Instr, Repr]):
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
         raise NotImplemented
 
+    @abc.abstractmethod
+    def const(self, val: object) -> Repr:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def from_const(self, val: Repr) -> object:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def ret(self, val: Repr) -> None:
+        raise NotImplemented
+
+
+def from_const(r: Repr):
+    return lambda vm: vm.from_const(r)
+
+
+def ret(val: Repr):
+    return lambda vm: vm.ret(val)
+
+
+def const(val: object):
+    return lambda vm: vm.const(val)
+
 
 def reg_of(name: str):
     return lambda vm: vm.reg_of(name)
 
 
-def release(name: str):
+def release(name: Repr):
     return lambda vm: vm.release(name)
 
 
@@ -88,6 +126,14 @@ def add_instr(instr: Instr):
         return vm.reg_of(vm)
 
     return apply
+
+
+def from_higher(qualifier: str, name: str):
+    return lambda vm: vm.from_higher(qualifier, name)
+
+
+def from_lower(qualifier: str, name: str):
+    return lambda vm: vm.from_lower(qualifier, name)
 
 
 def pop() -> Repr:
