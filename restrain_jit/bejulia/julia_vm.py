@@ -1,5 +1,5 @@
-from restrain_jit.ir.instructions import *
-from restrain_jit.ir.representations import *
+from restrain_jit.bejulia.instructions import *
+from restrain_jit.bejulia.representations import *
 from restrain_jit.vm.am import AM
 import typing as t
 from dataclasses import dataclass

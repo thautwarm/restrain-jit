@@ -1,10 +1,6 @@
-from enum import Enum, auto as _auto
-import abc
-import typing as t
-from dataclasses import dataclass
+from enum import auto as _auto
 
-
-from restrain_jit.ir.representations import *
+from restrain_jit.bejulia.representations import *
 
 
 class BackEnd(Enum):

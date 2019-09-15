@@ -1,7 +1,6 @@
-from restrain_jit.vm.julia_vm import JuVM
-from restrain_jit.vm.am import run_machine, Symbol
-from restrain_jit.ir.from_bc import abs_i, abs_i_cfg
-from restrain_jit.ir.instructions import *
+from restrain_jit.bejulia.julia_vm import JuVM
+from restrain_jit.vm.am import run_machine
+from restrain_jit.ir.from_bc import abs_i_cfg
 import bytecode as bc
 import typing as t
 
@@ -36,6 +35,7 @@ def f(x):
 
 code = bc.Bytecode.from_code(f.__code__)
 cfg = bc.ControlFlowGraph.from_bytecode(code)
+
 show_block(cfg)
 block1: t.List[bc.Instr] = list(cfg[0])
 
