@@ -343,10 +343,11 @@ class Indirect:
     f: 't.Callable'
 
 
-def py_mk_func(fname: Repr, code: types.CodeType):
-    code = bc.ControlFlowGraph.from_bytecode(
-        bc.Bytecode.from_code(code))
-    a = yield from Indirect.f(code)
+def py_mk_func(name: str, code: types.CodeType):
+    a = yield code_info(code)
+    f = yield from_lower(NS.RestrainJIT, py_mk_func.__name__)
+    n = yield const(name)
+    a = yield app(f, [n, a])
     return a
 
 

@@ -1,12 +1,37 @@
 from restrain_jit.bejulia.instructions import *
 from restrain_jit.bejulia.representations import *
-from restrain_jit.vm.am import AM
-import typing as t
+from restrain_jit.ir.code_info import PyCodeInfo
+from restrain_jit.ir import instrnames as InstrNames
+from restrain_jit.vm.am import AM, run_machine
+from restrain_jit.ir.from_bc import abs_i_cfg
 from dataclasses import dataclass
+from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr
+import typing as t
+import types
 
 
 @dataclass
 class JuVM(AM[Instr, Repr]):
+
+    @classmethod
+    def code_info(cls, code: types.CodeType) -> PyCodeInfo[Repr]:
+        bytecode = Bytecode.from_code(code)
+        glob_deps: t.Set[str] = set()
+        for each in bytecode:
+            if isinstance(each, PyInstr) and each.name in (
+                    InstrNames.LOAD_GLOBAL, InstrNames.STORE_GLOBAL):
+                glob_deps.add(each.arg)
+
+        cfg = ControlFlowGraph.from_bytecode(code)
+        self = cls.empty()
+        run_machine(abs_i_cfg(cfg), self)
+        instrs = self.instrs
+        instrs = self.pass_push_pop_inline(instrs)
+        return PyCodeInfo(code, tuple(glob_deps), instrs,
+                          code.co_freevars, code.co_cellvars,
+                          code.co_varnames, code.co_filename,
+                          code.co_firstlineno, code.co_consts,
+                          code.co_argcount, code.co_kwonlyargcount)
 
     def pop_exception(self, must: bool) -> Repr:
         name = self.alloc()

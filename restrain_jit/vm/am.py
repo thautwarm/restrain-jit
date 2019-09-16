@@ -1,5 +1,7 @@
 import abc
+import types
 import typing as t
+from restrain_jit.ir.code_info import PyCodeInfo
 from dataclasses import dataclass
 
 
@@ -114,6 +116,15 @@ class AM(t.Generic[Instr, Repr]):
     @abc.abstractmethod
     def ret(self, val: Repr) -> None:
         raise NotImplemented
+
+    @classmethod
+    @abc.abstractmethod
+    def code_info(cls, code: types.CodeType) -> PyCodeInfo[Repr]:
+        raise NotImplemented
+
+
+def code_info(code: types.CodeType):
+    return lambda vm: vm.code_info(code)
 
 
 def pop_exception(must: bool = False) -> Repr:
