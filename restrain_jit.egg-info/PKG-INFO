@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: restrain-jit
+Version: 0.1
+Summary: CPython compatible Python JIT
+Home-page: https://github.com/thautwarm/restrain-jit
+Author: thautwarm
+Author-email: twshere@outlook.com
+License: mit
+Description: ## restrain-jit
+Keywords: JIT,CPython,Optimizations
+Platform: any
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Requires-Python: >=3.6.0
+Description-Content-Type: text/markdown
