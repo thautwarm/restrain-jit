@@ -30,9 +30,10 @@ Main.eval("restrain_jl_side_aware! = RestrainJIT.mk_restrain_infr!()")
 
 def init():
 
+    restrain_jl_side_aware_ = jl_get_global(
+        jl_main, jl_symbol(b"restrain_jl_side_aware!"))
+
     def aware_(val):
-        restrain_jl_side_aware_ = jl_get_global(
-            jl_main, jl_symbol(b"restrain_jl_side_aware!"))
         global bridge
         bridge = val
         jl_call0(restrain_jl_side_aware_)
