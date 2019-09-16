@@ -22,7 +22,7 @@ class JuVM(AM[Instr, Repr]):
                     InstrNames.LOAD_GLOBAL, InstrNames.STORE_GLOBAL):
                 glob_deps.add(each.arg)
 
-        cfg = ControlFlowGraph.from_bytecode(code)
+        cfg = ControlFlowGraph.from_bytecode(bytecode)
         self = cls.empty()
         run_machine(abs_i_cfg(cfg), self)
         instrs = self.instrs

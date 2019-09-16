@@ -23,9 +23,6 @@ def show_block(x):
                 print(j)
 
 
-jvm = JuVM({}, [], [(None, [])], set(), set())
-
-
 def f1(x):
     with x:
         for each in x:
@@ -45,16 +42,7 @@ def f2():
         print(3)
 
 
-code = bc.Bytecode.from_code(f2.__code__)
-cfg = bc.ControlFlowGraph.from_bytecode(code)
-
-# show_block(cfg)
-block1: t.List[bc.Instr] = list(cfg[0])
-
-run_machine(abs_i_cfg(cfg), jvm)
-instrs = JuVM.pass_push_pop_inline(jvm.instrs)
-print('=============')
-show_block(cfg)
+c = JuVM.code_info(f2.__code__)
 
 
 def show(instrs, indent=''):
@@ -71,4 +59,4 @@ def show(instrs, indent=''):
             print(v)
 
 
-show(instrs)
+show(c.instrs)
