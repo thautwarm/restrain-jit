@@ -6,3 +6,4 @@ Digraph.gv*
 **.egg-info/
 dist/
 **~
+build/
