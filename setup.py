@@ -21,7 +21,7 @@ setup(
     entry_points={"console_scripts": []},
     # above option specifies commands to be installed,
     # e.g: entry_points={"console_scripts": ["yapypy=yapypy.cmd.compiler"]}
-    install_requires=["rbnf-rts"],
+    install_requires=["bytecode"],
     platforms="any",
     classifiers=[
         "Programming Language :: Python :: 3.6",

@@ -1,6 +1,5 @@
 import restrain_jit.bejulia.representations;
 
-enum BackEnd JlEnd PyEnd;
 abc Instr;
 data App(Instr) f:Repr args:t.List[Repr];
 data Ass(Instr) reg:Reg val:Repr;

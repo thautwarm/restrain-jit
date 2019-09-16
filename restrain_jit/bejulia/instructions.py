@@ -7,12 +7,6 @@ from dataclasses import dataclass
 from restrain_jit.bejulia.representations import *
 
 
-class BackEnd(Enum):
-    JlEnd = _auto()
-    PyEnd = _auto()
-    pass
-
-
 class Instr:
     pass
 

@@ -130,10 +130,11 @@ class JuVM(AM[Instr, Repr]):
         self.instrs.append((tag, instr))
         return None
 
-    # meta data
     _meta: dict
+
     # stack
     st: t.List[Repr]
+
     # instructions
     blocks: t.List[t.Tuple[t.Optional[str], t.
                            List[t.Tuple[t.Optional[str], Instr]]]]
