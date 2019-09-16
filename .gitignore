@@ -3,4 +3,6 @@ dev_test/
 Digraph.gv*
 .idea/
 .spyproject/
+**.egg-info/
+dist/
 **~
