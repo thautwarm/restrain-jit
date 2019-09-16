@@ -8,6 +8,27 @@ from dataclasses import dataclass
 @dataclass
 class JuVM(AM[Instr, Repr]):
 
+    def pop_exception(self, must: bool) -> Repr:
+        name = self.alloc()
+        self.add_instr(name, PopException(must))
+        return Reg(name)
+
+    def meta(self) -> dict:
+        return self._meta
+
+    def last_block_end(self) -> str:
+        return self.end_label
+
+    def push_block(self, end_label: str) -> None:
+        self.blocks.append((end_label, []))
+
+    def pop_block(self) -> Repr:
+        end_label, instrs = self.blocks.pop()
+        regname = self.alloc()
+        instr = UnwindBlock(instrs)
+        self.add_instr(regname, instr)
+        return Reg(regname)
+
     def from_const(self, val: Repr) -> object:
         assert isinstance(val, Const)
         return val.val
@@ -109,17 +130,28 @@ class JuVM(AM[Instr, Repr]):
         self.instrs.append((tag, instr))
         return None
 
+    # meta data
+    _meta: dict
     # stack
     st: t.List[Repr]
     # instructions
-    instrs: t.List[t.Tuple[str, Instr]]
+    blocks: t.List[t.Tuple[t.Optional[str], t.
+                           List[t.Tuple[t.Optional[str], Instr]]]]
 
     # allocated temporary
     used: t.Set[str]
     unused: t.Set[str]
 
-    def pass_push_pop_inline(self):
-        instrs = self.instrs
+    @property
+    def instrs(self):
+        return self.blocks[-1][1]
+
+    @property
+    def end_label(self) -> t.Optional[str]:
+        return self.blocks[-1][0]
+
+    @classmethod
+    def pass_push_pop_inline(cls, instrs):
         blacklist = set()
         i = 0
         while True:
@@ -127,6 +159,8 @@ class JuVM(AM[Instr, Repr]):
                 k, v = instrs[i]
             except IndexError:
                 break
+            if isinstance(v, UnwindBlock):
+                v.instrs = cls.pass_push_pop_inline(v.instrs)
             if k is None and isinstance(v, Pop):
                 j = i - 1
                 while True:
@@ -150,6 +184,6 @@ class JuVM(AM[Instr, Repr]):
             else:
                 i = i + 1
 
-        self.instrs = [
+        return [
             each for i, each in enumerate(instrs) if i not in blacklist
         ]

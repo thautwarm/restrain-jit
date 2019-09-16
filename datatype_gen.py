@@ -1,6 +1,6 @@
 paths = [
-    'restrain_jit/ir/instructions',
-    'restrain_jit/ir/representations',
+    'restrain_jit/bejulia/instructions',
+    'restrain_jit/bejulia/representations',
 ]
 
 for FROM, TO in [(path, path + '.py') for path in paths]:

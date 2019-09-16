@@ -14,6 +14,26 @@ Repr = t.TypeVar("Repr")
 
 class AM(t.Generic[Instr, Repr]):
 
+    @abc.abstractmethod
+    def meta(self) -> dict:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def pop_exception(self, must: bool) -> Repr:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def push_block(self, end_label: str) -> None:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def pop_block(self) -> Repr:
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def last_block_end(self) -> str:
+        raise NotImplemented
+
     @classmethod
     @abc.abstractmethod
     def reg_of(cls, n: str):
@@ -94,6 +114,26 @@ class AM(t.Generic[Instr, Repr]):
     @abc.abstractmethod
     def ret(self, val: Repr) -> None:
         raise NotImplemented
+
+
+def pop_exception(must: bool = False) -> Repr:
+    return lambda vm: vm.pop_exception(must)
+
+
+def meta():
+    return lambda vm: vm.meta()
+
+
+def last_block_end():
+    return lambda vm: vm.last_block_end()
+
+
+def push_block(r: str):
+    return lambda vm: vm.push_block(r)
+
+
+def pop_block():
+    return lambda vm: vm.pop_block()
 
 
 def from_const(r: Repr):

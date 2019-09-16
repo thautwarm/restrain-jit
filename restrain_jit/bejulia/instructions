@@ -1,4 +1,4 @@
-import restrain_jit.ir.representations;
+import restrain_jit.bejulia.representations;
 
 enum BackEnd JlEnd PyEnd;
 abc Instr;
@@ -16,4 +16,5 @@ data Push(Instr) val:Repr;
 data Pop(Instr) ;
 data PyGlob(Instr) qual:str name:str;
 data JlGlob(Instr) qual:str name:str;
-data Unwind(Instr)
+data UnwindBlock(Instr) instrs:t.List[t.Tuple[str, Instr]];
+data PopException(Instr) must:bool;

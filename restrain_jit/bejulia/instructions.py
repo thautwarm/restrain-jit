@@ -1,4 +1,8 @@
-from enum import auto as _auto
+from enum import Enum, auto as _auto
+import abc
+import typing as t
+from dataclasses import dataclass
+
 
 from restrain_jit.bejulia.representations import *
 
@@ -101,4 +105,17 @@ class PyGlob(Instr):
 class JlGlob(Instr):
     qual:str
     name:str
+    pass
+
+
+@dataclass
+class UnwindBlock(Instr):
+    instrs:t.List[t.Tuple[str,
+    Instr]]
+    pass
+
+
+@dataclass
+class PopException(Instr):
+    must:bool
     pass

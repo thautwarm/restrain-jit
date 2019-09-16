@@ -1,4 +1,4 @@
-from restrain_jit.bejulia.julia_vm import JuVM
+from restrain_jit.bejulia.julia_vm import JuVM, UnwindBlock
 from restrain_jit.vm.am import run_machine
 from restrain_jit.ir.from_bc import abs_i_cfg
 import bytecode as bc
@@ -23,28 +23,52 @@ def show_block(x):
                 print(j)
 
 
-jvm = JuVM([], [], set(), set())
+jvm = JuVM({}, [], [(None, [])], set(), set())
 
 
-def f(x):
-    for each in x:
-        a = each + 1
-        if a < 2:
-            k(a).d()
+def f1(x):
+    with x:
+        for each in x:
+            a = each + 1
+            if a < 2:
+                k(a).d()
 
 
-code = bc.Bytecode.from_code(f.__code__)
+def f2():
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        raise Exception
+    except Exception:
+        print(2)
+    finally:
+        print(3)
+
+
+code = bc.Bytecode.from_code(f2.__code__)
 cfg = bc.ControlFlowGraph.from_bytecode(code)
 
-show_block(cfg)
+# show_block(cfg)
 block1: t.List[bc.Instr] = list(cfg[0])
 
 run_machine(abs_i_cfg(cfg), jvm)
-jvm.pass_push_pop_inline()
+instrs = JuVM.pass_push_pop_inline(jvm.instrs)
 print('=============')
+show_block(cfg)
 
-for k, v in jvm.instrs:
-    if k is None:
-        print(v)
-    else:
-        print(k, '=', v)
+
+def show(instrs, indent=''):
+    for k, v in instrs:
+        if k is not None:
+            print(indent + k, '=', end='')
+        else:
+            print(indent, end='')
+        if isinstance(v, UnwindBlock):
+            next_indent = indent + '    '
+            print()
+            show(v.instrs, next_indent)
+        else:
+            print(v)
+
+
+show(instrs)

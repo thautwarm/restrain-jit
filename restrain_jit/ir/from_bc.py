@@ -318,6 +318,71 @@ def abs_i(b: t.Union[bc.Instr]):
         pass
     elif b.name == InstrNames.POP_TOP:
         yield am.pop()
+    elif b.name == InstrNames.SETUP_WITH:
+        arg = b.arg
+        assert isinstance(arg, bc.BasicBlock)
+        end_label = label_to_name(arg)
+        meta = yield am.meta()
+        var = yield am.pop()
+
+        def unwind():
+            # python 'with' block exits with a pushed 'None'
+            yield am.pop()
+            yield am.pop_block()
+            yield from RT.py_exit(var)
+
+        meta[end_label] = unwind
+        entered = yield from RT.py_enter(var)
+        yield am.push(entered)
+        yield am.push_block(end_label)
+    elif b.name == InstrNames.END_FINALLY:
+        exc = yield am.pop_exception()
+        label_no_ext = yield am.alloc()
+        py_none = yield from RT.py_none()
+        exc_is_none = yield from RT.py_is(py_none, exc)
+        yield am.jump_if(label_no_ext, exc_is_none)
+        yield from RT.py_throw(exc)
+        yield am.label(label_no_ext)
+
+    elif b.name == InstrNames.SETUP_FINALLY:
+        arg = b.arg
+        assert isinstance(arg, bc.BasicBlock)
+        end_label = label_to_name(arg)
+        meta = yield am.meta()
+
+        def unwind():
+            yield am.pop_block()
+
+        meta[end_label] = unwind
+        yield am.push_block(end_label)
+    elif b.name == InstrNames.SETUP_EXCEPT:
+        arg = b.arg
+        assert isinstance(arg, bc.BasicBlock)
+        end_label = label_to_name(arg)
+        meta = yield am.meta()
+
+        def unwind():
+            yield am.pop_block()
+            exc = yield am.pop_exception(must=True)
+            py_none = yield from RT.py_none()
+            yield am.push(py_none)
+            yield am.push(exc)
+            yield am.push(py_none)
+
+        meta[end_label] = unwind
+        yield am.push_block(end_label)
+    elif b.name in (InstrNames.WITH_CLEANUP_FINISH,
+                    InstrNames.WITH_CLEANUP_START,
+                    InstrNames.POP_EXCEPT):
+        pass
+    elif b.name == InstrNames.RAISE_VARARGS:
+        c = b.arg
+        if c is not 1:
+            raise ValueError(
+                "Raise statement must take 1 argument due to the limitations of current implementation."
+            )
+        err = yield am.pop()
+        yield from RT.py_throw(err)
     else:
         raise NotImplementedError(f"instruction {b} not supported yet")
 
@@ -417,10 +482,6 @@ def abs_i_inplace_binary(b: bc.Instr):
     yield am.push(c)
 
 
-def just_raise(*args):
-    raise ValueError
-
-
 cmp_map = {
     bc.Compare.EQ: RT.py_eq,
     bc.Compare.NE: RT.py_neq,
@@ -432,7 +493,7 @@ cmp_map = {
     bc.Compare.GE: RT.py_ge,
     bc.Compare.IN: RT.py_in,
     bc.Compare.NOT_IN: RT.py_not_in,
-    bc.Compare.EXC_MATCH: just_raise
+    bc.Compare.EXC_MATCH: RT.py_exc_match
 }
 
 
@@ -448,7 +509,13 @@ def abs_i_cmp(b: bc.Instr):
 def abs_i_cfg(b: bc.ControlFlowGraph):
     for each in b:
         assert isinstance(each, bc.BasicBlock)
-        yield am.label(label_to_name(each))
+        label_name = label_to_name(each)
+        last_label = yield am.last_block_end()
+        if last_label == label_name:
+            meta = yield am.meta()
+            unwind = meta[label_name]
+            yield from unwind()
+        yield am.label(label_name)
         for instr in each:
             yield from abs_i(instr)
 

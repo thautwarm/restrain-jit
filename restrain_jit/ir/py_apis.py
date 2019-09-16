@@ -476,3 +476,37 @@ def py_not_in(a: Repr, b: Repr):
     fn = yield from_lower(NS.RestrainJIT, py_not_in.__name__)
     a = yield app(fn, [a, b])
     return a
+
+
+def py_enter(with_val: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_enter.__name__)
+    with_val = yield app(fn, [with_val])
+    return with_val
+
+
+def py_exc_match(exc: Repr, exc_ty):
+    fn = yield from_lower(NS.RestrainJIT, py_exc_match.__name__)
+    with_val = yield app(fn, [exc, exc_ty])
+    return with_val
+
+
+def py_throw(err: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_throw.__name__)
+    err = yield app(fn, [err])
+    return err
+
+
+def py_exit(with_val: Repr):
+    fn = yield from_lower(NS.RestrainJIT, py_exit.__name__)
+    yield app(fn, [with_val])
+
+
+def py_none():
+    a = yield const(None)
+    return a
+
+
+def jl_isa(a: Repr, b: Repr):
+    fn = yield from_lower(NS.RestrainJIT, jl_isa.__name__)
+    a = yield app(fn, [a, b])
+    return a
