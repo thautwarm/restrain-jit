@@ -37,3 +37,4 @@ class PyFuncInfo(t.Generic[Instr]):
     r_codeinfo: PyCodeInfo
     r_func: types.FunctionType
     r_options: dict
+    r_attrnames: t.Tuple[str, ...]

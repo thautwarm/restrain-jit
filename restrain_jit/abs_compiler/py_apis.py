@@ -303,8 +303,10 @@ def py_load_method_(tos, attr: str):
 
 def py_get_attr(tos: Repr, attr: str):
     attr = yield const(Symbol(attr))
+    val = yield from_lower(NS.RestrainJIT, "Val")
+    val = yield app(val, [attr])
     fn = yield from_lower(NS.RestrainJIT, py_get_attr.__name__)
-    a = yield app(fn, [tos, attr])
+    a = yield app(fn, [tos, val])
     return a
 
 
@@ -366,7 +368,7 @@ def py_call_func_kwargs(f, attrs: t.Tuple[str, ...], *args):
 
 
 def py_call_func(f: Repr, *args: Repr):
-    a = yield app(f, list(args))
+    a = yield app(f, args)
     return a
 
 

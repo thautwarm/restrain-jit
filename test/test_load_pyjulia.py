@@ -1,12 +1,16 @@
 import bytecode as bc
 from restrain_jit.bejulia.julia_vm import JuVM
-from restrain_jit.ir.from_bc import abs_i_cfg
 from restrain_jit.vm.am import run_machine
+from restrain_jit.bejulia.jl_init import init
 
-from restrain_jit.bejulia.jl_protocol import init
+init()
 
+jit = JuVM.func_info
 
+@jit
 def func(x):
+    for i in range(1000):
+        print(i)
     return x + 1
 
 

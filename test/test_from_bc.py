@@ -32,25 +32,6 @@ def f1(x):
                 k(a).d()
 
 
-def f2():
-    try:
-        1 / 0
-    except ZeroDivisionError:
-        raise Exception
-    except Exception:
-        print(2)
-    finally:
-        print(3)
-
-
-print(f2)
-def f3(x):
-    return x + 1
-
-
-c = JuVM.func_info(f3)
-
-
 def show(instrs, indent=''):
     for a in instrs:
         k = a.lhs
@@ -67,14 +48,50 @@ def show(instrs, indent=''):
             print(v)
 
 
+def f2():
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        raise Exception
+    except Exception:
+        print(2)
+    finally:
+        print(3)
+
+
+d = 2
+print(f2)
+
+v = [1, 2, 3, 4]
+
+a1 = {1, 2}
+a2 = {1: 2}
+a3 = (1, 2)
+
+
+def f3(x):
+    a1
+    a2
+    a3
+    for each in v:
+        return each + x
+
+def func(x):
+    for i in [1, 2, 3, 3]:
+        print(i)
+    return x + 1
+
+c = JuVM.func_info(func)
+
 #
-# import dis
-# dis.dis(f3)
+import dis
+dis.dis(func)
 
 show(c.__func_info__.r_codeinfo.instrs)
-
-from restrain_jit.bejulia.jl_init import init
-init()
-c.__compile__()
-for each in c.__jit__:
-    print(each)
+#
+# from restrain_jit.bejulia.jl_init import init
+# init()
+# #
+# # # # print()
+# c.__compile__()
+# print(c.__jit__)

@@ -37,14 +37,13 @@ class JuVM(AM[Instr, Repr]):
 
     @classmethod
     def func_info(cls, func: types.FunctionType) -> types.FunctionType:
+        names = func.__code__.co_names
         code = Bytecode.from_code(func.__code__)
         codeinfo = cls.code_info(code)
 
         def r_compile():
             jit_func = Aware.f(self)
-            bc = Bytecode(code)
-            bc.clear()
-            bc.filename = filename
+            bc = Bytecode()
             bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))
             bc.extend(
                 [load_arg(each, cellvars, lineno) for each in argnames])
@@ -52,20 +51,16 @@ class JuVM(AM[Instr, Repr]):
                 PyInstr(InstrNames.CALL_FUNCTION, len(argnames)),
                 PyInstr(InstrNames.RETURN_VALUE)
             ])
-            start_func.__code__ = Bytecode(bc).to_code()
+            bc._copy_attr_from(code)
+            start_func.__code__ = bc.to_code()
             start_func.__jit__ = jit_func
             return jit_func
 
         start_func = copy_func(func)
-        start_func_code = Bytecode(code)
-        # noinspection PyProtectedMember
-        filename = code.filename
+        start_func_code = Bytecode()
         lineno = code.first_lineno
-
-        argnames = start_func_code.argnames
-        cellvars = start_func_code.cellvars
-        start_func_code.clear()
-        start_func_code.filename = filename
+        argnames = code.argnames
+        cellvars = code.cellvars
         start_func_code.extend([
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
             PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
@@ -74,10 +69,11 @@ class JuVM(AM[Instr, Repr]):
                 InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
             PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
         ])
+        start_func_code._copy_attr_from(code)
         self = PyFuncInfo(func.__name__, func.__module__,
                           func.__defaults__, func.__kwdefaults__,
                           func.__closure__, func.__globals__, codeinfo,
-                          func, {})
+                          func, {}, names)
         start_func.__code__ = start_func_code.to_code()
         start_func.__func_info__ = self
         start_func.__compile__ = r_compile
@@ -185,6 +181,7 @@ class JuVM(AM[Instr, Repr]):
         self.add_instr(None, JmpIf(n, cond))
 
     def label(self, n: str) -> None:
+        self.st.clear()
         self.add_instr(None, Label(n))
 
     def push(self, r: Repr) -> None:

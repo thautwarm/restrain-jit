@@ -53,11 +53,6 @@ def abs_i(b: t.Union[bc.Instr]):
         yield am.push(a)
         yield am.push(a)
 
-    elif b.name == InstrNames.GET_ITER:
-        a = yield am.pop()
-        a = yield from RT.py_iter(a)
-        yield am.push(a)
-
     elif b.name == InstrNames.GET_YIELD_FROM_ITER:
         a = yield am.pop()
         a = yield from RT.py_iter(a)
@@ -309,6 +304,8 @@ def abs_i(b: t.Union[bc.Instr]):
 
     elif b.name == InstrNames.GET_ITER:
         a = yield am.pop()
+        a = yield from RT.py_get_attr(a, "__iter__")
+        a = yield from RT.py_call_func(a)
         a = yield from RT.py_get_attr(a, "__next__")
         yield am.push(a)
 
