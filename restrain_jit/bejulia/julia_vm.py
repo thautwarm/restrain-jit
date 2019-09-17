@@ -42,7 +42,9 @@ class JuVM(AM[Instr, Repr]):
 
         def r_compile():
             jit_func = Aware.f(self)
-            bc = code.copy()
+            bc = Bytecode(code)
+            bc.clear()
+            bc.filename = filename
             bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))
             bc.extend(
                 [load_arg(each, cellvars, lineno) for each in argnames])
@@ -57,11 +59,13 @@ class JuVM(AM[Instr, Repr]):
         start_func = copy_func(func)
         start_func_code = Bytecode(code)
         # noinspection PyProtectedMember
-        start_func_code.filename = code.filename
+        filename = code.filename
         lineno = code.first_lineno
+
         argnames = start_func_code.argnames
         cellvars = start_func_code.cellvars
         start_func_code.clear()
+        start_func_code.filename = filename
         start_func_code.extend([
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
             PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),

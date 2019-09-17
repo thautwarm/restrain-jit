@@ -44,14 +44,8 @@ def f2():
 
 
 print(f2)
-
-
 def f3(x):
-
-    def k(y):
-        return x + y
-
-    return k
+    return x + 1
 
 
 c = JuVM.func_info(f3)
@@ -79,6 +73,8 @@ def show(instrs, indent=''):
 
 show(c.__func_info__.r_codeinfo.instrs)
 
-# from restrain_jit.bejulia.jl_init import init
-# init()
-# print(c(1))
+from restrain_jit.bejulia.jl_init import init
+init()
+c.__compile__()
+for each in c.__jit__:
+    print(each)
