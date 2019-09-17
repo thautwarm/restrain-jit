@@ -7,6 +7,13 @@ from dataclasses import dataclass
 from restrain_jit.bejulia.representations import *
 
 
+@dataclass
+class A:
+    lhs:t.Optional[str]
+    rhs:'Instr'
+    pass
+
+
 class Instr:
     pass
 
@@ -104,8 +111,7 @@ class JlGlob(Instr):
 
 @dataclass
 class UnwindBlock(Instr):
-    instrs:t.List[t.Tuple[str,
-    Instr]]
+    instrs:t.List[A]
     pass
 
 

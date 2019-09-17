@@ -1,5 +1,8 @@
 import restrain_jit.bejulia.representations;
 
+
+data A lhs:t.Optional[str] rhs:'Instr';
+
 abc Instr;
 data App(Instr) f:Repr args:t.List[Repr];
 data Ass(Instr) reg:Reg val:Repr;
@@ -15,5 +18,5 @@ data Push(Instr) val:Repr;
 data Pop(Instr) ;
 data PyGlob(Instr) qual:str name:str;
 data JlGlob(Instr) qual:str name:str;
-data UnwindBlock(Instr) instrs:t.List[t.Tuple[str, Instr]];
+data UnwindBlock(Instr) instrs:t.List[A];
 data PopException(Instr) must:bool;

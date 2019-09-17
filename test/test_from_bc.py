@@ -1,6 +1,7 @@
 from restrain_jit.bejulia.julia_vm import JuVM, UnwindBlock
 from restrain_jit.vm.am import run_machine
-from restrain_jit.ir.from_bc import abs_i_cfg
+from restrain_jit.abs_compiler.from_bc import abs_i_cfg
+from prettyprinter import pprint
 import bytecode as bc
 import typing as t
 
@@ -42,11 +43,24 @@ def f2():
         print(3)
 
 
-c = JuVM.code_info(f2.__code__)
+print(f2)
+
+
+def f3(x):
+
+    def k(y):
+        return x + y
+
+    return k
+
+
+c = JuVM.func_info(f3)
 
 
 def show(instrs, indent=''):
-    for k, v in instrs:
+    for a in instrs:
+        k = a.lhs
+        v = a.rhs
         if k is not None:
             print(indent + k, '=', end='')
         else:
@@ -59,4 +73,12 @@ def show(instrs, indent=''):
             print(v)
 
 
-show(c.instrs)
+#
+# import dis
+# dis.dis(f3)
+
+show(c.__func_info__.r_codeinfo.instrs)
+
+# from restrain_jit.bejulia.jl_init import init
+# init()
+# print(c(1))

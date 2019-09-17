@@ -1,9 +1,9 @@
 import types
 import bytecode as bc
 import typing as t
-from restrain_jit.ir import instrnames as InstrNames
+from restrain_jit.abs_compiler import instrnames as InstrNames
+from restrain_jit.abs_compiler import py_apis as RT
 from restrain_jit.vm import am
-from restrain_jit.ir import py_apis as RT
 
 
 def label_to_name(label: t.Union[bc.BasicBlock]):
@@ -203,7 +203,7 @@ def abs_i(b: t.Union[bc.Instr]):
         arg = b.arg
         assert isinstance(arg, (bc.CellVar, bc.FreeVar))
         a = yield am.reg_of(arg.name)
-        am.push(a)
+        yield am.push(a)
 
     elif b.name == InstrNames.LOAD_DEREF:
         arg = b.arg

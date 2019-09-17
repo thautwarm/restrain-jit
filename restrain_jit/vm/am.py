@@ -1,7 +1,8 @@
 import abc
 import types
 import typing as t
-from restrain_jit.ir.code_info import PyCodeInfo
+import bytecode
+from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from dataclasses import dataclass
 
 
@@ -119,12 +120,21 @@ class AM(t.Generic[Instr, Repr]):
 
     @classmethod
     @abc.abstractmethod
-    def code_info(cls, code: types.CodeType) -> PyCodeInfo[Repr]:
+    def code_info(cls, code: bytecode.Bytecode) -> PyCodeInfo[Instr]:
+        raise NotImplemented
+
+    @classmethod
+    @abc.abstractmethod
+    def func_info(cls, func: types.FunctionType) -> types.FunctionType:
         raise NotImplemented
 
 
-def code_info(code: types.CodeType):
+def code_info(code: bytecode.Bytecode):
     return lambda vm: vm.code_info(code)
+
+
+def func_info(fn: types.FunctionType):
+    return lambda vm: vm.code_info(fn)
 
 
 def pop_exception(must: bool = False) -> Repr:

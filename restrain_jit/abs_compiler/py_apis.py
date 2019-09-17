@@ -344,7 +344,9 @@ class Indirect:
 
 
 def py_mk_func(name: str, code: types.CodeType):
+    code = bc.Bytecode.from_code(code)
     a = yield code_info(code)
+    a = yield const(a)
     f = yield from_lower(NS.RestrainJIT, py_mk_func.__name__)
     n = yield const(name)
     a = yield app(f, [n, a])

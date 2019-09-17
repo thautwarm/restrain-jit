@@ -1,37 +1,105 @@
 from restrain_jit.bejulia.instructions import *
 from restrain_jit.bejulia.representations import *
-from restrain_jit.ir.code_info import PyCodeInfo
-from restrain_jit.ir import instrnames as InstrNames
+from restrain_jit.bejulia.jl_protocol import bridge, Aware
+from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
+from restrain_jit.abs_compiler import instrnames as InstrNames
+from restrain_jit.abs_compiler.from_bc import abs_i_cfg
 from restrain_jit.vm.am import AM, run_machine
-from restrain_jit.ir.from_bc import abs_i_cfg
 from dataclasses import dataclass
-from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr
+from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr, CellVar, CompilerFlags
 import typing as t
 import types
+
+
+def load_arg(x, cellvars, lineno):
+    if x in cellvars:
+        return PyInstr(InstrNames.LOAD_DEREF, CellVar(x), lineno=lineno)
+
+    return PyInstr(InstrNames.LOAD_FAST, x, lineno=lineno)
+
+
+def copy_func(f: types.FunctionType):
+    # noinspection PyArgumentList
+    nf = types.FunctionType(f.__code__, f.__globals__, None, None,
+                            f.__closure__)
+    nf.__defaults__ = f.__defaults__
+    nf.__name__ = f.__name__
+    nf.__qualname__ = f.__qualname__
+    nf.__module__ = f.__module__
+    nf.__kwdefaults__ = f.__kwdefaults__
+    nf.__annotations__ = f.__annotations__
+    nf.__dict__ = f.__dict__
+    return nf
 
 
 @dataclass
 class JuVM(AM[Instr, Repr]):
 
     @classmethod
-    def code_info(cls, code: types.CodeType) -> PyCodeInfo[Repr]:
-        bytecode = Bytecode.from_code(code)
+    def func_info(cls, func: types.FunctionType) -> types.FunctionType:
+        code = Bytecode.from_code(func.__code__)
+        codeinfo = cls.code_info(code)
+
+        def r_compile():
+            jit_func = Aware.f(self)
+            bc = code.copy()
+            bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))
+            bc.extend(
+                [load_arg(each, cellvars, lineno) for each in argnames])
+            bc.extend([
+                PyInstr(InstrNames.CALL_FUNCTION, len(argnames)),
+                PyInstr(InstrNames.RETURN_VALUE)
+            ])
+            start_func.__code__ = Bytecode(bc).to_code()
+            start_func.__jit__ = jit_func
+            return jit_func
+
+        start_func = copy_func(func)
+        start_func_code = Bytecode(code)
+        # noinspection PyProtectedMember
+        start_func_code.filename = code.filename
+        lineno = code.first_lineno
+        argnames = start_func_code.argnames
+        cellvars = start_func_code.cellvars
+        start_func_code.clear()
+        start_func_code.extend([
+            PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
+            PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
+            *(load_arg(each, cellvars, lineno) for each in argnames),
+            PyInstr(
+                InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
+            PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
+        ])
+        self = PyFuncInfo(func.__name__, func.__module__,
+                          func.__defaults__, func.__kwdefaults__,
+                          func.__closure__, func.__globals__, codeinfo,
+                          func, {})
+        start_func.__code__ = start_func_code.to_code()
+        start_func.__func_info__ = self
+        start_func.__compile__ = r_compile
+        start_func.__jit__ = None
+        return start_func
+
+    @classmethod
+    def code_info(cls, code: Bytecode) -> PyCodeInfo[Repr]:
         glob_deps: t.Set[str] = set()
-        for each in bytecode:
+        for each in code:
             if isinstance(each, PyInstr) and each.name in (
                     InstrNames.LOAD_GLOBAL, InstrNames.STORE_GLOBAL):
                 glob_deps.add(each.arg)
 
-        cfg = ControlFlowGraph.from_bytecode(bytecode)
+        cfg = ControlFlowGraph.from_bytecode(code)
         self = cls.empty()
         run_machine(abs_i_cfg(cfg), self)
         instrs = self.instrs
         instrs = self.pass_push_pop_inline(instrs)
-        return PyCodeInfo(code, tuple(glob_deps), instrs,
-                          code.co_freevars, code.co_cellvars,
-                          code.co_varnames, code.co_filename,
-                          code.co_firstlineno, code.co_consts,
-                          code.co_argcount, code.co_kwonlyargcount)
+        return PyCodeInfo(
+            code.name, tuple(glob_deps), code.argnames, code.freevars,
+            code.cellvars, code.filename, code.first_lineno,
+            code.argcount, code.kwonlyargcount,
+            bool(code.flags & CompilerFlags.GENERATOR),
+            bool(code.flags & CompilerFlags.VARKEYWORDS),
+            bool(code.flags & CompilerFlags.VARARGS), instrs)
 
     def pop_exception(self, must: bool) -> Repr:
         name = self.alloc()
@@ -152,7 +220,7 @@ class JuVM(AM[Instr, Repr]):
         return tmp_name
 
     def add_instr(self, tag, instr: Instr):
-        self.instrs.append((tag, instr))
+        self.instrs.append(A(tag, instr))
         return None
 
     _meta: dict
@@ -161,8 +229,7 @@ class JuVM(AM[Instr, Repr]):
     st: t.List[Repr]
 
     # instructions
-    blocks: t.List[t.Tuple[t.Optional[str], t.
-                           List[t.Tuple[t.Optional[str], Instr]]]]
+    blocks: t.List[t.Tuple[t.Optional[str], t.List[A]]]
 
     # allocated temporary
     used: t.Set[str]
@@ -182,7 +249,8 @@ class JuVM(AM[Instr, Repr]):
         i = 0
         while True:
             try:
-                k, v = instrs[i]
+                assign = instrs[i]
+                k, v = assign.lhs, assign.rhs
             except IndexError:
                 break
             if isinstance(v, UnwindBlock):
@@ -190,17 +258,19 @@ class JuVM(AM[Instr, Repr]):
             if k is None and isinstance(v, Pop):
                 j = i - 1
                 while True:
-                    k, v = instrs[j]
+                    assign = instrs[j]
+                    k, v = assign.lhs, assign.rhs
                     if k is None and isinstance(v, Push):
                         blacklist.add(j)
                         blacklist.add(i)
                         i += 1
                         j -= 1
                         try:
-                            k, v = instrs[i]
+                            assign = instrs[j]
+                            k, v = assign.lhs, assign.rhs
                         except IndexError:
                             break
-                        if k is None and isinstance(v, Pop):
+                        if k is None and isinstance(v, Push):
                             continue
                         break
 
