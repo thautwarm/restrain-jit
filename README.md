@@ -58,9 +58,10 @@ This comes with my talk on PyConChina 2019.
 
 1. intrinsics还远没有实现完, 目前只实现了`py_add`和`py_next`, `py_iter`等.
 
-   其实现直接简单, 很适合开PR贡献.
+   **其实现直接简单, 很适合开PR贡献**: 对照[py_apis.py](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/py_apis.py)
+   在[py_apis.jl](https://github.com/thautwarm/RestrainJIT.jl/blob/master/src/py_apis.jl)中给出实现.
 
-   P.S: 如果尽可能使用C API压榨性能, 甚至可以对非CPython的数据结构进行加速, 见 [Issue 1](https://github.com/thautwarm/restrain-jit/issues/1).
+   P.S: 如果尽可能使用C API压榨性能, 甚至可以对CPython数据结构上的操作进行加速, 见 [Issue 1](https://github.com/thautwarm/restrain-jit/issues/1).
 
    C API使用可以参考CPython: [cpython/Python/ceval.c](https://github.com/python/cpython/blob/master/Python/ceval.c)
 
