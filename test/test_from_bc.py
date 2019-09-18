@@ -76,22 +76,44 @@ def f3(x):
     for each in v:
         return each + x
 
+
 def func(x):
     for i in [1, 2, 3, 3]:
         print(i)
     return x + 1
 
+
 c = JuVM.func_info(func)
 
+print(c.__func_info__.r_codeinfo.glob_deps)
 #
 import dis
 dis.dis(func)
 
 show(c.__func_info__.r_codeinfo.instrs)
+
 #
 from restrain_jit.bejulia.jl_init import init
 init()
-c(1)
+# c(1)
+#
+jit = JuVM.func_info
+
+
+@jit
+def g(a):
+    for i in range(1000):
+        a = a + i
+        return a
+
+
+# x = {1, 2}
+# @jit
+# def g(a):
+#     for i in x:
+#         a = a + i
+#     return a
+# print(g(1))
 # #
 # # # # print()
 # c.__compile__()

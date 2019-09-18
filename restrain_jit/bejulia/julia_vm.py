@@ -35,6 +35,9 @@ def copy_func(f: types.FunctionType):
 @dataclass
 class JuVM(AM[Instr, Repr]):
 
+    def require_global(self, s: str):
+        self.globals.add(s)
+
     @classmethod
     def func_info(cls, func: types.FunctionType) -> types.FunctionType:
         names = func.__code__.co_names
@@ -82,15 +85,11 @@ class JuVM(AM[Instr, Repr]):
 
     @classmethod
     def code_info(cls, code: Bytecode) -> PyCodeInfo[Repr]:
-        glob_deps: t.Set[str] = set()
-        for each in code:
-            if isinstance(each, PyInstr) and each.name in (
-                    InstrNames.LOAD_GLOBAL, InstrNames.STORE_GLOBAL):
-                glob_deps.add(each.arg)
 
         cfg = ControlFlowGraph.from_bytecode(code)
         self = cls.empty()
         run_machine(abs_i_cfg(cfg), self)
+        glob_deps = tuple(self.globals)
         instrs = self.instrs
         instrs = self.pass_push_pop_inline(instrs)
         return PyCodeInfo(
@@ -235,6 +234,7 @@ class JuVM(AM[Instr, Repr]):
     # allocated temporary
     used: t.Set[str]
     unused: t.Set[str]
+    globals: t.Set[str]
 
     @property
     def instrs(self):
@@ -287,4 +287,4 @@ class JuVM(AM[Instr, Repr]):
 
     @classmethod
     def empty(cls):
-        return cls({}, [], [(None, [])], set(), set())
+        return cls({}, [], [(None, [])], set(), set(), set())

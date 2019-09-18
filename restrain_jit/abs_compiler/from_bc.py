@@ -227,10 +227,12 @@ def abs_i(b: t.Union[bc.Instr]):
     elif b.name == InstrNames.LOAD_GLOBAL:
         arg = b.arg
         assert isinstance(arg, str)
+        yield am.require_global(arg)
         a = yield am.from_higher("", arg)
         yield am.push(a)
 
     elif b.name == InstrNames.STORE_GLOBAL:
+        yield am.require_global(b.arg)
         raise NotImplemented
 
     elif b.name == InstrNames.LOAD_CONST:

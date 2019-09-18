@@ -18,6 +18,10 @@ Repr = t.TypeVar("Repr")
 class AM(t.Generic[Instr, Repr]):
 
     @abc.abstractmethod
+    def require_global(self, s: str):
+        raise NotImplemented
+
+    @abc.abstractmethod
     def meta(self) -> dict:
         raise NotImplemented
 
@@ -140,6 +144,9 @@ def func_info(fn: types.FunctionType):
 def pop_exception(must: bool = False) -> Repr:
     return lambda vm: vm.pop_exception(must)
 
+
+def require_global(a: str):
+    return lambda vm: vm.require_global(a)
 
 def meta():
     return lambda vm: vm.meta()
