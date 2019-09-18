@@ -263,10 +263,22 @@ class JuVM(AM[Instr, Repr]):
                     assign = instrs[j]
                     k, v = assign.lhs, assign.rhs
                     if k is None and isinstance(v, Push):
+                        try:
+                            assign = instrs[i]
+                            k, v = assign.lhs, assign.rhs
+                        except IndexError:
+                            break
+
+                        if k is None and isinstance(v, Pop):
+                            pass
+                        else:
+                            break
+
                         blacklist.add(j)
                         blacklist.add(i)
                         i += 1
                         j -= 1
+
                         try:
                             assign = instrs[j]
                             k, v = assign.lhs, assign.rhs
