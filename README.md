@@ -19,11 +19,11 @@ This comes with my talk on PyConChina 2019.
     - 字节码指令: [restrain_jit.abs_compiler.instrnames](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/instrnames.py)
     - 字节码处理依赖: [vstinner/bytecode](https://github.com/vstinner/bytecode)
 
-2. 抽象机器代码定义: (restrain_jit.vm.am](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/vm/am.py#L23)
+2. 抽象机器代码定义: [restrain_jit.vm.am](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/vm/am.py#L23)
 
 3. 抽象指令: `class AM`的interface methods
 
-   其中表达和具体指令无关的intrinsics见此: [restrain_jit.abs_compiler.py_apis](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/py_apis.py)
+   其中表达和具体指令无关的intrinsics: [restrain_jit.abs_compiler.py_apis](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/py_apis.py)
 
 4. [抽象解释代码实现](https://github.com/thautwarm/restrain-jit/tree/master/restrain_jit/abs_compiler/from_bc.py)
 
@@ -49,11 +49,9 @@ This comes with my talk on PyConChina 2019.
 
 12. PyCall.jl, 包装Pythin JIT函数的途径:
 
-    [Bridge: Julia to Python](https://github.com/thautwarm/RestrainJIT.jl/blob/master/src/codegen.jl#L303)
-
-    [Bridge: Python to Julia # 1](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/bejulia/jl_protocol.py#L5)
-
-    [Bridge: Python to Julia # 2](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/bejulia/jl_init.py#L32)
+    - [Bridge: Julia to Python](https://github.com/thautwarm/RestrainJIT.jl/blob/master/src/codegen.jl#L303)
+    - [Bridge: Python to Julia # 1](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/bejulia/jl_protocol.py#L5)
+    - [Bridge: Python to Julia # 2](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/bejulia/jl_init.py#L32)
 
 
 # Status
