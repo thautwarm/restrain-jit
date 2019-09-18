@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr, CellVar, CompilerFlags
 import typing as t
 import types
+import sys
 
 
 def load_arg(x, cellvars, lineno):
@@ -34,6 +35,9 @@ def copy_func(f: types.FunctionType):
 
 @dataclass
 class JuVM(AM[Instr, Repr]):
+
+    def get_module(self) -> types.ModuleType:
+        return self.module
 
     def require_global(self, s: str):
         self.globals.add(s)
@@ -88,11 +92,11 @@ class JuVM(AM[Instr, Repr]):
     def code_info(cls, code: Bytecode) -> PyCodeInfo[Repr]:
 
         cfg = ControlFlowGraph.from_bytecode(code)
-        self = cls.empty()
-        run_machine(abs_i_cfg(cfg), self)
-        glob_deps = tuple(self.globals)
-        instrs = self.instrs
-        instrs = self.pass_push_pop_inline(instrs)
+        current = cls.empty()
+        run_machine(abs_i_cfg(cfg), current)
+        glob_deps = tuple(current.globals)
+        instrs = current.instrs
+        instrs = current.pass_push_pop_inline(instrs)
         return PyCodeInfo(
             code.name, tuple(glob_deps), code.argnames, code.freevars,
             code.cellvars, code.filename, code.first_lineno,
@@ -236,6 +240,7 @@ class JuVM(AM[Instr, Repr]):
     used: t.Set[str]
     unused: t.Set[str]
     globals: t.Set[str]
+    module: types.ModuleType
 
     @property
     def instrs(self):
@@ -299,5 +304,6 @@ class JuVM(AM[Instr, Repr]):
         ]
 
     @classmethod
-    def empty(cls):
-        return cls({}, [], [(None, [])], set(), set(), set())
+    def empty(cls, module=None):
+        return cls({}, [], [(None, [])], set(), set(), set(), None
+                   or sys.modules[cls.__module__])

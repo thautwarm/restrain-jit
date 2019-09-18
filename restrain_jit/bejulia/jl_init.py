@@ -21,13 +21,13 @@ jl_symbol.argtypes = [ctypes.c_char_p]
 jl_symbol.restype = ctypes.c_void_p
 
 Main.eval("import RestrainJIT")
-Main.eval("restrain_jl_side_aware! = RestrainJIT.mk_restrain_infr!()")
+Main.eval("RestrainJIT.init!()")
 
 
 def init():
 
     restrain_jl_side_aware_ = jl_get_global(
-        jl_main, jl_symbol(b"restrain_jl_side_aware!"))
+        jl_main, jl_symbol(b"aware!"))
 
     def aware_(val, func_id):
         bridge.append((func_id, val))

@@ -1,6 +1,7 @@
 import typing as t
 import types
 from dataclasses import dataclass
+
 Instr = t.TypeVar("Instr")
 
 

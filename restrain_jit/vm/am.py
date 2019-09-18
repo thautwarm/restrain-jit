@@ -137,6 +137,10 @@ class AM(t.Generic[Instr, Repr]):
     def func_info(cls, func: types.FunctionType) -> types.FunctionType:
         raise NotImplemented
 
+    @abc.abstractmethod
+    def get_module(self) -> types.ModuleType:
+        raise NotImplemented
+
 
 def code_info(code: bytecode.Bytecode):
     return lambda vm: vm.code_info(code)
@@ -256,14 +260,19 @@ def app(f: Repr, args: t.List[Repr]):
     return lambda vm: vm.app(f, args)
 
 
+def get_module():
+    return lambda vm: vm.get_module()
+
+
 def run_machine(gen: t.Generator, vm: AM):
     """
     top level of abstract interpretion
     """
     v = None
+    send = gen.send
     try:
         while True:
-            binder = gen.send(v)
+            binder = send(v)
             v = binder(vm)
     except StopIteration as e:
         return e.value
