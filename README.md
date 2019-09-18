@@ -80,3 +80,7 @@ This comes with my talk on PyConChina 2019.
    - 由于Julia的错误处理有开销, try语句性能较差(try语句还未经过测试)
 
 4. 因为是Python中文社区, 所以使用中文书写README. 轻喷.
+
+5. 由于依赖PyJulia的原因, 目前只能在dynamically linked的Python(例如anaconda Python, ubuntu源里的Python; Arch Linux的Python是dyn的)下使用.
+
+   但这个限制是没有必要的, 在项目比较成熟时, 会移除PyJulia, 并使用一种前面提到的Bridging技巧, 来消除这个限制.
