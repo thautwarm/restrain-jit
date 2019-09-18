@@ -45,8 +45,9 @@ class JuVM(AM[Instr, Repr]):
         codeinfo = cls.code_info(code)
 
         def r_compile():
-            jit_func = Aware.f(self)
+            jit_func = Aware.f(self, id(start_func))
             bc = Bytecode()
+
             bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))
             bc.extend(
                 [load_arg(each, cellvars, lineno) for each in argnames])

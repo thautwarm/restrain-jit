@@ -11,6 +11,11 @@ class Symbol:
     s: str
 
 
+@dataclass
+class ValSymbol:
+    s: str
+
+
 Instr = t.TypeVar("Instr")
 Repr = t.TypeVar("Repr")
 
@@ -147,6 +152,7 @@ def pop_exception(must: bool = False) -> Repr:
 
 def require_global(a: str):
     return lambda vm: vm.require_global(a)
+
 
 def meta():
     return lambda vm: vm.meta()
