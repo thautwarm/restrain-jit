@@ -12,7 +12,7 @@ class JitMap:
         return self.__jit__(xs)
 
 
-map = JitMap()
+select = JitMap()
 
 
 class JitForeach:
