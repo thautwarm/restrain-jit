@@ -89,8 +89,9 @@ dis.dis(func)
 
 show(c.__func_info__.r_codeinfo.instrs)
 #
-# from restrain_jit.bejulia.jl_init import init
-# init()
+from restrain_jit.bejulia.jl_init import init
+init()
+c(1)
 # #
 # # # # print()
 # c.__compile__()
