@@ -23,7 +23,7 @@ This comes with my talk on PyConChina 2019.
 
 3. 抽象指令: `class AM`的interface methods
 
-   其中表达和具体指令无关的intrinsics: [restrain_jit.abs_compiler.py_apis](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/py_apis.py)
+   其中和具体指令乃至后端无关的intrinsics: [restrain_jit.abs_compiler.py_apis](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/abs_compiler/py_apis.py)
 
 4. [抽象解释代码实现](https://github.com/thautwarm/restrain-jit/tree/master/restrain_jit/abs_compiler/from_bc.py)
 
