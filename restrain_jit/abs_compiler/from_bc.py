@@ -172,6 +172,7 @@ def abs_i(b: t.Union[bc.Instr]):
             raise NotImplemented
         if arg & 0x08:
             name = yield am.pop()
+            name = yield am.from_const(name)
             code = yield am.pop()
             code = yield am.from_const(code)
             assert isinstance(code, types.CodeType)
@@ -181,6 +182,7 @@ def abs_i(b: t.Union[bc.Instr]):
 
         else:
             name = yield am.pop()
+            name = yield am.from_const(name)
             code = yield am.pop()
             code = yield am.from_const(code)
             assert isinstance(code, types.CodeType)

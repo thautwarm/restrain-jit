@@ -20,3 +20,5 @@ def func2(x):
 
 
 assert func1(100) == func2(100)
+
+print(func1.__jit__)
