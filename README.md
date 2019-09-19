@@ -4,6 +4,10 @@ The first and yet the only CPython compatible Python JIT, over the world.
 
 This comes with my talk on PyConChina 2019.
 
+# Get Started
+
+[Getting Started With Development](docs/GetStarted.md)
+
 # 预览
 
 ![p1](https://raw.githubusercontent.com/thautwarm/restrain-jit/master/static/p1.png)
