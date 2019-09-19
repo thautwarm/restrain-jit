@@ -1,4 +1,4 @@
-[![What's CPython Compat](https://img.shields.io/badge/Hyping-What's&nbsp;"CPython&nbsp;Compatible"-Orange.svg?style=flat)](docs/GetStarted.md)
+[![What's CPython Compat](https://img.shields.io/badge/Hyping-What's&nbsp;"CPython&nbsp;Compatible"-Orange.svg?style=flat)](docs/What-is-CPython-Compatible.md)
 
 ## Python Restrain JIT
 
