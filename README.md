@@ -1,12 +1,19 @@
-## restrain-jit
+[![What's CPython Compat](https://img.shields.io/badge/Hyping-What's&nbsp;"CPython&nbsp;Compatible"-Orange.svg?style=flat)](docs/GetStarted.md)
 
-The first and yet the only CPython compatible Python JIT, over the world.
+## Python Restrain JIT
+
+[![赞助/Donotion](https://img.shields.io/badge/Donation-赞助-Teal.svg?style=flat)](docs/DonationPrivacy.md)
+[![开始参与开发/Dev Guide](https://img.shields.io/badge/Start&nbsp;Devel-开发参与指南-Purple.svg?style=flat)](docs/GetStarted.md)
+
+
+The first and yet the only "CPython compatible" Python JIT, over the world.
 
 This comes with my talk on PyConChina 2019.
 
-# Get Started
 
-[Getting Started With Development](docs/GetStarted.md)
+
+After all, "CPython Compatible" means it's not a crispy experimental project.
+
 
 # 预览
 
