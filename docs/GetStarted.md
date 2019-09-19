@@ -52,7 +52,8 @@ from julia import Main
 
 ## Run Demo
 
+You can install `pytest` via `pip` and run test cases with
+
 ``` python
 python3 test/test_functional.py
 ```
-
