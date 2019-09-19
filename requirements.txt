@@ -1,0 +1,4 @@
+julia==0.4.1
+pytest==3.8.2
+numpy==1.17.2
+bytecode==0.7.0
