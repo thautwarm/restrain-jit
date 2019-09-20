@@ -49,7 +49,7 @@ class JuVM(AM[Instr, Repr]):
         codeinfo = cls.code_info(code)
 
         def r_compile():
-            jit_func = Aware.f(self, id(start_func))
+            jit_func = Aware.f(self)
             bc = Bytecode()
 
             bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))

@@ -1,3 +1,2 @@
-import restrain_jit.cpy_compat
 import sklearn
 import test_stage_count_tested

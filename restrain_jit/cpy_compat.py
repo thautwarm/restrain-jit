@@ -1,11 +1,11 @@
 import sys
-import builtins
 import types
 from restrain_jit.abs_compiler import instrnames as InstrNames
 from bytecode import Bytecode, Instr
 from importlib import _bootstrap
 from importlib._bootstrap import ModuleSpec
 from importlib.abc import Loader
+from contextlib import contextmanager
 from importlib._bootstrap_external import PathFinder, FileLoader, ExtensionFileLoader
 
 
@@ -37,6 +37,8 @@ class RePyLoader(Loader):
             for fn in functions:
                 fn.__update_global_ref__(name)
 
+        module.__dict__['__update_generations__'] = update_generations
+
         def update_bc():
             for each in bc:
                 yield each
@@ -45,8 +47,8 @@ class RePyLoader(Loader):
                         Instr) and each.name == InstrNames.STORE_NAME:
 
                     yield Instr(
-                        InstrNames.LOAD_CONST,
-                        update_generations,
+                        InstrNames.LOAD_NAME,
+                        '__update_generations__',
                         lineno=each.lineno)
                     yield Instr(
                         InstrNames.LOAD_CONST,
@@ -75,4 +77,18 @@ class RePyFinder(PathFinder):
         return spec
 
 
-sys.meta_path.insert(0, RePyFinder)
+def unregister():
+    sys.meta_path.remove(RePyFinder)
+
+
+def register():
+    sys.meta_path.insert(0, RePyFinder)
+
+
+@contextmanager
+def with_registered():
+    try:
+        register()
+        yield
+    finally:
+        unregister()

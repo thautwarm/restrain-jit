@@ -290,7 +290,7 @@ def py_format(tos):
 
 
 def py_load_method_(tos, attr: str):
-    attr = yield const(Symbol(attr))
+    attr = yield const(ValSymbol(attr))
     fn = yield from_lower(NS.RestrainJIT, py_load_method_.__name__)
     a = yield app(fn, [tos, attr])
     _0 = yield const(0)

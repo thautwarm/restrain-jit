@@ -23,3 +23,13 @@ class JitForeach:
 
 
 foreach = JitForeach()
+
+
+class AsJuliaObject:
+    __jit__: callable
+
+    def __matmul__(self, a):
+        return self.__jit__(a)
+
+
+J = AsJuliaObject()

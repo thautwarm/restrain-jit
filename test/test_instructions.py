@@ -32,13 +32,19 @@ def show_instrs(instrs, indent=''):
             print(v)
 
 
-
 @jit
 def func1(x):
     for i in range(1000):
         x = x + i
     return x + 1
 
+
+show_instrs(func1.__func_info__.r_codeinfo.instrs)
+
+
+@jit
+def func1(x):
+    x[:2] = 1
 
 
 show_instrs(func1.__func_info__.r_codeinfo.instrs)

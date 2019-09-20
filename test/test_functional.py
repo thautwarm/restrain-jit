@@ -1,4 +1,6 @@
-from restrain_jit.bejulia.functional import foreach, select
+from restrain_jit.bejulia.functional import foreach, select, J
+
+from restrain_jit.bejulia.pragmas import const
 from restrain_jit.bejulia.julia_vm import JuVM
 from restrain_jit.bejulia.jl_init import init
 
@@ -24,8 +26,6 @@ xs = np.arange(1000)
 zs = all_add2(xs)
 print(zs)
 
-import timeit
-
 from builtins import map
 
 
@@ -39,16 +39,15 @@ def py_all_add2(lst):
 
 import timeit
 
-print(
-    timeit.timeit(
-        """
+jit_time = timeit.timeit("""
 all_add2(xs)""",
-        globals=dict(all_add2=all_add2, xs=xs),
-        number=100000))
+    globals=dict(all_add2=all_add2, xs=xs),
+    number=100000)
 
-print(
-    timeit.timeit(
-        """
+cpy_time = (timeit.timeit("""
 all_add2(xs)""",
-        globals=dict(all_add2=py_all_add2, xs=xs),
-        number=100000))
+    globals=dict(all_add2=py_all_add2, xs=xs),
+    number=100000))
+
+assert cpy_time / jit_time > 20
+

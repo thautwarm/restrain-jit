@@ -29,8 +29,8 @@ def init():
     restrain_jl_side_aware_ = jl_get_global(jl_main,
                                             jl_symbol(b"aware!"))
 
-    def aware_(val, func_id):
-        bridge.append((func_id, val))
+    def aware_(val):
+        bridge.append(val)
         jl_call0(restrain_jl_side_aware_)
         return bridge.pop()
 
