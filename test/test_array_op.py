@@ -35,22 +35,48 @@ def test_repeat_append_jit():
 def test_repeat_append_jit_foreach():
     x = [1]
     x.pop()
-    @foreach(range(1000))
+
+    @foreach(range(10000))
     def each(e):
         x.append(e)
+
     return x
 
 
 def test_repeat_append_nojit():
     x = []
-    for i in range(10000):
+    for i in range(100000):
         x.append(i)
     return x
 
 
-print(test_repeat_append_jit())
+# print(test_repeat_append_jit())
 
-print(test_repeat_append_jit_foreach())
+# print(test_repeat_append_jit_foreach())
+#
+# for e in (test_repeat_append_jit_foreach.__func_info__.r_codeinfo.instrs):
+#     print(e)
+# show_instrs(test_repeat_append_jit_foreach.__func_info__.r_codeinfo.instrs)
+#
+# %timeit test_repeat_append_jit()
+# %timeit test_repeat_append_nojit()
+# %timeit test_repeat_append_jit_foreach()
 
-%timeit test_repeat_append_jit()
-%timeit test_repeat_append_nojit()
+from julia import Main
+
+tt = Main.eval("""
+function tt()
+    x = []
+    for i in 0:9999
+        push!(x, i)
+    end
+    x
+end
+""")
+tt()
+
+import timeit
+
+print(timeit.timeit("tt()", globals=dict(tt=tt), number=1000))
+print(timeit.timeit(
+    "tt()", globals=dict(tt=test_repeat_append_nojit), number=1000))

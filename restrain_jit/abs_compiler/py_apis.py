@@ -328,11 +328,10 @@ def py_call_method(*params: Repr):
     return a
 
 
-def py_mk_closure(closure_vars: t.List[Repr], native_fn_ptr: Repr):
-    tp = yield from py_mk_tuple(closure_vars)
+def py_mk_closure(closure_vars: Repr, native_fn_ptr: Repr):
     mk_closure = yield from_lower(NS.RestrainJIT,
                                   py_mk_closure.__name__)
-    a = yield app(mk_closure, [tp, native_fn_ptr])
+    a = yield app(mk_closure, [closure_vars, native_fn_ptr])
     return a
 
 

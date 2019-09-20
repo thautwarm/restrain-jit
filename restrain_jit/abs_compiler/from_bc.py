@@ -205,8 +205,7 @@ def abs_i(b: t.Union[bc.Instr]):
     elif b.name == InstrNames.LOAD_DEREF:
         arg = b.arg
         assert isinstance(arg, (bc.CellVar, bc.FreeVar))
-        reg = yield am.reg_of(arg.name)
-        a = yield am.load(reg)
+        a = yield am.load(arg.name)
         yield am.push(a)
 
     elif b.name == InstrNames.STORE_DEREF:
