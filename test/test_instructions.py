@@ -41,10 +41,10 @@ def func1(x):
 
 show_instrs(func1.__func_info__.r_codeinfo.instrs)
 
-
-@jit
-def func1(x):
-    x[:2] = 1
-
-
-show_instrs(func1.__func_info__.r_codeinfo.instrs)
+#
+# @jit
+# def func1(x):
+#     x[:2] = 1
+#
+#
+# show_instrs(func1.__func_info__.r_codeinfo.instrs)

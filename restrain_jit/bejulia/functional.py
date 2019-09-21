@@ -33,3 +33,33 @@ class AsJuliaObject:
 
 
 J = AsJuliaObject()
+
+
+class SIMDMap:
+    __jit__: callable
+
+    def __call__(self, a):
+        return self.__jit__(a)
+
+
+simd_select = SIMDMap()
+
+
+class SIMDForeach:
+    __jit__: callable
+
+    def __call__(self, a):
+        return self.__jit__(a)
+
+
+simd_foreach = SIMDForeach()
+
+
+class Out:
+    __jit__: callable
+
+    def __call__(self, a):
+        return self.__jit__(a)
+
+
+out = Out()

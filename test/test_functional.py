@@ -1,14 +1,12 @@
-from restrain_jit.bejulia.functional import foreach, select, J
-
-from restrain_jit.bejulia.pragmas import const
+from restrain_jit.bejulia.functional import foreach, select, simd_select, J, out
 from restrain_jit.bejulia.julia_vm import JuVM
 from restrain_jit.bejulia.jl_init import init
+import timeit
+import numpy as np
 
 init()
 
 jit = JuVM.func_info
-
-foreach([1, 2, 3])(print)
 
 
 @jit
@@ -21,12 +19,8 @@ def all_add2(lst):
     return ret
 
 
-import numpy as np
-xs = np.arange(1000)
+xs = np.arange(20000)
 zs = all_add2(xs)
-print(zs)
-
-from builtins import map
 
 
 def py_all_add2(lst):
@@ -37,17 +31,39 @@ def py_all_add2(lst):
         map(lambda x: x + 2, lst), dtype=np.int32, count=len(lst))
 
 
-import timeit
+@jit
+def all_add2_simd(lst, out):
 
-jit_time = timeit.timeit("""
+    @simd_select(lst, out)
+    def ret(elt):
+        return elt + 2
+
+    return ret
+
+
+ret = out(J @ np.ones(len(xs)))
+print(all_add2_simd(xs, ret))
+
+jit_time = timeit.timeit(
+    """
 all_add2(xs)""",
     globals=dict(all_add2=all_add2, xs=xs),
-    number=100000)
+    number=1000)
 
-cpy_time = (timeit.timeit("""
+cpy_time = (timeit.timeit(
+    """
 all_add2(xs)""",
     globals=dict(all_add2=py_all_add2, xs=xs),
-    number=100000))
+    number=1000))
 
-assert cpy_time / jit_time > 20
+print(ret)
 
+simd_time = (timeit.timeit(
+    """
+all_add2(xs, out)""",
+    globals=dict(all_add2=all_add2_simd, xs=xs, out=ret),
+    number=1000))
+print()
+print(cpy_time)
+print(jit_time)
+print(simd_time)
