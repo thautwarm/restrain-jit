@@ -1,3 +1,8 @@
+
+The developement of this project is suspended due to the complexity of managing multi-language dependencies and Python's verbose functional style codebase. We're now working on creating a static compiled programming language [RemuLang](https://github.com/RemuLang) targeting CPython bytecode, and after the available version of RemuLang released
+we'll resume the development of Restrain-JIT.
+
+
 [![What's CPython Compat](https://img.shields.io/badge/Hyping-What's&nbsp;"CPython&nbsp;Compatible"-Orange.svg?style=flat)](docs/What-is-CPython-Compatible.md)
 
 ## Python Restrain JIT
