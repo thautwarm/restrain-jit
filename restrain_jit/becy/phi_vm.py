@@ -59,14 +59,6 @@ class JmpIf(Instr):
 
 
 @dataclass(frozen=True, order=True)
-class JmpIfPush(Instr):
-    label:object
-    cond:Repr
-    leave:Repr
-    pass
-
-
-@dataclass(frozen=True, order=True)
 class Jmp(Instr):
     label:object
     pass
@@ -75,29 +67,14 @@ class Jmp(Instr):
 @dataclass(frozen=True, order=True)
 class Label(Instr):
     label:object
-    pass
-
-
-@dataclass(frozen=True, order=True)
-class Peek(Instr):
-    offset:int
+    phi:t.Dict[object,t.Dict[Reg,
+    Repr]]
     pass
 
 
 @dataclass(frozen=True, order=True)
 class Return(Instr):
     val:Repr
-    pass
-
-
-@dataclass(frozen=True, order=True)
-class Push(Instr):
-    val:Repr
-    pass
-
-
-@dataclass(frozen=True, order=True)
-class Pop(Instr):
     pass
 
 

@@ -14,6 +14,7 @@ def show_instrs(instrs, indent=''):
         next_indent = indent + '        '
         if isinstance(v, UnwindBlock):
             print()
+            print(next_indent, 'Unwind', sep='')
             show_instrs(v.instrs, next_indent)
         elif isinstance(v, App):
             print('call', v.f)

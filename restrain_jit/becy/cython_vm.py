@@ -1,7 +1,9 @@
 from restrain_jit.becy.stack_vm_instructions import *
+from restrain_jit.becy.phi_node_analysis import PhiNodeAnalysis
+from restrain_jit.becy.relabel import apply as relabel
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
-from restrain_jit.abs_compiler.from_bc import abs_i_cfg
+from restrain_jit.abs_compiler.from_bc import Interpreter
 from restrain_jit.vm.am import AM, run_machine
 from dataclasses import dataclass
 from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr, CellVar, CompilerFlags
@@ -32,7 +34,10 @@ def copy_func(f: types.FunctionType):
 
 
 @dataclass
-class JuVM(AM[Instr, Repr]):
+class CyVM(AM[Instr, Repr]):
+
+    def set_lineno(self, lineno: int):
+        self.add_instr(None, SetLineno(lineno))
 
     def get_module(self) -> types.ModuleType:
         return self.module
@@ -47,7 +52,7 @@ class JuVM(AM[Instr, Repr]):
         codeinfo = cls.code_info(code)
 
         def r_compile():
-            jit_func = Aware.f(self)
+            jit_func = jit_compile_to_cython(self)
             print("jit_func", type(jit_func))
             bc = Bytecode()
 
@@ -67,14 +72,14 @@ class JuVM(AM[Instr, Repr]):
         start_func_code = Bytecode()
         lineno = code.first_lineno
         argnames = code.argnames
+        start_func_code.argnames = argnames
         cellvars = code.cellvars
         start_func_code.extend([
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
             PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
             *(load_arg(each, cellvars, lineno) for each in argnames),
-            PyInstr(InstrNames.CALL_FUNCTION,
-                    len(argnames),
-                    lineno=lineno),
+            PyInstr(
+                InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
             PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
         ])
         start_func_code._copy_attr_from(code)
@@ -93,23 +98,23 @@ class JuVM(AM[Instr, Repr]):
 
         cfg = ControlFlowGraph.from_bytecode(code)
         current = cls.empty()
-        run_machine(abs_i_cfg(cfg), current)
+        run_machine(
+            Interpreter(code.first_lineno).abs_i_cfg(cfg), current)
         glob_deps = tuple(current.globals)
         instrs = current.instrs
-        instrs = current.pass_push_pop_inline(instrs)
-        return PyCodeInfo(code.name, tuple(glob_deps), code.argnames,
-                          code.freevars, code.cellvars, code.filename,
-                          code.first_lineno, code.argcount,
-                          code.kwonlyargcount,
-                          bool(code.flags & CompilerFlags.GENERATOR),
-                          bool(code.flags & CompilerFlags.VARKEYWORDS),
-                          bool(code.flags & CompilerFlags.VARARGS),
-                          instrs)
+        instrs = cls.pass_push_pop_inline(instrs)
+        instrs = list(relabel(instrs))
+        instrs = list(PhiNodeAnalysis(instrs).main())
+        return PyCodeInfo(
+            code.name, tuple(glob_deps), code.argnames, code.freevars,
+            code.cellvars, code.filename, code.first_lineno,
+            code.argcount, code.kwonlyargcount,
+            bool(code.flags & CompilerFlags.GENERATOR),
+            bool(code.flags & CompilerFlags.VARKEYWORDS),
+            bool(code.flags & CompilerFlags.VARARGS), instrs)
 
     def pop_exception(self, must: bool) -> Repr:
-        name = self.alloc()
-        self.add_instr(name, PopException(must))
-        return Reg(name)
+        raise NotImplemented
 
     def meta(self) -> dict:
         return self._meta
@@ -121,11 +126,13 @@ class JuVM(AM[Instr, Repr]):
         self.blocks.append((end_label, []))
 
     def pop_block(self) -> Repr:
-        end_label, instrs = self.blocks.pop()
-        regname = self.alloc()
-        instr = UnwindBlock(instrs)
-        self.add_instr(regname, instr)
-        return Reg(regname)
+        # end_label, instrs = self.blocks.pop()
+        # self.add_instr(None, PushUnwind())
+        # for instr in instrs:
+        #     self.add_instr(instr.lhs, instr.rhs)
+        # self.add_instr(None, PopUnwind())
+        # return Const(None)
+        raise NotImplemented
 
     def from_const(self, val: Repr) -> object:
         assert isinstance(val, Const)
@@ -153,8 +160,9 @@ class JuVM(AM[Instr, Repr]):
 
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
         name = self.alloc()
+        reg = Reg(name)
         self.add_instr(name, App(f, args))
-        return Reg(name)
+        return reg
 
     def store(self, n: str, val: Repr):
         self.add_instr(None, Store(Reg(n), val))
@@ -252,6 +260,11 @@ class JuVM(AM[Instr, Repr]):
         return self.blocks[-1][0]
 
     @classmethod
+    def empty(cls, module=None):
+        return cls({}, [], [(None, [])], set(), set(), set(), module
+                   or sys.modules[cls.__module__])
+
+    @classmethod
     def pass_push_pop_inline(cls, instrs):
         blacklist = set()
         i = 0
@@ -261,10 +274,7 @@ class JuVM(AM[Instr, Repr]):
                 k, v = assign.lhs, assign.rhs
             except IndexError:
                 break
-            if isinstance(v, UnwindBlock):
-                instrs = cls.pass_push_pop_inline(v.instrs)
-                v.instrs.clear()
-                v.instrs.extend(instrs)
+
             if k is None and isinstance(v, Pop):
                 j = i - 1
                 while True:
@@ -305,8 +315,3 @@ class JuVM(AM[Instr, Repr]):
         return [
             each for i, each in enumerate(instrs) if i not in blacklist
         ]
-
-    @classmethod
-    def empty(cls, module=None):
-        return cls({}, [], [(None, [])], set(), set(), set(), None
-                   or sys.modules[cls.__module__])

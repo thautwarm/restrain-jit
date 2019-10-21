@@ -1,5 +1,7 @@
-from restrain_jit.becy.stack_vm_instructions import UnwindBlock, App, Const
+from restrain_jit.becy.stack_vm_instructions import App, Const, JmpIf, JmpIfPush, Jmp
 from restrain_jit.jit_info import PyCodeInfo
+
+jumps = (JmpIfPush, JmpIf, Jmp)
 
 
 def show_instrs(instrs, indent=''):
@@ -11,10 +13,7 @@ def show_instrs(instrs, indent=''):
         else:
             print(indent, end='')
         next_indent = indent + '        '
-        if isinstance(v, UnwindBlock):
-            print()
-            show_instrs(v.instrs, next_indent)
-        elif isinstance(v, App):
+        if isinstance(v, App):
             print('call', v.f)
             for each in v.args:
                 if isinstance(each, Const) and isinstance(

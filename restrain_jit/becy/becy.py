@@ -5,6 +5,9 @@ import sys
 from importlib import util
 from string import Template
 
+import Cython.Includes as includes
+include_path = list(includes.__path__)
+
 suffix = '.pyd' if platform.system() == 'Windows' else '.so'
 
 
@@ -32,7 +35,10 @@ def exec_subproc(cmd, args):
 template = Template(r"""
 from distutils.core import setup
 from Cython.Build import cythonize
-setup(ext_modules=cythonize([$module]))
+setup(
+    ext_modules=cythonize([$module]),
+    include_dirs=[$include]
+)
 """)
 
 
@@ -44,27 +50,30 @@ def compile_module(mod_name: str, source_code: str):
 
     dirname = tempfile.mkdtemp()
     mod_path = mod_name + '.pyx'
-    with open(os.path.join(dirname, mod_path),
-              'w') as pyx_file, open(os.path.join(dirname, 'setup.py'),
-                                     'w') as setup_file:
+    with open(os.path.join(dirname, mod_path), 'w') as pyx_file, open(
+            os.path.join(dirname, 'setup.py'), 'w') as setup_file:
         pyx_file.write(source_code)
-        setup_file.write(template.substitute(module=repr(mod_path)))
+        setup_file.write(
+            template.substitute(
+                module=repr(mod_path), include=include_path))
 
     cwd = os.getcwd()
-    os.chdir(dirname)
+    try:
+        os.chdir(dirname)
 
-    c = exec_subproc(sys.executable,
-                     ['setup.py', 'build_ext', '--inplace'])
+        c = exec_subproc(sys.executable,
+                         ['setup.py', 'build_ext', '--inplace'])
 
-    hd = next(c)
-    if hd is not 0:
-        sys.stderr.buffer.write(b''.join(c))
-        raise SystemError
+        hd = next(c)
+        if hd is not 0:
+            sys.stderr.buffer.write(b''.join(c))
+            raise SystemError
 
-    pyd_name = next(each for each in os.listdir(dirname)
-                    if each.endswith(suffix))
-
-    os.chdir(cwd)
+        pyd_name = next(
+            each for each in os.listdir(dirname)
+            if each.endswith(suffix))
+    finally:
+        os.chdir(cwd)
 
     spec = util.spec_from_file_location(mod_name,
                                         os.path.join(dirname, pyd_name))
@@ -72,8 +81,3 @@ def compile_module(mod_name: str, source_code: str):
     spec.loader.exec_module(mod)
     return mod
 
-
-compile_module("hey_you",
-               """
-def f(               
-               """)
