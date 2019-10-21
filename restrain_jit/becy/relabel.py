@@ -1,5 +1,5 @@
 import restrain_jit.becy.stack_vm_instructions as sv
-from restrain_jit.becy.tools import jumps
+from restrain_jit.becy.tools import sv_jumps
 import typing as t
 
 
@@ -15,7 +15,7 @@ def apply(instrs: t.List[sv.A]):
         rhs = ass.rhs
         if isinstance(rhs, sv.Label):
             target_labels[rhs.label] = len(target_labels)
-        elif isinstance(rhs, jumps):
+        elif isinstance(rhs, sv_jumps):
             used_labels.add(rhs.label)
 
     for ass in instrs:
