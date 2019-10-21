@@ -1,10 +1,20 @@
-paths = [
-    'restrain_jit/bejulia/instructions',
-    'restrain_jit/bejulia/representations',
-]
+from pathlib import Path
 
-for FROM, TO in [(path, path + '.py') for path in paths]:
-    with open(FROM) as f:
+
+def find_paths(p: Path):
+    if not p.is_dir():
+        if p.suffix == '.gen':
+            yield p
+    else:
+        for i in p.iterdir():
+            if i == p:
+                continue
+            yield from find_paths(i)
+
+
+for FROM, TO in [(path, path.with_suffix('.py'))
+                 for path in find_paths(Path('.'))]:
+    with FROM.open() as f:
         text = f.read()
 
     defs = [[e.strip() for e in i.strip().split()] for i in text.split(';')]
@@ -19,6 +29,12 @@ for FROM, TO in [(path, path + '.py') for path in paths]:
         code.append('')
 
         head, *each = each
+        if head == 'typevar':
+            var, *args = each
+            cov = ""
+            if args:
+                cov = "bound=" + "t.Union[" + ', '.join(map(repr, args)) + "]"
+            code.append(f'{var} = t.TypeVar({var!r}, {cov})')
         if head == 'import':
             code.append(f'from {each[0]} import *')
         elif head == "enum":
@@ -35,7 +51,7 @@ for FROM, TO in [(path, path + '.py') for path in paths]:
             continue
         elif head == 'data':
             name, *fields = each
-            code.append('@dataclass')
+            code.append('@dataclass(frozen=True, order=True)')
             code.append(f'class {name}:')
             for v in fields:
                 code.append('    ' + v)
@@ -43,5 +59,5 @@ for FROM, TO in [(path, path + '.py') for path in paths]:
                 code.append('    pass')
     code.append('')
 
-    with open(TO, 'w') as f:
+    with TO.open('w') as f:
         f.write('\n'.join(code))

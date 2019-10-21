@@ -1,11 +1,8 @@
-from restrain_jit.bejulia.julia_vm import JuVM, UnwindBlock, App, Repr, Reg, Const
+from restrain_jit.becy.stack_vm_instructions import UnwindBlock, App, Const
 from restrain_jit.jit_info import PyCodeInfo
-
-jit = JuVM.func_info
 
 
 def show_instrs(instrs, indent=''):
-
     for a in instrs:
         k = a.lhs
         v = a.rhs
@@ -30,21 +27,3 @@ def show_instrs(instrs, indent=''):
 
         else:
             print(v)
-
-
-@jit
-def func1(x):
-    for i in range(1000):
-        x = x + i
-    return x + 1
-
-
-show_instrs(func1.__func_info__.r_codeinfo.instrs)
-
-#
-# @jit
-# def func1(x):
-#     x[:2] = 1
-#
-#
-# show_instrs(func1.__func_info__.r_codeinfo.instrs)

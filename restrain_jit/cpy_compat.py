@@ -21,7 +21,6 @@ class RePyLoader(Loader):
         return mod
 
     def exec_module(self, module):
-        """Execute the module."""
         code = self.loader.get_code(module.__name__)
         if code is None:
             raise ImportError('cannot load module {!r} when get_code() '

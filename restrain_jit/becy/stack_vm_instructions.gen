@@ -1,0 +1,23 @@
+abc Instr;
+abc Repr;
+
+data A lhs:t.Optional[str] rhs:Instr;
+data Reg(Repr) n:str;
+data Const(Repr) val:object;
+
+data App(Instr) f:Repr args:t.List[Repr];
+data Ass(Instr) reg:Reg val:Repr;
+data Load(Instr) reg:Reg;
+data Store(Instr) reg:Reg val:Repr;
+data JmpIf(Instr) label:str cond:Repr;
+data JmpIfPush(Instr) label:str cond:Repr leave:Repr;
+data Jmp(Instr) label:str;
+data Label(Instr) label:str phi;
+data Peek(Instr) offset:int;
+data Return(Instr) val:Repr;
+data Push(Instr) val:Repr;
+data Pop(Instr) ;
+data PyGlob(Instr) qual:str name:str;
+data CyGlob(Instr) qual:str name:str;
+data UnwindBlock(Instr) instrs:t.List[A];
+data PopException(Instr) must:bool;

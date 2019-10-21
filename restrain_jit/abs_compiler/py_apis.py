@@ -425,7 +425,7 @@ def yield_from(a: Repr):
 
 def py_eq(a: Repr, b: Repr):
     fn = from_lower(NS.RestrainJIT, py_eq.__name__)
-    a = yield from app(fn, [a])
+    a = yield from app(fn, [a, b])
     return a
 
 

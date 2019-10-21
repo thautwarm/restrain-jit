@@ -1,6 +1,4 @@
-from restrain_jit.bejulia.instructions import *
-from restrain_jit.bejulia.representations import *
-from restrain_jit.bejulia.jl_protocol import bridge, Aware
+from restrain_jit.becy.stack_vm_instructions import *
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
 from restrain_jit.abs_compiler.from_bc import abs_i_cfg
@@ -150,7 +148,7 @@ class JuVM(AM[Instr, Repr]):
 
     def from_lower(self, qualifier: str, name: str):
         regname = self.alloc()
-        self.add_instr(regname, JlGlob(qualifier, name))
+        self.add_instr(regname, CyGlob(qualifier, name))
         return Reg(regname)
 
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
@@ -264,7 +262,9 @@ class JuVM(AM[Instr, Repr]):
             except IndexError:
                 break
             if isinstance(v, UnwindBlock):
-                v.instrs = cls.pass_push_pop_inline(v.instrs)
+                instrs = cls.pass_push_pop_inline(v.instrs)
+                v.instrs.clear()
+                v.instrs.extend(instrs)
             if k is None and isinstance(v, Pop):
                 j = i - 1
                 while True:
