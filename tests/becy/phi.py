@@ -13,5 +13,4 @@ instrs = [
     A(None, Return(Reg("c")))
 ]
 
-
 show_instrs(list(PhiNodeAnalysis(instrs).main()))

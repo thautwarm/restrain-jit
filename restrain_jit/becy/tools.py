@@ -25,14 +25,14 @@ def show_instrs(instrs, indent=''):
                     show_instrs(each.val.instrs,
                                 next_indent + "         ")
                 else:
-                    print(next_indent, each)
+                    print(next_indent, each, sep='')
         elif isinstance(v, phi.Label):
             print(indent, 'label ', v.label, ':', sep='')
-            for from_label, values in v.phi.items():
-                print(indent + '  ', ' from ', from_label, sep='')
+            for reg_name, values in v.phi.items():
+                print(indent + '  ', reg_name.n, ' = ', sep='', end='')
                 for k, v in values.items():
-                    print(next_indent, k.n, ' = ', v, sep='')
-
-            print(next_indent, )
+                    print('label {} to {}'.format(k, v), end=', ')
+                if values:
+                    print()
         else:
             print(v)

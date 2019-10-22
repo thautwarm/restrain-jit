@@ -393,9 +393,7 @@ class Interpreter:
 
         elif b.name == InstrNames.GET_ITER:
             a = yield am.pop()
-            a = yield from RT.py_get_attr(a, "__iter__")
-            a = yield from RT.py_call_func(a)
-            a = yield from RT.py_get_attr(a, "__next__")
+            a = yield from RT.py_get_no_exception_iter(a)
             yield am.push(a)
 
         elif b.name == InstrNames.SETUP_LOOP:

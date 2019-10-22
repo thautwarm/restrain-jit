@@ -67,8 +67,7 @@ class Jmp(Instr):
 @dataclass(frozen=True, order=True)
 class Label(Instr):
     label:object
-    phi:t.Dict[object,t.Dict[Reg,
-    Repr]]
+    phi:t.Dict[Reg,t.Dict[object,Repr]]
     pass
 
 

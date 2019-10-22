@@ -1,15 +1,21 @@
 from restrain_jit.becy.stack_vm_instructions import *
 from restrain_jit.becy.phi_node_analysis import PhiNodeAnalysis
 from restrain_jit.becy.relabel import apply as relabel
+from restrain_jit.becy.tools import show_instrs
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
 from restrain_jit.abs_compiler.from_bc import Interpreter
 from restrain_jit.vm.am import AM, run_machine
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr, CellVar, CompilerFlags
 import typing as t
 import types
 import sys
+
+DEBUG = {
+    'stack-vm': False,
+    'phi': False,
+}
 
 
 def load_arg(x, cellvars, lineno):
@@ -35,6 +41,19 @@ def copy_func(f: types.FunctionType):
 
 @dataclass
 class CyVM(AM[Instr, Repr]):
+    _meta: dict
+
+    # stack
+    st: t.List[Repr]
+
+    # instructions
+    blocks: t.List[t.Tuple[t.Optional[str], t.List[A]]]
+
+    # allocated temporary
+    used: t.Set[str]
+    unused: t.Set[str]
+    globals: t.Set[str]
+    module: types.ModuleType
 
     def set_lineno(self, lineno: int):
         self.add_instr(None, SetLineno(lineno))
@@ -78,8 +97,9 @@ class CyVM(AM[Instr, Repr]):
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
             PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
             *(load_arg(each, cellvars, lineno) for each in argnames),
-            PyInstr(
-                InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
+            PyInstr(InstrNames.CALL_FUNCTION,
+                    len(argnames),
+                    lineno=lineno),
             PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
         ])
         start_func_code._copy_attr_from(code)
@@ -94,7 +114,8 @@ class CyVM(AM[Instr, Repr]):
         return start_func
 
     @classmethod
-    def code_info(cls, code: Bytecode) -> PyCodeInfo[Repr]:
+    def code_info(cls, code: Bytecode, *,
+                  debug_passes=()) -> PyCodeInfo[Repr]:
 
         cfg = ControlFlowGraph.from_bytecode(code)
         current = cls.empty()
@@ -104,14 +125,21 @@ class CyVM(AM[Instr, Repr]):
         instrs = current.instrs
         instrs = cls.pass_push_pop_inline(instrs)
         instrs = list(relabel(instrs))
+        if DEBUG.get('stack-vm'):
+            print('DEBUG: stack-vm'.center(20, '='))
+            show_instrs(instrs)
         instrs = list(PhiNodeAnalysis(instrs).main())
-        return PyCodeInfo(
-            code.name, tuple(glob_deps), code.argnames, code.freevars,
-            code.cellvars, code.filename, code.first_lineno,
-            code.argcount, code.kwonlyargcount,
-            bool(code.flags & CompilerFlags.GENERATOR),
-            bool(code.flags & CompilerFlags.VARKEYWORDS),
-            bool(code.flags & CompilerFlags.VARARGS), instrs)
+        if DEBUG.get('phi'):
+            print('DEBUG: phi'.center(20, '='))
+            show_instrs(instrs)
+        return PyCodeInfo(code.name, tuple(glob_deps), code.argnames,
+                          code.freevars, code.cellvars, code.filename,
+                          code.first_lineno, code.argcount,
+                          code.kwonlyargcount,
+                          bool(code.flags & CompilerFlags.GENERATOR),
+                          bool(code.flags & CompilerFlags.VARKEYWORDS),
+                          bool(code.flags & CompilerFlags.VARARGS),
+                          instrs)
 
     def pop_exception(self, must: bool) -> Repr:
         raise NotImplemented
@@ -236,20 +264,6 @@ class CyVM(AM[Instr, Repr]):
     def add_instr(self, tag, instr: Instr):
         self.instrs.append(A(tag, instr))
         return None
-
-    _meta: dict
-
-    # stack
-    st: t.List[Repr]
-
-    # instructions
-    blocks: t.List[t.Tuple[t.Optional[str], t.List[A]]]
-
-    # allocated temporary
-    used: t.Set[str]
-    unused: t.Set[str]
-    globals: t.Set[str]
-    module: types.ModuleType
 
     @property
     def instrs(self):

@@ -11,7 +11,7 @@ data Load(Instr) reg:Reg;
 data Store(Instr) reg:Reg val:Repr;
 data JmpIf(Instr) label:object cond:Repr;
 data Jmp(Instr) label:object;
-data Label(Instr) label:object phi:t.Dict[object,t.Dict[Reg, Repr]];
+data Label(Instr) label:object phi:t.Dict[Reg,t.Dict[object,Repr]];
 data Return(Instr) val:Repr;
 data PyGlob(Instr) qual:str name:str;
 data CyGlob(Instr) qual:str name:str;

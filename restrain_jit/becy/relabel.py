@@ -1,6 +1,11 @@
 import restrain_jit.becy.stack_vm_instructions as sv
-from restrain_jit.becy.tools import sv_jumps
 import typing as t
+
+# I don't know why, but using
+#   `from restrain_jit.becy.tools import sv_jumps`
+# will lead to the failure of type checking at line 24
+# of this file. Seemingly a bug of PyCharm.
+sv_jumps = (sv.Jmp, sv.JmpIf, sv.JmpIfPush)
 
 
 def apply(instrs: t.List[sv.A]):

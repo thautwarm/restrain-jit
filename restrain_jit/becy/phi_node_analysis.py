@@ -42,20 +42,23 @@ class PhiNodeAnalysis:
     come_from: t.Dict[Target, t.Set[From]]
 
     # indicates the use of stack objects from current block's parent blocks
-    pops: t.Dict[Label, t.Dict[str, int]]
+    pops: t.Dict[Label, int]
 
     # stores the instruction operands of label.
-    phi_dict: t.Dict[Label, t.Dict[object, t.Dict[Reg, Repr]]]
+    phi_dict: t.Dict[Label, t.Dict[Reg, t.Dict[Label, Repr]]]
 
     # is ended in current block
     come_to_end: bool
+
+    def drawback_name(self, from_label, drawback_n: int):
+        return 'drawback_{}{}'.format(from_label, drawback_n)
 
     def __init__(self, sv_instrs: t.List[sv.A]):
         self.left_stacks = {}
         self.current_left_stack = LeftStack("", [])
         self.come_from = defaultdict(set)
         self.sv_instrs = sv_instrs
-        self.pops = defaultdict(dict)
+        self.pops = {}
         self.phi_dict = {}
         self.come_to_end = True
 
@@ -87,8 +90,6 @@ class PhiNodeAnalysis:
         if other_block:
             self.come_from[other_block].add(self.current_left_stack)
 
-        self.left_stacks[
-            self.current_left_stack.name] = self.current_left_stack
         self.come_to_end = True
 
     def start_block(self, new_block):
@@ -96,27 +97,43 @@ class PhiNodeAnalysis:
             self.come_from[new_block].add(self.current_left_stack)
         else:
             self.end_block(new_block)
-        self.current_left_stack = LeftStack(new_block, [])
+        self.left_stacks[
+            new_block] = self.current_left_stack = LeftStack(
+                new_block, [])
         self.come_to_end = False
 
     def peek_n(self, n: int, at: From):
-        if isinstance(at, LeftStack):
-            try:
-                return at.objs[-n]
-            except IndexError:
-                raise HigherOrderStackUsage
+        if not isinstance(at, LeftStack):
+            at = self.left_stacks[at]
 
-        stack = self.left_stacks[at]
         try:
-            return stack.objs[-n]
+            return at.objs[-n]
         except IndexError:
+            come_from = self.come_from[at.name]
+            if len(come_from) is 1:
+                come_from = next(iter(come_from))
+                n = n - len(at.objs) + self.pops[at.name]
+                return self.peek_n(n, come_from)
             raise HigherOrderStackUsage
 
     def main(self):
         sv_instrs = self.sv_instrs
 
         for ass in sv_instrs:
-            # print('===', ass, '====', self.left_stacks)
+            # ass_str = str(ass) if ass.lhs else str(ass.rhs)
+            # ass_str_len = len(ass_str)
+            # print(ass_str, end=' ')
+            # dist = ' ' * (100 - ass_str_len)
+            # print(dist,
+            #       ' current ',
+            #       self.current_left_stack.name,
+            #       sep='',
+            #       end=' | ')
+            # for v in self.left_stacks.values():
+            #     if v.objs:
+            #         print(v, sep='', end='; ')
+            # print()
+
             rhs = ass.rhs
             lhs = ass.lhs
             if not lhs:
@@ -166,12 +183,12 @@ class PhiNodeAnalysis:
             elif isinstance(rhs, sv.Peek):
                 val = self[-rhs.offset]
                 if isinstance(val, Repr):
-                    yield phi.A(None, phi.Ass(Reg(lhs), val))
+                    if lhs is not None:
+                        yield phi.A(None, phi.Ass(Reg(lhs), val))
                 else:
                     cur_name = self.current_left_stack.name
-                    drawback_name = "drawback{}-{}".format(
-                        cur_name, val)
-                    self.pops[cur_name][drawback_name] = val
+                    drawback_name = self.drawback_name(cur_name, val)
+                    self.pops[cur_name] = val
 
                     if lhs is not None:
                         yield phi.A(
@@ -179,12 +196,12 @@ class PhiNodeAnalysis:
             elif isinstance(rhs, sv.Pop):
                 val = self.pop()
                 if isinstance(val, Repr):
-                    yield phi.A(None, phi.Ass(Reg(lhs), val))
+                    if lhs is not None:
+                        yield phi.A(None, phi.Ass(Reg(lhs), val))
                 else:
                     cur_name = self.current_left_stack.name
-                    drawback_name = "drawback{}-{}".format(
-                        cur_name, val)
-                    self.pops[cur_name][drawback_name] = val
+                    drawback_name = self.drawback_name(cur_name, val)
+                    self.pops[cur_name] = val
                     if lhs is not None:
                         yield phi.A(
                             None, phi.Ass(Reg(lhs), Reg(drawback_name)))
@@ -192,13 +209,14 @@ class PhiNodeAnalysis:
         pops = self.pops
         come_from = self.come_from
         fulls = self.phi_dict
-        for label, requires in pops.items():
+        for label, max_required in pops.items():
             phi_dispatch_cases = fulls[label]
-            for (reg_name, peek_n) in requires.items():
+            for peek_n in range(1, max_required + 1):
+                reg_name = self.drawback_name(label, peek_n)
+                reg_dispatch_cases = phi_dispatch_cases[Reg(reg_name)]
                 for can_from in come_from[label]:
                     can_from_label = can_from.name if isinstance(
                         can_from, LeftStack) else can_from
                     assert isinstance(peek_n, int)
                     r = self.peek_n(peek_n, at=can_from)
-                    label_phi = phi_dispatch_cases[can_from_label]
-                    label_phi[Reg(reg_name)] = r
+                    reg_dispatch_cases[can_from_label] = r
