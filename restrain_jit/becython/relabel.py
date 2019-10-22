@@ -1,4 +1,4 @@
-import restrain_jit.becy.stack_vm_instructions as sv
+import restrain_jit.becython.stack_vm_instructions as sv
 import typing as t
 
 # I don't know why, but using

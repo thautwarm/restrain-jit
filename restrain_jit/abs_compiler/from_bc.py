@@ -173,7 +173,7 @@ class Interpreter:
             yield am.ret(a)
         elif b.name == InstrNames.YIELD_VALUE:
             a = yield am.pop()
-            yield from RT.yield_val(a)
+            yield am.yield_return(a)
 
         elif b.name == InstrNames.YIELD_FROM:
             a = yield am.pop()

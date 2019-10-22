@@ -46,7 +46,7 @@ def compile_module(mod_name: str, source_code: str):
     # TODO:
     # tempfile.TemporaryDirectory will close unexpectedly before removing the generated module.
     # Since that we don't delete the temporary dir as a workaround.
-    mod_name = 'cythonextension_' + mod_name
+    mod_name = 'RestrainJIT_' + mod_name
 
     dirname = tempfile.mkdtemp()
     mod_path = mod_name + '.pyx'
@@ -80,4 +80,5 @@ def compile_module(mod_name: str, source_code: str):
     mod = util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
+
 

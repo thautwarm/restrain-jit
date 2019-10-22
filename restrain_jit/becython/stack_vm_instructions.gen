@@ -1,5 +1,4 @@
-import restrain_jit.becy.representations;
-
+import restrain_jit.becython.representations;
 abc Instr;
 
 data A lhs:t.Optional[str] rhs:Instr;
@@ -10,8 +9,12 @@ data Ass(Instr) reg:Reg val:Repr;
 data Load(Instr) reg:Reg;
 data Store(Instr) reg:Reg val:Repr;
 data JmpIf(Instr) label:object cond:Repr;
+data JmpIfPush(Instr) label:object cond:Repr leave:Repr;
 data Jmp(Instr) label:object;
-data Label(Instr) label:object phi:t.Dict[Reg,t.Dict[object,Repr]];
+data Label(Instr) label:object;
+data Peek(Instr) offset:int;
 data Return(Instr) val:Repr;
+data Push(Instr) val:Repr;
+data Pop(Instr) ;
 data PyGlob(Instr) qual:str name:str;
 data CyGlob(Instr) qual:str name:str;

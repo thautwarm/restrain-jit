@@ -23,6 +23,10 @@ Repr = t.TypeVar("Repr")
 class AM(t.Generic[Instr, Repr]):
 
     @abc.abstractmethod
+    def yield_return(self, val: Repr):
+        raise NotImplemented
+
+    @abc.abstractmethod
     def set_lineno(self, lineno: int):
         raise NotImplemented
 
@@ -270,6 +274,10 @@ def get_module():
 
 def set_lineno(i):
     return lambda vm: vm.set_lineno(i)
+
+
+def yield_return(val):
+    return lambda vm: vm.yield_return(val)
 
 
 def run_machine(gen: t.Generator, vm: AM):

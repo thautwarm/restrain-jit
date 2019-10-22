@@ -1,7 +1,7 @@
-from restrain_jit.becy.stack_vm_instructions import *
-from restrain_jit.becy.phi_node_analysis import PhiNodeAnalysis
-from restrain_jit.becy.relabel import apply as relabel
-from restrain_jit.becy.tools import show_instrs
+from restrain_jit.becython.stack_vm_instructions import *
+from restrain_jit.becython.phi_elim import PhiElim
+from restrain_jit.becython.relabel import apply as relabel
+from restrain_jit.becython.tools import show_instrs, show_mono_instrs
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
 from restrain_jit.abs_compiler.from_bc import Interpreter
@@ -128,10 +128,10 @@ class CyVM(AM[Instr, Repr]):
         if DEBUG.get('stack-vm'):
             print('DEBUG: stack-vm'.center(20, '='))
             show_instrs(instrs)
-        instrs = list(PhiNodeAnalysis(instrs).main())
-        if DEBUG.get('phi'):
-            print('DEBUG: phi'.center(20, '='))
-            show_instrs(instrs)
+        instrs = list(PhiElim(instrs).main())
+        if DEBUG.get('phi-elim'):
+            print('DEBUG: phi-elim'.center(20, '='))
+            show_mono_instrs(instrs)
         return PyCodeInfo(code.name, tuple(glob_deps), code.argnames,
                           code.freevars, code.cellvars, code.filename,
                           code.first_lineno, code.argcount,

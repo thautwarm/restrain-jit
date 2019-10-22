@@ -4,7 +4,7 @@ import typing as t
 from dataclasses import dataclass
 
 
-from restrain_jit.becy.representations import *
+from restrain_jit.becython.representations import *
 
 
 class Instr:
@@ -67,7 +67,7 @@ class Jmp(Instr):
 @dataclass(frozen=True, order=True)
 class Label(Instr):
     label:object
-    phi:t.Dict[Reg,t.Dict[object,Repr]]
+    phi:t.Dict[object,t.Dict[Reg,Repr]]
     pass
 
 

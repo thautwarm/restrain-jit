@@ -1,6 +1,6 @@
-from restrain_jit.becy.phi_node_analysis import PhiNodeAnalysis
-from restrain_jit.becy.stack_vm_instructions import *
-from restrain_jit.becy.tools import show_instrs
+from restrain_jit.becython.phi_node_analysis import PhiNodeAnalysis
+from restrain_jit.becython.stack_vm_instructions import *
+from restrain_jit.becython.tools import show_instrs
 
 instrs = [
     A(None, Label(label=0)),

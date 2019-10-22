@@ -420,11 +420,6 @@ def py_is_none(v: Repr):
     a = yield app(fn, [v])
     return a
 
-
-def yield_val(a: Repr):
-    raise NotImplemented
-
-
 def yield_from(a: Repr):
     raise NotImplemented
 
