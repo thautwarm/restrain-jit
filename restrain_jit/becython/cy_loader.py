@@ -7,7 +7,6 @@ from restrain_jit.config import RESTRAIN_CONFIG
 from pathlib import Path
 from string import Template
 from restrain_jit.utils import exec_cc
-import ctypes
 try:
     import Cython.Includes as includes
 except ImportError:
@@ -35,14 +34,13 @@ setup(ext_modules=cythonize(exts))
 """)
 
 
-def compile_module(mod_name: str, source_code: str):
+def compile_module(mod_name: str, source_code: str, libs=()):
     # TODO:
     # tempfile.TemporaryDirectory will close unexpectedly before removing the generated module.
     # Since that we don't delete the temporary dir as a workaround.
     restrain_rts = Path(RESTRAIN_CONFIG.cython.rts).expanduser()
     restrain_include = Path(restrain_rts / "include")
     restrain_lib = Path(restrain_rts / "lib")
-    ctypes.PyDLL(str(restrain_lib / 'typeint.so'))
 
     mod_name = 'RestrainJIT_' + mod_name
 
@@ -56,7 +54,7 @@ def compile_module(mod_name: str, source_code: str):
             template.substitute(
                 module=repr(mod_name),
                 module_path=repr(mod_path),
-                libraries=repr([':typeint']),
+                libraries=repr([':typeint', *libs]),
                 include_dirs=repr(
                     [str(restrain_include), *include_paths]),
                 library_dirs=repr([str(restrain_lib)]),
