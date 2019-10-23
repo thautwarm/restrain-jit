@@ -1,4 +1,3 @@
-%%cython
 # cython: language=c++
 # cython: language_level=3str
 
@@ -33,7 +32,7 @@ cdef class JITMonitor:
             else:
                 m[0][typeid_of_param] += 1
 
-    cpdef int32_t is_generate(self, std_vector[int64_t] method):
+    cpdef int8_t is_generate(self, std_vector[int64_t] method):
         return self.jited[method]
 
     cpdef generate(self, std_vector[int64_t] method):
