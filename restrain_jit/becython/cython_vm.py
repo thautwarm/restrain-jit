@@ -1,7 +1,8 @@
 from restrain_jit.becython.stack_vm_instructions import *
-from restrain_jit.becython.phi_elim import PhiElim
+from restrain_jit.becython.phi_elim import main as phi_elim
+from restrain_jit.becython.phi_node_analysis import main as phi_keep
 from restrain_jit.becython.relabel import apply as relabel
-from restrain_jit.becython.tools import show_instrs, show_mono_instrs
+from restrain_jit.becython.tools import show_instrs
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
 from restrain_jit.abs_compiler.from_bc import Interpreter
@@ -12,9 +13,10 @@ import typing as t
 import types
 import sys
 
-DEBUG = {
-    'stack-vm': False,
-    'phi': False,
+Options = {
+    'log-stack-vm': False,
+    'log-phi': False,
+    'phi-pass': "keep-phi",
 }
 
 
@@ -97,9 +99,8 @@ class CyVM(AM[Instr, Repr]):
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
             PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
             *(load_arg(each, cellvars, lineno) for each in argnames),
-            PyInstr(InstrNames.CALL_FUNCTION,
-                    len(argnames),
-                    lineno=lineno),
+            PyInstr(
+                InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
             PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
         ])
         start_func_code._copy_attr_from(code)
@@ -125,21 +126,32 @@ class CyVM(AM[Instr, Repr]):
         instrs = current.instrs
         instrs = cls.pass_push_pop_inline(instrs)
         instrs = list(relabel(instrs))
-        if DEBUG.get('stack-vm'):
+        if Options.get('log-stack-vm'):
             print('DEBUG: stack-vm'.center(20, '='))
             show_instrs(instrs)
-        instrs = list(PhiElim(instrs).main())
-        if DEBUG.get('phi-elim'):
-            print('DEBUG: phi-elim'.center(20, '='))
-            show_mono_instrs(instrs)
-        return PyCodeInfo(code.name, tuple(glob_deps), code.argnames,
-                          code.freevars, code.cellvars, code.filename,
-                          code.first_lineno, code.argcount,
-                          code.kwonlyargcount,
-                          bool(code.flags & CompilerFlags.GENERATOR),
-                          bool(code.flags & CompilerFlags.VARKEYWORDS),
-                          bool(code.flags & CompilerFlags.VARARGS),
-                          instrs)
+
+        phi_pass_name = Options['phi-pass']
+        e = None
+        try:
+            phi_pass = {
+                'phi-elim-by-move': phi_elim,
+                'keep-phi': phi_keep
+            }[Options['phi-pass']]
+        except KeyError as ke:
+            e = Exception("Unknown phi pass {!r}".format(phi_pass_name))
+        if e is not None:
+            raise e
+        instrs = list(phi_pass(instrs))
+        if Options.get('log-phi'):
+            print('DEBUG: phi'.center(20, '='))
+            show_instrs(instrs)
+        return PyCodeInfo(
+            code.name, tuple(glob_deps), code.argnames, code.freevars,
+            code.cellvars, code.filename, code.first_lineno,
+            code.argcount, code.kwonlyargcount,
+            bool(code.flags & CompilerFlags.GENERATOR),
+            bool(code.flags & CompilerFlags.VARKEYWORDS),
+            bool(code.flags & CompilerFlags.VARARGS), instrs)
 
     def pop_exception(self, must: bool) -> Repr:
         raise NotImplemented

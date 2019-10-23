@@ -60,8 +60,13 @@ class SetCont(Instr):
 
 
 @dataclass(frozen=True, order=True)
-class Label(Instr):
+class BeginBlock(Instr):
     label:object
+    pass
+
+
+@dataclass(frozen=True, order=True)
+class EndBlock(Instr):
     pass
 
 
@@ -88,7 +93,7 @@ class CyGlob(Instr):
 
 
 @dataclass(frozen=True, order=True)
-class Block:
-    label:object
-    instrs:t.List[Instr]
+class MoveOrAss(Instr):
+    target:str
+    reg:str
     pass

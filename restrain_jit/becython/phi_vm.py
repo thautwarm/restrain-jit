@@ -12,13 +12,6 @@ class Instr:
 
 
 @dataclass(frozen=True, order=True)
-class A:
-    lhs:t.Optional[str]
-    rhs:Instr
-    pass
-
-
-@dataclass(frozen=True, order=True)
 class SetLineno(Instr):
     lineno:int
     pass
@@ -26,6 +19,7 @@ class SetLineno(Instr):
 
 @dataclass(frozen=True, order=True)
 class App(Instr):
+    target:t.Optional[str]
     f:Repr
     args:t.List[Repr]
     pass
@@ -33,20 +27,21 @@ class App(Instr):
 
 @dataclass(frozen=True, order=True)
 class Ass(Instr):
-    reg:Reg
+    target:t.Optional[str]
     val:Repr
     pass
 
 
 @dataclass(frozen=True, order=True)
 class Load(Instr):
+    target:t.Optional[str]
     reg:Reg
     pass
 
 
 @dataclass(frozen=True, order=True)
 class Store(Instr):
-    reg:Reg
+    target:t.Optional[str]
     val:Repr
     pass
 
@@ -65,9 +60,14 @@ class Jmp(Instr):
 
 
 @dataclass(frozen=True, order=True)
-class Label(Instr):
+class BeginBlock(Instr):
     label:object
-    phi:t.Dict[object,t.Dict[Reg,Repr]]
+    phi:t.Dict[object,t.Dict[str,Repr]]
+    pass
+
+
+@dataclass(frozen=True, order=True)
+class EndBlock(Instr):
     pass
 
 
@@ -79,6 +79,7 @@ class Return(Instr):
 
 @dataclass(frozen=True, order=True)
 class PyGlob(Instr):
+    target:t.Optional[str]
     qual:str
     name:str
     pass
@@ -86,6 +87,7 @@ class PyGlob(Instr):
 
 @dataclass(frozen=True, order=True)
 class CyGlob(Instr):
+    target:t.Optional[str]
     qual:str
     name:str
     pass

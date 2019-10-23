@@ -1,15 +1,23 @@
-from restrain_jit.becython.cython_vm import CyVM, App, Repr, Reg, Const, DEBUG
+import sys
+
+from restrain_jit.becython.cython_vm import CyVM, App, Repr, Reg, Const, Options
 from restrain_jit.becython.tools import show_instrs
+from restrain_jit.becython.cy_codegen import CodeEmitter
 jit = CyVM.func_info
 
 # DEBUG['stack-vm'] = True
-# DEBUG['phi-elim'] = True
+# Options['log-phi'] = True
 
 
 @jit
 def f(x, y):
+    s = x
     for i in y:
-        print(x + i)
+        s += i
+    return s
 
 
+io = sys.stdout
+instrs = f.__func_info__.r_codeinfo.instrs
+CodeEmitter(io).emit(instrs)
 

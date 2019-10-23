@@ -45,13 +45,14 @@ def pop_or_peek(self, lhs, rhs, val):
     else:
         cur_name = self.current_left_stack.name
         drawback_name = self.drawback_name(cur_name, val)
+        # FIXME: should be max(val, ...)
         self.pops[cur_name] = val
         if lhs is not None:
             # yield phi.A(None, phi.Ass(Reg(lhs), Reg(drawback_name)))
             self.add_mono_instr(mono.Ass(lhs, Reg(drawback_name)))
 
 
-class PhiElim:
+class PhiElimViaMove:
     current_left_stack: t.Optional[LeftStack]
 
     # when a block exits, the object lefted on the stack
@@ -68,7 +69,8 @@ class PhiElim:
 
     blocks: t.Dict[Label, t.List[mono.Instr]]
 
-    def drawback_name(self, from_label, drawback_n: int):
+    @staticmethod
+    def drawback_name(from_label, drawback_n: int):
         return 'drawback_{}{}'.format(from_label, drawback_n)
 
     def __init__(self, sv_instrs: t.List[sv.A], elim_phi=True):
@@ -146,107 +148,105 @@ class PhiElim:
                 return self.peek_n(n, come_from)
             raise HigherOrderStackUsage
 
-    def main(self):
-        sv_instrs = self.sv_instrs
 
-        for ass in sv_instrs:
+def main(sv_instrs):
+    self = PhiElimViaMove(sv_instrs)
 
-            rhs = ass.rhs
-            lhs = ass.lhs
-            if not lhs:
-                # can be label or terminate instruction
-                if isinstance(rhs, sv.Label):
-                    self.start_block(rhs.label)
-                    self.phi_dict[rhs.label] = defaultdict(dict)
-                    # yield phi.A(None, phi.Label(rhs.label, full))
-                    continue
-                elif isinstance(rhs, sv.Jmp):
-                    self.add_mono_instr(mono.SetCont(rhs.label))
-                    self.end_block(rhs.label)
-                    # yield phi.A(None, phi.Jmp(rhs.label))
-                    continue
-                elif isinstance(rhs, sv.JmpIf):
-                    self.add_mono_instr(
-                        mono.SetContIf(rhs.label, rhs.cond))
-                    self.end_block(rhs.label)
-                    # yield phi.A(None, phi.JmpIf(rhs.label, rhs.cond))
-                    continue
-                elif isinstance(rhs, sv.JmpIfPush):
-                    objs = [*self.current_left_stack.objs, rhs.leave]
-                    requested = self.current_left_stack.requested
-                    name = self.current_left_stack.name
-                    tmp, self.current_left_stack = self.current_left_stack, LeftStack(
-                        name, objs, requested)
-                    self.add_mono_instr(
-                        mono.SetContIf(rhs.label, rhs.cond))
+    for ass in sv_instrs:
 
-                    self.end_block(rhs.label)
-                    self.current_left_stack = tmp
-                    # yield phi.A(None, phi.JmpIf(rhs.label, rhs.cond))
-                    continue
-            if isinstance(rhs, sv.SetLineno):
-                # yield phi.A(None, phi.SetLineno(rhs.lineno))
-                self.add_mono_instr(mono.SetLineno(rhs.lineno))
-            elif isinstance(rhs, sv.Return):
-                self.add_mono_instr(mono.Return(rhs.val))
-                self.end_block()
-                # yield phi.A(None, phi.Return(rhs.val))
-            elif isinstance(rhs, sv.App):
-                # yield phi.A(lhs, phi.App(rhs.f, rhs.args))
-                self.add_mono_instr(mono.App(lhs, rhs.f, rhs.args))
-            elif isinstance(rhs, sv.Ass):
-                # yield phi.A(lhs, phi.Ass(rhs.reg, rhs.val))
-                self.add_mono_instr(mono.Ass(rhs.reg.n, rhs.val))
-                if lhs is not None:
-                    self.add_mono_instr(mono.Ass(lhs, rhs.reg))
-            elif isinstance(rhs, sv.Store):
-                # yield phi.A(lhs, phi.Store(rhs.reg, rhs.val))
-                self.add_mono_instr(mono.Store(rhs.reg.n, rhs.val))
-                if lhs is not None:
-                    self.add_mono_instr(mono.Store(lhs, rhs.reg))
+        rhs = ass.rhs
+        lhs = ass.lhs
+        if not lhs:
+            # can be label or terminate instruction
+            if isinstance(rhs, sv.Label):
+                self.start_block(rhs.label)
+                self.phi_dict[rhs.label] = defaultdict(dict)
+                # yield phi.A(None, phi.Label(rhs.label, full))
+                continue
+            elif isinstance(rhs, sv.Jmp):
+                self.add_mono_instr(mono.SetCont(rhs.label))
+                self.end_block(rhs.label)
+                # yield phi.A(None, phi.Jmp(rhs.label))
+                continue
+            elif isinstance(rhs, sv.JmpIf):
+                self.add_mono_instr(mono.SetContIf(rhs.label, rhs.cond))
+                self.end_block(rhs.label)
+                continue
+            elif isinstance(rhs, sv.JmpIfPush):
+                objs = [*self.current_left_stack.objs, rhs.leave]
+                requested = self.current_left_stack.requested
+                name = self.current_left_stack.name
+                tmp, self.current_left_stack = self.current_left_stack, LeftStack(
+                    name, objs, requested)
+                self.add_mono_instr(mono.SetContIf(rhs.label, rhs.cond))
 
-            elif isinstance(rhs, sv.PyGlob):
-                # yield phi.A(lhs, phi.PyGlob(rhs.qual, rhs.name))
-                self.add_mono_instr(mono.PyGlob(lhs, rhs.qual,
-                                                rhs.name))
+                self.end_block(rhs.label)
+                self.current_left_stack = tmp
+                # yield phi.A(None, phi.JmpIf(rhs.label, rhs.cond))
+                continue
+        if isinstance(rhs, sv.SetLineno):
+            # yield phi.A(None, phi.SetLineno(rhs.lineno))
+            self.add_mono_instr(mono.SetLineno(rhs.lineno))
+        elif isinstance(rhs, sv.Return):
+            self.add_mono_instr(mono.Return(rhs.val))
+            self.end_block()
+            # yield phi.A(None, phi.Return(rhs.val))
+        elif isinstance(rhs, sv.App):
+            # yield phi.A(lhs, phi.App(rhs.f, rhs.args))
+            self.add_mono_instr(mono.App(lhs, rhs.f, rhs.args))
+        elif isinstance(rhs, sv.Ass):
+            # yield phi.A(lhs, phi.Ass(rhs.reg, rhs.val))
+            self.add_mono_instr(mono.Ass(rhs.reg.n, rhs.val))
+            if lhs is not None:
+                self.add_mono_instr(mono.Ass(lhs, rhs.reg))
+        elif isinstance(rhs, sv.Store):
+            # yield phi.A(lhs, phi.Store(rhs.reg, rhs.val))
+            self.add_mono_instr(mono.Store(rhs.reg.n, rhs.val))
+            if lhs is not None:
+                self.add_mono_instr(mono.Store(lhs, rhs.reg))
 
-            elif isinstance(rhs, sv.CyGlob):
-                # yield phi.A(lhs, phi.CyGlob(rhs.qual, rhs.name))
-                self.add_mono_instr(mono.CyGlob(lhs, rhs.qual,
-                                                rhs.name))
+        elif isinstance(rhs, sv.PyGlob):
+            # yield phi.A(lhs, phi.PyGlob(rhs.qual, rhs.name))
+            self.add_mono_instr(mono.PyGlob(lhs, rhs.qual, rhs.name))
 
-            elif isinstance(rhs, sv.Load):
-                # yield phi.A(lhs, phi.Load(rhs.reg))
-                self.add_mono_instr(mono.Load(lhs, rhs.reg))
+        elif isinstance(rhs, sv.CyGlob):
+            # yield phi.A(lhs, phi.CyGlob(rhs.qual, rhs.name))
+            self.add_mono_instr(mono.CyGlob(lhs, rhs.qual, rhs.name))
 
-            elif isinstance(rhs, sv.Push):
-                self.push(rhs.val)
+        elif isinstance(rhs, sv.Load):
+            # yield phi.A(lhs, phi.Load(rhs.reg))
+            self.add_mono_instr(mono.Load(lhs, rhs.reg))
+
+        elif isinstance(rhs, sv.Push):
+            self.push(rhs.val)
+        else:
+            if isinstance(rhs, sv.Peek):
+                val = self[-rhs.offset]
+
+            elif isinstance(rhs, sv.Pop):
+                val = self.pop()
             else:
-                if isinstance(rhs, sv.Peek):
-                    val = self[-rhs.offset]
+                raise NotImplementedError(rhs)
+            pop_or_peek(self, lhs, rhs, val)
 
-                elif isinstance(rhs, sv.Pop):
-                    val = self.pop()
-                else:
-                    raise NotImplementedError(rhs)
-                pop_or_peek(self, lhs, rhs, val)
+    self.end_block()
 
-        self.end_block()
+    pops = self.pops
+    come_from = self.come_from
 
-        pops = self.pops
-        come_from = self.come_from
+    for label, max_required in pops.items():
+        for peek_n in range(1, max_required + 1):
+            reg_name = self.drawback_name(label, peek_n)
+            for can_from in come_from[label]:
+                can_from_label = can_from.name if isinstance(
+                    can_from, LeftStack) else can_from
+                assert isinstance(peek_n, int)
+                r = self.peek_n(peek_n, at=can_from)
+                # use move to remove phi nodes
+                self.blocks[can_from_label].append(
+                    mono.MoveOrAss(reg_name, r))
 
-        for label, max_required in pops.items():
-            for peek_n in range(1, max_required + 1):
-                reg_name = self.drawback_name(label, peek_n)
-                for can_from in come_from[label]:
-                    can_from_label = can_from.name if isinstance(
-                        can_from, LeftStack) else can_from
-                    assert isinstance(peek_n, int)
-                    r = self.peek_n(peek_n, at=can_from)
-                    # use move to remove phi nodes
-                    self.blocks[can_from_label].append(
-                        mono.Ass(reg_name, r))
-        for label, instrs in self.blocks.items():
-            yield mono.Label(label)
-            yield from instrs
+    for label, instrs in self.blocks.items():
+        yield mono.BeginBlock(label)
+        yield from instrs
+        yield mono.EndBlock()
