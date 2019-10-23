@@ -1,18 +1,7 @@
-# cython: language=c++
-# cython: language_level=3str
-
-from libcpp.map cimport map as std_map
-from libcpp.vector cimport vector as std_vector
-from libc.stdint cimport int64_t, int32_t, int16_t, int8_t
-
-ctypedef std_map[int64_t, int64_t] hotspot_argument
-ctypedef std_map[int16_t, hotspot_argument] hotspot_call
-ctypedef std_map[std_vector[int64_t], int8_t] hotspot_jited
+#distutils: language=c++
+#cython: language_level=3
 
 cdef class JITMonitor:
-    cdef hotspot_call stats
-    cdef hotspot_jited jited
-    cdef int16_t argc
     def __init__(self, int16_t argc):
         self.stats = hotspot_call()
         jited = hotspot_jited()
@@ -32,7 +21,7 @@ cdef class JITMonitor:
             else:
                 m[0][typeid_of_param] += 1
 
-    cpdef int8_t is_generate(self, std_vector[int64_t] method):
+    cpdef is_generate(self, std_vector[int64_t] method):
         return self.jited[method]
 
     cpdef generate(self, std_vector[int64_t] method):

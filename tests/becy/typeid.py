@@ -1,8 +1,16 @@
-from restrain_jit.becython.cy_loader import compile_module
+from restrain_jit.becython.cy_loader import compile_module, setup_pyx_for_cpp
+from pyximport import pyximport
+setup_pyx_for_cpp()
+pyximport.install()
+import restrain_jit.becython.cython_lib.restrain_hotspot
+
 mod = """
 cimport cython
 from libc cimport stdint
 from cpython.ref cimport PyObject
+cimport restrain_jit.becython.cython_lib.restrain_hotspot
+from restrain_jit.becython.cython_lib.restrain_hotspot cimport JITMonitor
+
 cdef extern from "<typeint.h>":
     stdint.int64_t pyobjtoint "ptrtoint"(object)
 

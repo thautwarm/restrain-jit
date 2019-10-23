@@ -7,8 +7,11 @@ ctypedef std_map[int16_t, hotspot_argument] hotspot_call
 ctypedef std_map[std_vector[int64_t], int8_t] hotspot_jited
 
 cdef class JITMonitor:
-    cpdef void record(self, std_vector[int64_t])
-    cpdef int8_t is_generate(self, std_vector[int64_t])
-    cpdef void generate(self, std_vector[int64_t])
-    cpdef hotspot_argument search_arg_stats(self, int16_t)
-    cpdef int64_t search_arg_type_stats(self, int16_t, int64_t)
+    cdef hotspot_call stats
+    cdef hotspot_jited jited
+    cdef int16_t argc
+    cpdef record(self, std_vector[int64_t])
+    cpdef is_generate(self, std_vector[int64_t])
+    cpdef generate(self, std_vector[int64_t])
+    cpdef search_arg_stats(self, int16_t)
+    cpdef search_arg_type_stats(self, int16_t, int64_t)

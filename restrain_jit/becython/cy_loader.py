@@ -26,7 +26,8 @@ exts = [
         [$module_path],
         include_dirs=$include_dirs,
         libraries=$libraries,
-        library_dirs=$library_dirs
+        library_dirs=$library_dirs,
+        language="c++"
     )
 ]
 
