@@ -142,7 +142,7 @@ class AM(t.Generic[Instr, Repr]):
 
     @classmethod
     @abc.abstractmethod
-    def func_info(cls, func: types.FunctionType) -> types.FunctionType:
+    def func_info(cls, func: types.FunctionType):
         raise NotImplemented
 
     @abc.abstractmethod

@@ -183,8 +183,8 @@ def main(sv_instrs):
             self += phi.SetLineno(rhs.lineno)
 
         elif isinstance(rhs, sv.Return):
-            self.end_block()
             self += phi.Return(rhs.val)
+            self.end_block()
 
         elif isinstance(rhs, sv.App):
             self += phi.App(lhs, rhs.f, rhs.args)

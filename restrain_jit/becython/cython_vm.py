@@ -29,8 +29,7 @@ def load_arg(x, cellvars, lineno):
 
 def copy_func(f: types.FunctionType):
     # noinspection PyArgumentList
-    nf = types.FunctionType(f.__code__, f.__globals__, None, None,
-                            f.__closure__)
+    nf = types.FunctionType(f.__code__, f.__globals__, None, None, f.__closure__)
     nf.__defaults__ = f.__defaults__
     nf.__name__ = f.__name__
     nf.__qualname__ = f.__qualname__
@@ -67,61 +66,20 @@ class CyVM(AM[Instr, Repr]):
         self.globals.add(s)
 
     @classmethod
-    def func_info(cls, func: types.FunctionType) -> types.FunctionType:
+    def func_info(cls, func: types.FunctionType):
         names = func.__code__.co_names
         code = Bytecode.from_code(func.__code__)
         codeinfo = cls.code_info(code)
-
-        def r_compile():
-            jit_func = jit_compile_to_cython(self)
-            print("jit_func", type(jit_func))
-            bc = Bytecode()
-
-            bc.append(PyInstr(InstrNames.LOAD_CONST, jit_func))
-            bc.extend(
-                [load_arg(each, cellvars, lineno) for each in argnames])
-            bc.extend([
-                PyInstr(InstrNames.CALL_FUNCTION, len(argnames)),
-                PyInstr(InstrNames.RETURN_VALUE)
-            ])
-            bc._copy_attr_from(code)
-            start_func.__code__ = bc.to_code()
-            start_func.__jit__ = jit_func
-            return jit_func
-
-        start_func = copy_func(func)
-        start_func_code = Bytecode()
-        lineno = code.first_lineno
-        argnames = code.argnames
-        start_func_code.argnames = argnames
-        cellvars = code.cellvars
-        start_func_code.extend([
-            PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
-            PyInstr(InstrNames.CALL_FUNCTION, 0, lineno=lineno),
-            *(load_arg(each, cellvars, lineno) for each in argnames),
-            PyInstr(
-                InstrNames.CALL_FUNCTION, len(argnames), lineno=lineno),
-            PyInstr(InstrNames.RETURN_VALUE, lineno=lineno)
-        ])
-        start_func_code._copy_attr_from(code)
-        self = PyFuncInfo(func.__name__, func.__module__,
-                          func.__defaults__, func.__kwdefaults__,
-                          func.__closure__, func.__globals__, codeinfo,
+        return PyFuncInfo(func.__name__, func.__module__, func.__defaults__,
+                          func.__kwdefaults__, func.__closure__, func.__globals__, codeinfo,
                           func, {}, names)
-        start_func.__code__ = start_func_code.to_code()
-        start_func.__func_info__ = self
-        start_func.__compile__ = r_compile
-        start_func.__jit__ = None
-        return start_func
 
     @classmethod
-    def code_info(cls, code: Bytecode, *,
-                  debug_passes=()) -> PyCodeInfo[Repr]:
+    def code_info(cls, code: Bytecode, *, debug_passes=()) -> PyCodeInfo[Repr]:
 
         cfg = ControlFlowGraph.from_bytecode(code)
         current = cls.empty()
-        run_machine(
-            Interpreter(code.first_lineno).abs_i_cfg(cfg), current)
+        run_machine(Interpreter(code.first_lineno).abs_i_cfg(cfg), current)
         glob_deps = tuple(current.globals)
         instrs = current.instrs
         instrs = cls.pass_push_pop_inline(instrs)
@@ -145,13 +103,11 @@ class CyVM(AM[Instr, Repr]):
         if Options.get('log-phi'):
             print('DEBUG: phi'.center(20, '='))
             show_instrs(instrs)
-        return PyCodeInfo(
-            code.name, tuple(glob_deps), code.argnames, code.freevars,
-            code.cellvars, code.filename, code.first_lineno,
-            code.argcount, code.kwonlyargcount,
-            bool(code.flags & CompilerFlags.GENERATOR),
-            bool(code.flags & CompilerFlags.VARKEYWORDS),
-            bool(code.flags & CompilerFlags.VARARGS), instrs)
+        return PyCodeInfo(code.name, tuple(glob_deps), code.argnames, code.freevars,
+                          code.cellvars, code.filename, code.first_lineno, code.argcount,
+                          code.kwonlyargcount, bool(code.flags & CompilerFlags.GENERATOR),
+                          bool(code.flags & CompilerFlags.VARKEYWORDS),
+                          bool(code.flags & CompilerFlags.VARARGS), instrs)
 
     def pop_exception(self, must: bool) -> Repr:
         raise NotImplemented
@@ -338,6 +294,4 @@ class CyVM(AM[Instr, Repr]):
             else:
                 i = i + 1
 
-        return [
-            each for i, each in enumerate(instrs) if i not in blacklist
-        ]
+        return [each for i, each in enumerate(instrs) if i not in blacklist]

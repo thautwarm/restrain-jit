@@ -82,6 +82,7 @@ def compile_module(mod_name: str, source_code: str, libs=()):
             raise RuntimeError("Cython compiler failed.")
 
         # find the python extension module.
+        print(dirname)
         pyd_name = next(
             each for each in os.listdir(dirname)
             if each.endswith(suffix))
