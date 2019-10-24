@@ -27,8 +27,8 @@ exts = [
         libraries=$libraries,
         library_dirs=$library_dirs,
         language="c++",
-        extra_compile_args=["-std=c++1z"],
-        extra_link_args=["-std=c++1z"]
+        extra_compile_args=["-std=c++11", '-O3'],
+        extra_link_args=["-std=c++11", '-O3']
     )
 ]
 

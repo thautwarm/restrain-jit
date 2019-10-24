@@ -378,6 +378,51 @@ def app(a: App, self: CodeEmit):
     tag = ""
     if a.target:
         tag = "{} = ".format(self.mangle(a.target))
-    args = ', '.join(map(lambda x: emit_repr(self, x), a.args))
+    args = list(map(lambda x: emit_repr(self, x), a.args))
+    if isinstance(a.f, Prim) and a.f.qual == NS.RestrainJIT:
+        if a.f.n == "py_subscr":
+            assert len(args) is 2
+            self += "{}{}({}[{}])".format(self.prefix, tag, args[0], args[1])
+            return
+
+        op = {
+            'py_add': '+',
+            'py_sub': '-',
+            'py_mul': '*',
+            'py_truediv': '/',
+            'py_floordiv': '//',
+            'py_mod': '%',
+            'py_lsh': '<<',
+            'py_rsh': '>>',
+            'py_xor': '^',
+            'py_or': '|',
+            'py_and': '&',
+            'py_pow': '**',
+            'py_is': 'is',
+            'py_gt': '>',
+            'py_lt': '<',
+            'py_in': 'in',
+            'py_not_in': 'not in',
+            'py_ge': '>=',
+            'py_le': '<=',
+            'py_neq': '!=',
+            'py_eq': '==',
+        }.get(a.f.n, None)
+
+        if op is not None:
+            assert len(args) is 2
+            self += "{}{}({} {} {})".format(self.prefix, tag, args[0], op, args[1])
+            return
+        op = {
+            "py_is_none": '{} is None',
+            'py_is_true': '{} is True',
+            'py_not': 'not {}',
+            'py_inv': '~{}',
+            'py_neg': '-{}',
+        }.get(a.f.n, None)
+        if op is not None:
+            assert len(args) is 1
+            self += "{}{}({})".format(self.prefix, tag, op.format(args[0]))
+            return
     f = emit_repr(self, a.f)
-    self += "{}{}{}({})".format(self.prefix, tag, f, args)
+    self += "{}{}{}({})".format(self.prefix, tag, f, ', '.join(args))
