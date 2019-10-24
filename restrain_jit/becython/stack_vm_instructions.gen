@@ -17,4 +17,3 @@ data Return(Instr) val:Repr;
 data Push(Instr) val:Repr;
 data Pop(Instr) ;
 data PyGlob(Instr) qual:str name:str;
-data CyGlob(Instr) qual:str name:str;

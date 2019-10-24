@@ -17,8 +17,4 @@ jit_sys = JITSystem()
 def f(x, y):
     return x + y
 
-
-
-# io = sys.stdout
-# ci = f.__func_info__.r_codeinfo
-# print(mk_module_code(ci))
+print(f(1, 2))

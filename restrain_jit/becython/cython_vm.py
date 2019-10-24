@@ -150,9 +150,7 @@ class CyVM(AM[Instr, Repr]):
         return Reg(regname)
 
     def from_lower(self, qualifier: str, name: str):
-        regname = self.alloc()
-        self.add_instr(regname, CyGlob(qualifier, name))
-        return Reg(regname)
+        return Prim(qualifier, name)
 
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
         name = self.alloc()

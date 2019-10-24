@@ -18,3 +18,10 @@ class Reg(Repr):
 class Const(Repr):
     val:object
     pass
+
+
+@dataclass(frozen=True, order=True)
+class Prim(Repr):
+    qual:str
+    n:str
+    pass

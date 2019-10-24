@@ -83,11 +83,3 @@ class PyGlob(Instr):
     qual:str
     name:str
     pass
-
-
-@dataclass(frozen=True, order=True)
-class CyGlob(Instr):
-    target:t.Optional[str]
-    qual:str
-    name:str
-    pass

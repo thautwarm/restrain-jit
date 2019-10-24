@@ -10,8 +10,7 @@ from restrain_jit.utils import exec_cc
 try:
     import Cython.Includes as includes
 except ImportError:
-    raise RuntimeError(
-        "For using Cython backend, cython package is required.")
+    raise RuntimeError("For using Cython backend, cython package is required.")
 include_paths = list(includes.__path__)
 
 suffix = '.pyd' if platform.system() == 'Windows' else '.so'
@@ -27,11 +26,17 @@ exts = [
         include_dirs=$include_dirs,
         libraries=$libraries,
         library_dirs=$library_dirs,
-        language="c++"
+        language="c++",
+        extra_compile_args=["-std=c++1z"],
+        extra_link_args=["-std=c++1z"]
     )
 ]
 
-setup(ext_modules=cythonize(exts))
+setup(
+    ext_modules=cythonize(
+        exts,
+        compiler_directives=dict(language_level="3str")
+    ))
 """)
 
 
@@ -82,15 +87,11 @@ def compile_module(mod_name: str, source_code: str, libs=()):
             raise RuntimeError("Cython compiler failed.")
 
         # find the python extension module.
-        print(dirname)
-        pyd_name = next(
-            each for each in os.listdir(dirname)
-            if each.endswith(suffix))
+        pyd_name = next(each for each in os.listdir(dirname) if each.endswith(suffix))
     finally:
         os.chdir(cwd)
 
-    spec = util.spec_from_file_location(mod_name,
-                                        os.path.join(dirname, pyd_name))
+    spec = util.spec_from_file_location(mod_name, os.path.join(dirname, pyd_name))
     mod = util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod
@@ -104,11 +105,9 @@ def setup_pyx_for_cpp():
 
     old_get_distutils_extension = pyximport.pyximport.get_distutils_extension
 
-    def new_get_distutils_extension(modname,
-                                    pyxfilename,
-                                    language_level=None):
-        extension_mod, setup_args = old_get_distutils_extension(
-            modname, pyxfilename, language_level)
+    def new_get_distutils_extension(modname, pyxfilename, language_level=None):
+        extension_mod, setup_args = old_get_distutils_extension(modname, pyxfilename,
+                                                                language_level)
         extension_mod.language = 'c++'
         for k, v in get_includes_and_libs().items():
             setattr(extension_mod, k, v)

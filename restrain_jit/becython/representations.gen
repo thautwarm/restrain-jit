@@ -2,3 +2,4 @@ abc Repr;
 
 data Reg(Repr) n:str;
 data Const(Repr) val:object;
+data Prim(Repr) qual:str n:str;

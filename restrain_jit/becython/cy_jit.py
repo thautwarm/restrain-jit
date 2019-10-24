@@ -11,10 +11,11 @@ class JITFunctionHoldPlace:
 
     def __init__(self, code_info: PyCodeInfo):
         self.globals = {}
-        self._function_module = None
-        self._fn_ptr_name = None
+        self.glob_deps = code_info.glob_deps
         self.name_that_makes_sense = code_info.name
         self.argc = code_info.argcount
+        self._function_module = None
+        self._fn_ptr_name = None
 
     @property
     def function_module(self):
@@ -103,16 +104,16 @@ base_method_getter_addr = reinterpret_cast[int64_t](<void*>base_method_getter)
                    function_place.fn_ptr_name)
 
         code += method_getter_code
-        print(code)
         mod = compile_module(
-            "RestrainJIT__Methods__" + function_place.name_that_makes_sense.replace(
-                '.', '__') + '.base_method', code)
+            "Methods__" + function_place.name_that_makes_sense.replace('.', '__') +
+            '__base_method', code)
 
         method_init_fptrs = getattr(mod, CodeEmit.method_init_fptrs)
         method_init_globals = getattr(mod, CodeEmit.method_init_globals)
         base_method_getter_addr = getattr(mod, 'base_method_getter_addr')
 
-        method_init_globals(**function_place.globals)
+        g = function_place.globals
+        method_init_globals(**{k: g[k] for k in function_place.glob_deps})
         method_init_fptrs(self.jit_fptr_index)
 
         function_place.function_module.f.mut_method_get(base_method_getter_addr)

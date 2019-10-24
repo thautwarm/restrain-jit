@@ -115,8 +115,7 @@ class Phi:
             return
         assert self.current_left_stack
         if other_label_addr:
-            self.come_from[other_label_addr].add(
-                self.current_left_stack)
+            self.come_from[other_label_addr].add(self.current_left_stack)
         self.block = []
         self.come_to_end = True
 
@@ -125,9 +124,8 @@ class Phi:
             self.come_from[new_label_addr].add(self.current_left_stack)
         else:
             self.end_block(new_label_addr)
-        self.left_stacks[
-            new_label_addr] = self.current_left_stack = LeftStack(
-                new_label_addr, [])
+        self.left_stacks[new_label_addr] = self.current_left_stack = LeftStack(
+            new_label_addr, [])
         self.blocks[self.current_left_stack.name] = self.block
         self.come_to_end = False
 
@@ -201,9 +199,6 @@ def main(sv_instrs):
         elif isinstance(rhs, sv.PyGlob):
             self += phi.PyGlob(lhs, rhs.qual, rhs.name)
 
-        elif isinstance(rhs, sv.CyGlob):
-            self += phi.CyGlob(lhs, rhs.qual, rhs.name)
-
         elif isinstance(rhs, sv.Load):
             if lhs:
                 self += phi.Load(lhs, rhs.reg)
@@ -231,8 +226,8 @@ def main(sv_instrs):
         for peek_n in range(1, max_required + 1):
             reg_name = self.drawback_name(label, peek_n)
             for can_from in come_from[label]:
-                can_from_label = can_from.name if isinstance(
-                    can_from, LeftStack) else can_from
+                can_from_label = can_from.name if isinstance(can_from,
+                                                             LeftStack) else can_from
                 assert isinstance(peek_n, int)
                 r = self.peek_n(peek_n, at=can_from)
                 reg_dispatch_cases = phi_dispatch_cases[can_from_label]

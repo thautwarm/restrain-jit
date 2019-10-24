@@ -157,7 +157,9 @@ class CodeEmit:
         self.priority = Finally
 
         prefix = "    "
+
         arguments_comma_lst = ', '.join(self.glob.keys())
+
         global_vars_comma_lst = ', '.join(self.glob.values())
         fptrs_comma_lst = ', '.join(self.other_fptrs.keys())
 
@@ -244,6 +246,8 @@ def emit_repr(self: CodeEmit, r: Repr) -> str:
         return emit_const(self, r.val)
     elif isinstance(r, Reg):
         return self.mangle(r.n)
+    elif isinstance(r, Prim):
+        return "{}.{}".format(r.qual, r.n)
     else:
         raise TypeError(r)
 
@@ -325,21 +329,10 @@ def glob(n: t.Union[PyGlob], self: CodeEmit):
     self += "{}{} = {}".format(self.prefix, tag, glob_name)
 
 
-@emit.register(CyGlob)
-def glob(n: t.Union[CyGlob], self: CodeEmit):
-    if not n.target:
-        return
-    tag = self.mangle(n.target)
-    qual = n.qual
-    if qual:
-        self += "{}{} = {}.{}".format(self.prefix, tag, qual, n.name)
-    else:
-        self += "{}{} = {}".format(self.prefix, tag, n.name)
-
-
 @emit.register
 def ret(r: Return, self: CodeEmit):
     self += "{}return {}".format(self.prefix, emit_repr(self, r.val))
+
 
 @emit.register
 def set_cont(c: Jmp, self: CodeEmit):
