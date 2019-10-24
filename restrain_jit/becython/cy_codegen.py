@@ -1,4 +1,5 @@
 from restrain_jit.becython.phi_vm import *
+from restrain_jit.abs_compiler.py_apis import NS
 from io import StringIO
 from contextlib import contextmanager
 from functools import singledispatch
@@ -26,10 +27,14 @@ class CodeEmitter:
     cont_name = "_restrain__cont"
     last_cont_name = "_restrain__last_cont"
     tmp_head = '_res_tmp_'
+    var_head = '_res_'
 
-    def __init__(self, io: StringIO, options: CodeGenOptions = None):
+    def __init__(self,
+                 io: StringIO,
+                 glob: dict,
+                 options: CodeGenOptions = None):
         self.prefixes = [""]
-
+        self.glob = glob
         tmp = self.tmp_head
 
         def mangle_rule():
@@ -61,7 +66,7 @@ class CodeEmitter:
 
     def mangle(self, n: str):
         if n.isidentifier():
-            return n
+            return self.var_head + n
         return self.mangle_map[n]
 
     def __iadd__(self, other):
@@ -177,16 +182,33 @@ def end(_: EndBlock, self: CodeEmitter):
     self.dedent()
 
 
-@emit.register(CyGlob)
 @emit.register(PyGlob)
-def ass_glob(n: t.Union[PyGlob, CyGlob], self: CodeEmitter):
-    if n.target:
-        tag = self.mangle(n.target)
-        if n.qual:
-            self += "{}{} = {}.{}".format(self.prefix, tag, n.qual,
-                                          n.name)
-        else:
-            self += "{}{} = {}".format(self.prefix, tag, n.name)
+def ass_glob(n: t.Union[PyGlob], self: CodeEmitter):
+    if not n.target:
+        return
+    tag = self.mangle(n.target)
+    qual = n.qual
+    assert not qual, "Python Globals not using qualname yet."
+    undef = object()
+    name = n.name
+    glob_var = self.glob.get(name, undef)
+    if glob_var is not undef:
+        assert name.isidentifier()
+        name = "self.globals.{}".format(name)
+
+    self += "{}{} = {}".format(self.prefix, tag, name)
+
+
+@emit.register(CyGlob)
+def ass_glob(n: t.Union[CyGlob], self: CodeEmitter):
+    if not n.target:
+        return
+    tag = self.mangle(n.target)
+    qual = n.qual
+    if qual:
+        self += "{}{} = {}.{}".format(self.prefix, tag, qual, n.name)
+    else:
+        self += "{}{} = {}".format(self.prefix, tag, n.name)
 
 
 @emit.register

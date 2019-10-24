@@ -32,3 +32,24 @@ cdef class JITMonitor:
 
     cpdef search_arg_type_stats(self, int16_t argi, int64_t typeid):
         return self.stats[argi][typeid]
+
+cdef class JITCounter:
+    def __init__(self, dict argtypes_count, times=0):
+        self.argtypes_count = argtypes_count
+        self.times = 0
+
+    def __getitem__(self, object i):
+        v = self.argtypes_count.get(i, 0)
+        if v == 0:
+            self.argtypes_count[i] = 0
+        return v
+
+    def __setitem__(self, object i, object v):
+        self.times += 1
+        self.argtypes_count[i] = v
+
+    cpdef get_times(self):
+        return self.times
+
+    cpdef dict get(self):
+        return self.argtypes_count

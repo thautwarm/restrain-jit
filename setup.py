@@ -16,7 +16,7 @@ setup(
     url='https://github.com/thautwarm/restrain-jit',
     author='thautwarm',
     author_email='twshere@outlook.com',
-    packages=find_packages() + ['restrain_jit.becython.cython_lib'],
+    packages=find_packages() + ['restrain_jit.becython.cython_rts'],
     package_data={'': ['*.pyx', '*.pxd', '*.h', '*.c', '*.cpp']},
     entry_points={"console_scripts": []},
     # above option specifies commands to be installed,

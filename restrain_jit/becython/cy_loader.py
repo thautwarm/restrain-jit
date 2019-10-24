@@ -35,13 +35,25 @@ setup(ext_modules=cythonize(exts))
 """)
 
 
+def get_restrain_rts():
+    restrain_rts = Path(RESTRAIN_CONFIG.cython.rts).expanduser()
+    restrain_include = Path(restrain_rts / "include")
+    restrain_lib = Path(restrain_rts / "lib")
+    return restrain_include, restrain_lib
+
+
+def get_includes_and_libs(extra_libs=()):
+    restrain_include, restrain_lib = get_restrain_rts()
+    return dict(
+        include_dirs=[str(restrain_include), *include_paths],
+        library_dirs=[str(restrain_lib)],
+        libraries=[':typeint', *extra_libs])
+
+
 def compile_module(mod_name: str, source_code: str, libs=()):
     # TODO:
     # tempfile.TemporaryDirectory will close unexpectedly before removing the generated module.
     # Since that we don't delete the temporary dir as a workaround.
-    restrain_rts = Path(RESTRAIN_CONFIG.cython.rts).expanduser()
-    restrain_include = Path(restrain_rts / "include")
-    restrain_lib = Path(restrain_rts / "lib")
 
     mod_name = 'RestrainJIT_' + mod_name
 
@@ -55,11 +67,7 @@ def compile_module(mod_name: str, source_code: str, libs=()):
             template.substitute(
                 module=repr(mod_name),
                 module_path=repr(mod_path),
-                libraries=repr([':typeint', *libs]),
-                include_dirs=repr(
-                    [str(restrain_include), *include_paths]),
-                library_dirs=repr([str(restrain_lib)]),
-            ))
+                **get_includes_and_libs()))
 
     cwd = os.getcwd()
     try:
@@ -101,6 +109,8 @@ def setup_pyx_for_cpp():
         extension_mod, setup_args = old_get_distutils_extension(
             modname, pyxfilename, language_level)
         extension_mod.language = 'c++'
+        for k, v in get_includes_and_libs().items():
+            setattr(extension_mod, k, v)
         return extension_mod, setup_args
 
     pyximport.pyximport.get_distutils_extension = new_get_distutils_extension
