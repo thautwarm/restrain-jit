@@ -83,6 +83,10 @@ cdef fused Arg3:
     int
 ```
 
+The use of fused types could lead to some problems in current stage,
+and there's a workaround: https://github.com/cython/cython/issues/3204
+
+
 # Dependencies of JIT
 
 Sometimes, the type is not the trivial primitive types,
