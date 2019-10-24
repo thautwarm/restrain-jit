@@ -28,4 +28,6 @@ cdef class JITCounter:
 cdef extern from "typeint.h":
     int64_t pytoint "ptrtoint"(object)
     object inttopy "inttoptr"(int64_t)
+    void* inttoptr(int64_t)
     int check_ptr_eq(object, object)
+    object unsafe_cast(void*)

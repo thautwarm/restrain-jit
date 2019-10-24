@@ -11,6 +11,15 @@ class JITFunctionHoldPlace:
     def source_file(self):
         raise NotImplementedError
 
+    def counter_name(self) -> str:
+        raise NotImplementedError
+
+    def global_name(self, glob: str) -> str:
+        raise NotImplementedError
+
+    def arg_type_name(self, ith: int) -> str:
+        raise NotImplementedError
+
 
 class JIT:
 
@@ -32,5 +41,6 @@ class JIT:
     def register_function(self, f: FunctionType):
         place = self.allocate_place_for_function(f)
 
-    def codegen_fused(self):
+    def codegen_no_arg_type(self):
+
         pass

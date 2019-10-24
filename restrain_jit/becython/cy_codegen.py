@@ -1,6 +1,11 @@
 from restrain_jit.becython.phi_vm import *
 from restrain_jit.abs_compiler.py_apis import NS
+from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
+from restrain_jit.vm.am import ValSymbol, Symbol
+from dataclasses import dataclass
+from enum import Enum, auto
 from io import StringIO
+from collections import OrderedDict
 from contextlib import contextmanager
 from functools import singledispatch
 import typing as t
@@ -22,41 +27,72 @@ class MissingDict(dict):
         return val
 
 
+class CodeOut(OrderedDict):
+
+    def __missing__(self, key):
+        v = self[key] = []
+        return v
+
+
 class CodeEmitter:
-    lineno_name = "_restrain__lineno"
-    cont_name = "_restrain__cont"
-    last_cont_name = "_restrain__last_cont"
-    tmp_head = '_res_tmp_'
-    var_head = '_res_'
+    lineno_name = "restrain_lineno"
+    cont_name = "res_cont"
+    last_cont_name = "res_last_cont"
+    mangle_head = 'res_mg_'
+    gensym_head = "res_gen_"
+    var_head = 'res_var_'
+    sym_head = "symbol_"
+    glob_head = "global_"
+    fn_head = "localfn_"
 
-    def __init__(self,
-                 io: StringIO,
-                 glob: dict,
-                 options: CodeGenOptions = None):
+    def __init__(self, code_out: t.Dict[int, t.List[str]],
+                 global_name_mapping: dict):
         self.prefixes = [""]
-        self.glob = glob
-        tmp = self.tmp_head
+        self.glob = global_name_mapping
+        self.priority = 0
+        self.gen_sym_id = 0
+        mangle_head = self.mangle_head
+        sym_head = self.sym_head
+        fn_head = self.fn_head
 
-        def mangle_rule():
-            return "{}{}".format(tmp, len(mangle_map))
+        mangle_map = self.mangle_map = MissingDict(
+            lambda: "{}{}".format(mangle_head, len(mangle_map)))
 
-        mangle_map = self.mangle_map = MissingDict(mangle_rule)
+        self.symbol_map = symbom_map = MissingDict(
+            lambda: "{}{}".format(sym_head, len(symbom_map)))
 
-        write = io.write
+        self.fn_map = fn_map = MissingDict(lambda: "{}{}".format(
+            fn_head, len(fn_map)))
 
         def emit_line(line):
-            write(line)
-            write('\n')
-
-        def change_io_target(new_io: StringIO):
-            emit_line.__closure__[0].cell_contents = new_io.write
+            code_out[self.priority].append(line)
 
         self.emit_line = emit_line
-        self.change_io_target = change_io_target
+
+    @classmethod
+    def declare_func_info(self, fn_info: PyFuncInfo, ):
+        code_out = CodeOut()
+        glob_deps = fn_info.r_codeinfo.glob_deps
+        glob = {}
+        ce = CodeEmitter(code_out, glob)
+        ce.glob.update({each: ce.gensym(each) for each in glob_deps})
+        name = ce.emit_codeinfo(fn_info.r_codeinfo)
+        return name, code_out
 
     @property
     def prefix(self):
         return self.prefixes[-1]
+
+    def gensym(self, s: str = ""):
+        if not s:
+            base = 'r3e'
+        elif s.isidentifier():
+            base = s
+        else:
+            base = ''.join(e for e in s if e.isidentifier())
+        ret = "{}{}_{}".format(self.gensym_head, self.gen_sym_id, base)
+        self.gen_sym_id += 1
+        return ret
 
     def indent(self):
         self.prefixes.append(self.prefix + "    ")
@@ -68,6 +104,31 @@ class CodeEmitter:
         if n.isidentifier():
             return self.var_head + n
         return self.mangle_map[n]
+
+    def declare_symbol(self, s: str):
+        if s in self.symbol_map:
+            return self.symbol_map[s]
+        n = self.symbol_map[s]
+        p = self.priority
+        self.priority = -2
+        try:
+            self += "cdef int64_t {} = {}.get_symbol({!r})".format(
+                n, NS.RestrainJIT, s)
+        finally:
+            self.priority = p
+        return n
+
+    def declare_fptr(self, code: PyCodeInfo):
+        if id(code) in self.fn_map:
+            return self.fn_map[id(code)]
+        p = self.priority
+        self.priority = -1
+        try:
+            n = self.emit_codeinfo(code)
+            self.fn_map[id(code)] = n
+        finally:
+            self.priority = p
+        return
 
     def __iadd__(self, other):
         self.emit_line(other)
@@ -81,7 +142,10 @@ class CodeEmitter:
         self += "{}{} = {}".format(self.prefix, self.last_cont_name,
                                    last or self.cont_name)
 
-    def emit(self, instrs: t.List[Instr], with_head=True):
+    def emit_codeinfo(self, code_info: PyCodeInfo) -> str:
+        raise NotImplementedError
+
+    def emit_instrs(self, instrs: t.List[Instr], with_head=True):
 
         def _op():
             for each in instrs:
@@ -106,10 +170,19 @@ def emit(a: Instr, self: CodeEmitter):
     raise NotImplementedError(a)
 
 
+def emit_const(self: CodeEmitter, r: object):
+    if isinstance(r, (ValSymbol, Symbol)):
+        var_name = self.declare_symbol(r.s)
+        return var_name
+    elif isinstance(r, PyCodeInfo):
+        return self.emit_codeinfo(r)
+    return repr(r)
+
+
 def emit_repr(self: CodeEmitter, r: Repr) -> str:
     # TODO:
     if isinstance(r, Const):
-        return repr(r.val)
+        return emit_const(self, r.val)
     elif isinstance(r, Reg):
         return self.mangle(r.n)
     else:
@@ -189,14 +262,9 @@ def ass_glob(n: t.Union[PyGlob], self: CodeEmitter):
     tag = self.mangle(n.target)
     qual = n.qual
     assert not qual, "Python Globals not using qualname yet."
-    undef = object()
     name = n.name
-    glob_var = self.glob.get(name, undef)
-    if glob_var is not undef:
-        assert name.isidentifier()
-        name = "self.globals.{}".format(name)
-
-    self += "{}{} = {}".format(self.prefix, tag, name)
+    glob_name = self.glob[name]
+    self += "{}{} = {}".format(self.prefix, tag, glob_name)
 
 
 @emit.register(CyGlob)

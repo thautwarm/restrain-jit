@@ -11,3 +11,7 @@ void* inttoptr(int64_t i){
 int check_ptr_eq(void* a, void* b){
     return ptrtoint(a) == ptrtoint(b);
 }
+
+void* unsafe_cast(void* f){
+    return f;
+}
