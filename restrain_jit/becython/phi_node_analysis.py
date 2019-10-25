@@ -160,12 +160,12 @@ def main(sv_instrs):
                 self += phi.BeginBlock(rhs.label, full)
                 continue
             elif isinstance(rhs, sv.Jmp):
-                self.end_block(rhs.label)
                 self += phi.Jmp(rhs.label)
+                self.end_block(rhs.label)
                 continue
             elif isinstance(rhs, sv.JmpIf):
-                self.end_block(rhs.label)
                 self += phi.JmpIf(rhs.label, rhs.cond)
+                self.end_block(rhs.label)
                 continue
             elif isinstance(rhs, sv.JmpIfPush):
                 objs = [*self.current_left_stack.objs, rhs.leave]
@@ -173,9 +173,9 @@ def main(sv_instrs):
                 name = self.current_left_stack.name
                 tmp, self.current_left_stack = self.current_left_stack, LeftStack(
                     name, objs, requested)
-                self.end_block(rhs.label)
                 self.current_left_stack = tmp
                 self += phi.JmpIf(rhs.label, rhs.cond)
+                self.end_block(rhs.label)
                 continue
         if isinstance(rhs, sv.SetLineno):
             self += phi.SetLineno(rhs.lineno)

@@ -204,7 +204,7 @@ class CodeEmit:
         return self
 
     def set_cont(self, label_i):
-        self += "{}{} = {}".format(self.prefix, self.last_cont_name, label_i)
+        self += "{}{} = {}".format(self.prefix, self.cont_name, label_i)
 
     def set_last_cont(self, last=None):
         self += "{}{} = {}".format(self.prefix, self.last_cont_name, last or self.cont_name)
@@ -313,7 +313,8 @@ def label(n: BeginBlock, self: CodeEmit):
 @emit.register
 def end(_: EndBlock, self: CodeEmit):
     self.set_last_cont(self.cont_name)
-    self += "{}break".format(self.prefix)
+    self.set_cont('{} + 1'.format(self.cont_name))
+    self += "{}continue".format(self.prefix)
     self.dedent()
 
 
@@ -337,9 +338,9 @@ def ret(r: Return, self: CodeEmit):
 @emit.register
 def set_cont(c: Jmp, self: CodeEmit):
     prefix = self.prefix
-    self += "{}{} = {}".format(prefix, self.cont_name, c.label)
     self.set_last_cont()
-    self += "{}break".format(prefix)
+    self.set_cont(c.label)
+    self += "{}continue".format(prefix)
 
 
 @emit.register
@@ -349,7 +350,7 @@ def set_conf_if(c: JmpIf, self: CodeEmit):
         prefix = self.prefix
         self += "{}{} = {}".format(prefix, self.cont_name, c.label)
         self.set_last_cont()
-        self += "{}break".format(prefix)
+        self += "{}continue".format(prefix)
 
 
 @emit.register

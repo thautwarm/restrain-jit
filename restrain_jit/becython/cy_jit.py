@@ -102,7 +102,7 @@ cdef method_t base_method_getter({}):
 base_method_getter_addr = reinterpret_cast[int64_t](<void*>base_method_getter)    
         """.format(method_argtype_comma_lst, method_get_argument_comma_lst,
                    function_place.fn_ptr_name)
-
+        print(code)
         code += method_getter_code
         mod = compile_module(
             "Methods__" + function_place.name_that_makes_sense.replace('.', '__') +
