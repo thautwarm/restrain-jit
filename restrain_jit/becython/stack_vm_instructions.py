@@ -99,17 +99,3 @@ class Push(Instr):
 @dataclass(frozen=True, order=True)
 class Pop(Instr):
     pass
-
-
-@dataclass(frozen=True, order=True)
-class PyGlob(Instr):
-    qual:str
-    name:str
-    pass
-
-
-@dataclass(frozen=True, order=True)
-class CyGlob(Instr):
-    qual:str
-    name:str
-    pass

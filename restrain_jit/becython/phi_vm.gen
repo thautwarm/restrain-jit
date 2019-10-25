@@ -11,5 +11,3 @@ data Jmp(Instr) label:object;
 data BeginBlock(Instr) label:object phi:t.Dict[object,t.Dict[str,Repr]];
 data EndBlock(Instr);
 data Return(Instr) val:Repr;
-data PyGlob(Instr) target:t.Optional[str] qual:str name:str;
-data CyGlob(Instr) target:t.Optional[str] qual:str name:str;

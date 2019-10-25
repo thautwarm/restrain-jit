@@ -115,8 +115,7 @@ class Phi:
             return
         assert self.current_left_stack
         if other_label_addr:
-            self.come_from[other_label_addr].add(
-                self.current_left_stack)
+            self.come_from[other_label_addr].add(self.current_left_stack)
         self.block = []
         self.come_to_end = True
 
@@ -125,9 +124,8 @@ class Phi:
             self.come_from[new_label_addr].add(self.current_left_stack)
         else:
             self.end_block(new_label_addr)
-        self.left_stacks[
-            new_label_addr] = self.current_left_stack = LeftStack(
-                new_label_addr, [])
+        self.left_stacks[new_label_addr] = self.current_left_stack = LeftStack(
+            new_label_addr, [])
         self.blocks[self.current_left_stack.name] = self.block
         self.come_to_end = False
 
@@ -162,12 +160,12 @@ def main(sv_instrs):
                 self += phi.BeginBlock(rhs.label, full)
                 continue
             elif isinstance(rhs, sv.Jmp):
-                self.end_block(rhs.label)
                 self += phi.Jmp(rhs.label)
+                self.end_block(rhs.label)
                 continue
             elif isinstance(rhs, sv.JmpIf):
-                self.end_block(rhs.label)
                 self += phi.JmpIf(rhs.label, rhs.cond)
+                self.end_block(rhs.label)
                 continue
             elif isinstance(rhs, sv.JmpIfPush):
                 objs = [*self.current_left_stack.objs, rhs.leave]
@@ -175,16 +173,16 @@ def main(sv_instrs):
                 name = self.current_left_stack.name
                 tmp, self.current_left_stack = self.current_left_stack, LeftStack(
                     name, objs, requested)
-                self.end_block(rhs.label)
                 self.current_left_stack = tmp
                 self += phi.JmpIf(rhs.label, rhs.cond)
+                self.end_block(rhs.label)
                 continue
         if isinstance(rhs, sv.SetLineno):
             self += phi.SetLineno(rhs.lineno)
 
         elif isinstance(rhs, sv.Return):
-            self.end_block()
             self += phi.Return(rhs.val)
+            self.end_block()
 
         elif isinstance(rhs, sv.App):
             self += phi.App(lhs, rhs.f, rhs.args)
@@ -197,12 +195,6 @@ def main(sv_instrs):
         elif isinstance(rhs, sv.Store):
             assert not lhs
             self += phi.Store(rhs.reg.n, rhs.val)
-
-        elif isinstance(rhs, sv.PyGlob):
-            self += phi.PyGlob(lhs, rhs.qual, rhs.name)
-
-        elif isinstance(rhs, sv.CyGlob):
-            self += phi.CyGlob(lhs, rhs.qual, rhs.name)
 
         elif isinstance(rhs, sv.Load):
             if lhs:
@@ -231,8 +223,8 @@ def main(sv_instrs):
         for peek_n in range(1, max_required + 1):
             reg_name = self.drawback_name(label, peek_n)
             for can_from in come_from[label]:
-                can_from_label = can_from.name if isinstance(
-                    can_from, LeftStack) else can_from
+                can_from_label = can_from.name if isinstance(can_from,
+                                                             LeftStack) else can_from
                 assert isinstance(peek_n, int)
                 r = self.peek_n(peek_n, at=can_from)
                 reg_dispatch_cases = phi_dispatch_cases[can_from_label]

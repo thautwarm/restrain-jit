@@ -75,19 +75,3 @@ class EndBlock(Instr):
 class Return(Instr):
     val:Repr
     pass
-
-
-@dataclass(frozen=True, order=True)
-class PyGlob(Instr):
-    target:t.Optional[str]
-    qual:str
-    name:str
-    pass
-
-
-@dataclass(frozen=True, order=True)
-class CyGlob(Instr):
-    target:t.Optional[str]
-    qual:str
-    name:str
-    pass

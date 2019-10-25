@@ -26,6 +26,11 @@ cdef class JITCounter:
     cpdef get_times(self)
 
 cdef extern from "typeint.h":
-    int64_t pytoint "ptrtoint"(object)
     object inttopy "inttoptr"(int64_t)
+    void* inttoptr(int64_t)
+    int64_t pytoint "ptrtoint"(object)
+    int64_t ptrtoint(void*)
     int check_ptr_eq(object, object)
+    object unsafe_cast(void*)
+
+cdef int64_t typeid(object)

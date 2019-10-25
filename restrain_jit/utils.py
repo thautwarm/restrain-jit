@@ -2,6 +2,28 @@ import os
 import sys
 
 
+class MissingDict(dict):
+
+    def __init__(self, fact):
+        dict.__init__(self)
+        self.fact = fact
+
+    def __missing__(self, key):
+        val = self[key] = self.fact()
+        return val
+
+
+class CodeOut(dict):
+
+    def __missing__(self, key):
+        v = self[key] = []
+        return v
+
+    def to_code_lines(self):
+        for _, v in sorted(self.items(), key=lambda x: x[0]):
+            yield from v
+
+
 def exec_cc(cmd, args):
     """
     Execute with current context.

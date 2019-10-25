@@ -24,7 +24,7 @@ class PyCodeInfo(t.Generic[Instr]):
     has_var_kw: bool
     has_var_arg: bool
 
-    instrs: t.List[t.Tuple[str, Instr]]
+    instrs: t.List
 
 
 @dataclass(unsafe_hash=True, order=True, repr=False)

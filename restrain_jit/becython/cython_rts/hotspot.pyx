@@ -53,3 +53,6 @@ cdef class JITCounter:
 
     cpdef dict get(self):
         return self.argtypes_count
+
+cdef int64_t typeid(object x):
+    return pytoint(type(x))
