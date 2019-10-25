@@ -2,7 +2,8 @@ import tempfile
 import os
 import platform
 import sys
-from importlib import util
+import pyximport
+from importlib import util, import_module
 from restrain_jit.config import RESTRAIN_CONFIG
 from pathlib import Path
 from string import Template
@@ -12,6 +13,18 @@ try:
 except ImportError:
     raise RuntimeError("For using Cython backend, cython package is required.")
 include_paths = list(includes.__path__)
+
+JIT_DATA_DIR = Path(tempfile.TemporaryDirectory(prefix="restrain").name)
+JIT_DATA_DIR.mkdir()
+
+JIT_FUNCTION_DIR = JIT_DATA_DIR / "Restrain_paths_functions"
+JIT_TYPE_DIR = JIT_DATA_DIR / "Restrain_paths_types"
+sys.path.append(str(JIT_DATA_DIR))
+
+JIT_FUNCTION_DIR.mkdir()
+JIT_TYPE_DIR.mkdir()
+with (JIT_TYPE_DIR / "__init__.py").open('w') as f:
+    f.write('# So, this is a module, a cython module!')
 
 suffix = '.pyd' if platform.system() == 'Windows' else '.so'
 
@@ -55,14 +68,13 @@ def get_includes_and_libs(extra_libs=()):
         libraries=[':typeint', *extra_libs])
 
 
-def compile_module(mod_name: str, source_code: str, libs=()):
+def compile_module(under_dir: Path, mod_name: str, source_code: str, libs=()):
     # TODO:
     # tempfile.TemporaryDirectory will close unexpectedly before removing the generated module.
     # Since that we don't delete the temporary dir as a workaround.
 
-    mod_name = 'RestrainJIT_' + mod_name
-
-    dirname = tempfile.mkdtemp()
+    mod_name = mod_name
+    dirname = tempfile.mkdtemp(dir=str(under_dir))
     mod_path = mod_name + '.pyx'
     with open(os.path.join(dirname, mod_path), 'w') as pyx_file, open(
             os.path.join(dirname, 'setup.py'), 'w') as setup_file:
@@ -87,13 +99,12 @@ def compile_module(mod_name: str, source_code: str, libs=()):
             raise RuntimeError("Cython compiler failed.")
 
         # find the python extension module.
-        pyd_name = next(each for each in os.listdir(dirname) if each.endswith(suffix))
+        # pyd_name = next(each for each in os.listdir(dirname) if each.endswith(suffix))
     finally:
         os.chdir(cwd)
 
-    spec = util.spec_from_file_location(mod_name, os.path.join(dirname, pyd_name))
-    mod = util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
+    mod = import_module("{}.{}.{}".format(under_dir.name,
+                                          os.path.split(dirname)[1], mod_name))
     return mod
 
 
@@ -101,7 +112,6 @@ def setup_pyx_for_cpp():
     """
     This is to support --cplus for pyximport
     """
-    import pyximport
 
     old_get_distutils_extension = pyximport.pyximport.get_distutils_extension
 
@@ -114,3 +124,7 @@ def setup_pyx_for_cpp():
         return extension_mod, setup_args
 
     pyximport.pyximport.get_distutils_extension = new_get_distutils_extension
+
+
+setup_pyx_for_cpp()
+pyximport.install()

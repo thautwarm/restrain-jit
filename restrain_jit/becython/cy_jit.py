@@ -1,7 +1,8 @@
+from restrain_jit.becython.cy_jit_hotspot_comp import Strategy, HitN, JITRecompilationDecision, extension_type_pxd_paths, is_jit_able_type
 from restrain_jit.becython.cy_method_codegen import CodeEmit, UndefGlobal
 from restrain_jit.becython.cython_vm import CyVM
 from restrain_jit.becython.cy_jit_ext_template import mk_module_code, mk_call_record_t
-from restrain_jit.becython.cy_loader import compile_module
+from restrain_jit.becython.cy_loader import compile_module, JIT_FUNCTION_DIR, JIT_TYPE_DIR
 from restrain_jit.jit_info import PyFuncInfo, PyCodeInfo
 from restrain_jit.utils import CodeOut
 from types import FunctionType
@@ -54,7 +55,10 @@ class JITFunctionHoldPlace:
 
 class JITSystem:
 
-    def __init__(self):
+    def __init__(self, strategies: t.List[Strategy] = None):
+        strategies = strategies or [HitN(200)]
+        self.fn_count = 0
+        self.jit_hotspot_analysis = JITRecompilationDecision(strategies)
         self.memoize_partial_code = {}
         self.jit_fptr_index = {}
         self.fn_place_index = {}  # type: t.Dict[int, JITFunctionHoldPlace]
@@ -74,10 +78,10 @@ class JITSystem:
     def get_func_info(f: FunctionType) -> PyFuncInfo:
         return CyVM.func_info(f)
 
-    @staticmethod
-    def generate_module_for_code(code_info: PyCodeInfo):
+    def generate_module_for_code(self, code_info: PyCodeInfo):
         code = mk_module_code(code_info)
-        mod = compile_module('Functions__' + code_info.__module__.replace('.', '__'), code)
+        unique_module_name = "Functions_{}".format(self.fn_count)
+        mod = compile_module(JIT_FUNCTION_DIR, unique_module_name, code)
         return mod
 
     def remember_partial_code(self, fn_place: JITFunctionHoldPlace, code_out: CodeOut):
@@ -157,9 +161,9 @@ base_method_getter_addr = reinterpret_cast[int64_t](<void*>base_method_getter)
         if self.store_base_method_log:
             function_place.base_method_code = code
 
-        mod = compile_module(
-            "Methods__" + function_place.name_that_makes_sense.replace('.', '__') +
-            '__base_method', code)
+        unique_module = "Methods_{}_{}_base_method".format(
+            id(function_place), function_place.name_that_makes_sense.replace('.', '__'))
+        mod = compile_module(JIT_FUNCTION_DIR, unique_module, code)
 
         method_init_fptrs = getattr(mod, CodeEmit.method_init_fptrs)
         method_init_globals = getattr(mod, CodeEmit.method_init_globals)
