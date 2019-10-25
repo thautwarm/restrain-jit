@@ -3,7 +3,7 @@ from restrain_jit.bejulia.representations import *
 from restrain_jit.bejulia.jl_protocol import bridge, Aware
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.abs_compiler import instrnames as InstrNames
-from restrain_jit.abs_compiler.from_bc import abs_i_cfg
+from restrain_jit.abs_compiler.from_bc import Interpreter
 from restrain_jit.vm.am import AM, run_machine
 from dataclasses import dataclass
 from bytecode import Bytecode, ControlFlowGraph, Instr as PyInstr, CellVar, CompilerFlags
@@ -35,6 +35,10 @@ def copy_func(f: types.FunctionType):
 
 @dataclass
 class JuVM(AM[Instr, Repr]):
+
+    def set_lineno(self, lineno: int):
+        # TODO
+        pass
 
     def get_module(self) -> types.ModuleType:
         return self.module
@@ -69,6 +73,7 @@ class JuVM(AM[Instr, Repr]):
         start_func_code = Bytecode()
         lineno = code.first_lineno
         argnames = code.argnames
+        start_func_code.argnames = argnames
         cellvars = code.cellvars
         start_func_code.extend([
             PyInstr(InstrNames.LOAD_CONST, r_compile, lineno=lineno),
@@ -95,7 +100,8 @@ class JuVM(AM[Instr, Repr]):
 
         cfg = ControlFlowGraph.from_bytecode(code)
         current = cls.empty()
-        run_machine(abs_i_cfg(cfg), current)
+        run_machine(
+            Interpreter(code.first_lineno).abs_i_cfg(cfg), current)
         glob_deps = tuple(current.globals)
         instrs = current.instrs
         instrs = current.pass_push_pop_inline(instrs)
@@ -155,8 +161,9 @@ class JuVM(AM[Instr, Repr]):
 
     def app(self, f: Repr, args: t.List[Repr]) -> Repr:
         name = self.alloc()
+        reg = Reg(name)
         self.add_instr(name, App(f, args))
-        return Reg(name)
+        return reg
 
     def store(self, n: str, val: Repr):
         self.add_instr(None, Store(Reg(n), val))
@@ -308,5 +315,5 @@ class JuVM(AM[Instr, Repr]):
 
     @classmethod
     def empty(cls, module=None):
-        return cls({}, [], [(None, [])], set(), set(), set(), None
+        return cls({}, [], [(None, [])], set(), set(), set(), module
                    or sys.modules[cls.__module__])

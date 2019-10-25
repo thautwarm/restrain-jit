@@ -335,6 +335,12 @@ def py_mk_closure(closure_vars: Repr, native_fn_ptr: Repr):
     return a
 
 
+def py_get_no_exception_iter(v: Repr):
+    f = yield from_lower(NS.RestrainJIT, py_get_no_exception_iter.__name__)
+    a = yield app(f, [v])
+    return a
+
+
 class Indirect:
     """
     start a new VM object
@@ -413,11 +419,6 @@ def py_is_none(v: Repr):
     fn = yield from_lower(NS.RestrainJIT, py_is_none.__name__)
     a = yield app(fn, [v])
     return a
-
-
-def yield_val(a: Repr):
-    raise NotImplemented
-
 
 def yield_from(a: Repr):
     raise NotImplemented

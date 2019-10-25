@@ -1,0 +1,10 @@
+{
+  "julia": {
+    "image": "$JULIA_ROOT/julia-1.2.0/lib/julia/sys.so",
+    "lib": "$JULIA_ROOT/julia-1.2.0/bin/../lib/libjulia.so.1",
+    "bin": "$JULIA_ROOT/julia-1.2.0/bin"
+  },
+  "cython": {
+      "rts": "$RESTRAIN_ROOT/cython_rts/"
+  }
+}

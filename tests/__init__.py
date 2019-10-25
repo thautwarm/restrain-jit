@@ -1,1 +1,1 @@
-from .test_functional import *
+from tests.bejl.test_functional import *
