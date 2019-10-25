@@ -14,26 +14,26 @@ from restrain_jit.becython.cy_jit import JITSystem
 jit_sys = JITSystem()
 
 # DEBUG['stack-vm'] = True
-Options['log-phi'] = True
+# Options['log-phi'] = True
 
 # show generated code for debug
 jit_sys.store_base_method_log = True
 
 
 @jit_sys.jit
-def f(x, y, z, k):
+def f(x, y):
     if x < y:
-        return x + y + z + k + k + k + k
+        return x + y + y + y + x
     return 10
 
 
-def g(x, y, z, k):
+def g(x, y):
     if x < y:
-        return x + y + z + k + k + k + k
+        return x + y + y + y + x
     return 10
 
 
-template = "f(2, 3, 4, 5)"
+template = "f(2, 3)"
 
 
 def test(f):
@@ -41,8 +41,18 @@ def test(f):
     print(f, 'costs', t)
 
 
-print(jit_sys.fn_place_index[id(f)].base_method_code)
+print(f(1, 2))
+test(f)
+test(g)
 
-print(f(1, 2, 3, 4))
+test(f)
+test(g)
+
+template = "f(2.0, 3.0)"
+
+
+test(f)
+test(g)
+
 test(f)
 test(g)

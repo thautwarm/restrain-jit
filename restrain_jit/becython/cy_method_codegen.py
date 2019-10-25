@@ -1,4 +1,6 @@
 from restrain_jit.becython.phi_vm import *
+from restrain_jit.becython.cy_jit_common import *
+from restrain_jit.becython.cy_jit_ext_template import mk_call_record, mk_call_record_t
 from restrain_jit.abs_compiler.py_apis import NS
 from restrain_jit.jit_info import PyCodeInfo, PyFuncInfo
 from restrain_jit.vm.am import ValSymbol, Symbol
@@ -6,6 +8,7 @@ from restrain_jit.utils import CodeOut, MissingDict
 from collections import OrderedDict
 from contextlib import contextmanager
 from functools import singledispatch
+from string import Template
 import typing as t
 
 try:
@@ -18,34 +21,50 @@ class UndefGlobal:
     pass
 
 
-Import = -10
-TypeDecl = -5
-Customizable = 0
-Normal = 5
-Finally = 10
-
 preludes = [
     "cimport restrain_jit.becython.cython_rts.RestrainJIT as RestrainJIT",
     "from restrain_jit.becython.cython_rts.RestrainJIT cimport Cell",
-    "from libc.stdint cimport int64_t, int8_t", "from libcpp.cast cimport reinterpret_cast",
-    "from restrain_jit.becython.cython_rts.hotspot cimport typeid, inttoptr",
-    "from libcpp.vector cimport vector as std_vector"
+    "from libc.stdint cimport int64_t, int8_t",
+    "from libcpp.cast cimport reinterpret_cast",
+    "from restrain_jit.becython.cython_rts.hotspot cimport typeid, inttoptr, pytoint",
 ]
+
+base_call_prelude = """
+from libcpp.vector cimport vector as std_vector
+ctypedef $call_record_t call_record_t
+ctypedef std_vector[call_record_t] call_records_t
+
+cdef class NonJITCallRecorder:
+    cdef call_records_t records
+    cdef int64_t bound
+
+    def __init__(self):
+        self.bound = 233
+        self.records = call_records_t()
+
+    cdef record(self, call_record_t m):
+        self.records.push_back(m)
+
+    cdef int8_t check_bounded(self):
+        return self.records.size() % self.bound == 0
+
+    def load_type(self, int64_t i):
+        return <object>(inttoptr(i))
+
+    def get(self):
+        return self.records
+
+cdef NonJITCallRecorder {0}    
+cdef object {1}
+
+def {2}(a, b):
+    global {0}, {1}
+    {0} = a
+    {1} = b
+""".format(recorder, notifier, method_init_recorder_and_notifier)
 
 
 class CodeEmit:
-    lineno_name = "restrain_lineno"
-    cont_name = "res_cont"
-    last_cont_name = "res_last_cont"
-    mangle_head = 'res_mg_'
-    gensym_head = "res_gen_"
-    var_head = 'res_var_'
-    sym_head = "res_symbol_"
-    glob_head = "res_global_"
-    fn_head = "res_localfn_"
-    fn_addr = "res_address"
-    method_init_globals = "method_init_globals"
-    method_init_fptrs = "method_init_fptrs"
 
     def __init__(self, jit_system: 'JITSystem', code_info: PyCodeInfo,
                  function_place: 'JITFunctionHoldPlace'):
@@ -59,12 +78,21 @@ class CodeEmit:
         def emit_line(line):
             code_out[self.priority].append(line)
 
+        def persistent_code():
+            nonlocal code_out
+            code_out = persistent_code_out
+
+        self.persistent_code = persistent_code
+
+        def base_method_code():
+            nonlocal code_out
+            code_out = once_code_out
+
+        self.base_method_code = base_method_code
+
         self.emit_line = emit_line
 
         # Name generator
-        mangle_head = self.mangle_head
-        sym_head = self.sym_head
-        fn_head = self.fn_head
         mangle_map = self.mangle_map = MissingDict(lambda: "{}{}".format(
             mangle_head, len(mangle_map)))
 
@@ -74,7 +102,6 @@ class CodeEmit:
         self.fn_map = fn_map = MissingDict(lambda: "{}{}".format(fn_head, len(fn_map)))
 
         # End name generator
-
         code_out = persistent_code_out = CodeOut()
         for each in preludes:
             self += each
@@ -101,28 +128,48 @@ class CodeEmit:
 
         once_code_out = CodeOut()
         code_out = once_code_out
-        self.priority = Customizable
+        self.priority = TypeDecl
+        self += Template(base_call_prelude).substitute(
+            call_record_t=mk_call_record_t(code_info.argcount))
 
+        # BASE_METHOD_CODE
         #  different methods of a JIT function
         #  varies from their behaviours/codegen rules of following block
-        # BLOCK: CUSTOMIZABLE
+        code_out = once_code_out
+        self.priority = Customizable
         cellvars = code_info.cellvars
-        arguments = {
-            e: self.mangle(e) if e not in cellvars else self.gensym(e)
-            for e in code_info.freevars + code_info.argnames
-        }
+        arguments = OrderedDict((e, self.mangle(e) if e not in cellvars else self.gensym(e))
+                                for e in code_info.freevars + code_info.argnames)
+        function_place.method_arguments = tuple(arguments.values())
         self += 'cdef {}({}):'.format(fn_name, ', '.join(arguments.values()))
-        cellvars = code_info.cellvars
-        for cell in cellvars:
-            actual_cell = self.mangle(cell)
-            if cell in code_info.argnames:
-                cell_in_arg = self.gensym(cell)
-                self += "{}cdef Cell {} = {}.Cell({})".format(self.prefix, actual_cell,
-                                                              NS.RestrainJIT, cell_in_arg)
-            else:
-                self += "{}cdef Cell {} = {}.Cell(None)".format(self.prefix, actual_cell,
-                                                                NS.RestrainJIT)
-        # END BLOCK: CUSTOMIZABLE
+
+        code_out = once_code_out
+        self.priority = Customizable
+        with indent(self):
+            if code_info.argcount:
+                typeids = mk_call_record(arguments.values())
+                self += "{}# BEGIN MONITOR".format(self.prefix)
+                self += "{}cdef call_record_t res_call_record = {}".format(
+                    self.prefix, typeids)
+                self += "{}{}.record(res_call_record)".format(self.prefix, recorder)
+                self += "{}if {}.check_bounded(): {}()".format(self.prefix, recorder,
+                                                               notifier)
+                self += "{}# END MONITOR".format(self.prefix)
+
+        # PERSISTENT CODE
+            code_out = persistent_code_out
+            self.priority = Normal
+            cellvars = code_info.cellvars
+            for cell in cellvars:
+                actual_cell = self.mangle(cell)
+                if cell in code_info.argnames:
+                    cell_in_arg = self.gensym(cell)
+                    self += "{}cdef Cell {} = {}.Cell({})".format(
+                        self.prefix, actual_cell, NS.RestrainJIT, cell_in_arg)
+                else:
+                    self += "{}cdef Cell {} = {}.Cell(None)".format(
+                        self.prefix, actual_cell, NS.RestrainJIT)
+
         code_out = persistent_code_out
         self.priority = Normal
 
@@ -130,15 +177,10 @@ class CodeEmit:
             self.emit_instrs(code_info.instrs)
 
         self.declare_globals()
-
         jit_system.remember_partial_code(function_place, code_out=persistent_code_out)
-
         # dict.update not work here.
-        for k, v in persistent_code_out.items():
-            once_code_out[k] = v
-
+        once_code_out.merge_update(persistent_code_out)
         base_call_code = '\n'.join(once_code_out.to_code_lines())
-
         function_place.fn_ptr_name = fn_name
         jit_system.generate_base_method(function_place, code=base_call_code)
 
@@ -153,19 +195,19 @@ class CodeEmit:
             base = s
         else:
             base = ''.join(e for e in s if e.isidentifier())
-        ret = "{}{}_{}".format(self.gensym_head, self.gen_sym_id, base)
+        ret = "{}{}_{}".format(gensym_head, self.gen_sym_id, base)
         self.gen_sym_id += 1
         return ret
 
     def indent(self):
-        self.prefixes.append(self.prefix + "    ")
+        self.prefixes.append(self.prefix + IDENTATION_SECTION)
 
     def dedent(self):
         self.prefixes.pop()
 
     def mangle(self, n: str):
         if n.isidentifier():
-            return self.var_head + n
+            return var_head + n
         return self.mangle_map[n]
 
     def declare_globals(self):
@@ -223,17 +265,17 @@ class CodeEmit:
         return self
 
     def set_cont(self, label_i):
-        self += "{}{} = {}".format(self.prefix, self.cont_name, label_i)
+        self += "{}{} = {}".format(self.prefix, cont_name, label_i)
 
     def set_last_cont(self, last=None):
-        self += "{}{} = {}".format(self.prefix, self.last_cont_name, last or self.cont_name)
+        self += "{}{} = {}".format(self.prefix, last_cont_name, last or cont_name)
 
     def emit_instrs(self, instrs: t.List[Instr]):
 
         tmplt = "{}cdef int {} = 0"
-        self += tmplt.format(self.prefix, self.last_cont_name)
-        self += tmplt.format(self.prefix, self.cont_name)
-        self += tmplt.format(self.prefix, self.lineno_name)
+        self += tmplt.format(self.prefix, last_cont_name)
+        self += tmplt.format(self.prefix, cont_name)
+        self += tmplt.format(self.prefix, lineno_name)
         self += "{}# Control flow graph splitted".format(self.prefix)
         self += "{}while True:".format(self.prefix)
         with indent(self):
@@ -287,7 +329,7 @@ def indent(self: CodeEmit):
 
 @emit.register
 def set_lineno(n: SetLineno, self: CodeEmit):
-    self += "{}{} = {}".format(self.prefix, self.lineno_name, n.lineno)
+    self += "{}{} = {}".format(self.prefix, lineno_name, n.lineno)
 
 
 def phi_for_given_branch(self, var_dict):
@@ -297,7 +339,7 @@ def phi_for_given_branch(self, var_dict):
         self += "{}{} = {}".format(self.prefix, k, v)
 
 
-def phi(self, phi_dict):
+def phi(self: CodeEmit, phi_dict):
 
     def app(_self, _token, _var_dict):
         _self += "{}{}:".format(_self.prefix, _token)
@@ -306,11 +348,11 @@ def phi(self, phi_dict):
 
     head, *init, end = phi_dict.items()
 
-    token = "if {} == {}".format(head[0], self.last_cont_name)
+    token = "if {} == {}".format(head[0], last_cont_name)
     app(self, token, head[1])
 
     for come_from, var_dict in init:
-        token = "elif {} == {}".format(come_from, self.last_cont_name)
+        token = "elif {} == {}".format(come_from, last_cont_name)
         app(self, token, var_dict)
 
     self += "# must from label {}".format(head[0])
@@ -319,7 +361,7 @@ def phi(self, phi_dict):
 
 @emit.register
 def label(n: BeginBlock, self: CodeEmit):
-    self += "{}if {} == {}:".format(self.prefix, n.label, self.cont_name)
+    self += "{}if {} == {}:".format(self.prefix, n.label, cont_name)
 
     self.indent()
     self.set_cont(n.label)
@@ -336,8 +378,8 @@ def label(n: BeginBlock, self: CodeEmit):
 
 @emit.register
 def end(_: EndBlock, self: CodeEmit):
-    self.set_last_cont(self.cont_name)
-    self.set_cont('{} + 1'.format(self.cont_name))
+    self.set_last_cont(cont_name)
+    self.set_cont('{} + 1'.format(cont_name))
     self += "{}continue".format(self.prefix)
     self.dedent()
 
@@ -360,7 +402,7 @@ def set_conf_if(c: JmpIf, self: CodeEmit):
     self += "{}if {}:".format(self.prefix, emit_repr(self, c.cond))
     with indent(self):
         prefix = self.prefix
-        self += "{}{} = {}".format(prefix, self.cont_name, c.label)
+        self += "{}{} = {}".format(prefix, cont_name, c.label)
         self.set_last_cont()
         self += "{}continue".format(prefix)
 

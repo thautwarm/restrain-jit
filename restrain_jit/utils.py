@@ -19,8 +19,16 @@ class CodeOut(dict):
         v = self[key] = []
         return v
 
+    def merge_update(self, another: 'CodeOut'):
+        for k, v in another.items():
+            self[k] += v
+
     def to_code_lines(self):
-        for _, v in sorted(self.items(), key=lambda x: x[0]):
+
+        def key(x):
+            return x[0]
+
+        for _, v in sorted(self.items(), key=key):
             yield from v
 
 
@@ -38,9 +46,11 @@ def exec_cc(cmd, args):
     """
     file = cmd
     err_in, err_out = os.pipe()
+    out_in, out_out = os.pipe()
     if os.fork():
         _, status = os.wait()
         os.close(err_out)
+        os.close(out_out)
         yield status
         while True:
             load = os.read(err_in, 1024)
@@ -50,7 +60,10 @@ def exec_cc(cmd, args):
     else:
         # for child process
         os.close(err_in)
+        os.close(out_in)
         os.dup2(err_out, sys.stderr.fileno())
+        os.dup2(out_out, sys.stdout.fileno())
+
         os.execvpe(file, [cmd, *args], dict(os.environ))
         # in case that os.execvp fails
         sys.exit(127)

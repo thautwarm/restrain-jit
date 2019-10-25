@@ -1,9 +1,12 @@
 import typing as t
 import abc
+import numpy as np
+from restrain_jit.becython.cy_jit_common import *
 from collections import Counter
-call_record_t = t.Tuple[int, ...]
-call_records_t = t.List[call_record_t]
-JITRules = []
+try:
+    from .cy_jit import JITSystem, JITFunctionHoldPlace
+except ImportError:
+    pass
 
 extension_type_pxd_paths = {
     int: None,
@@ -13,7 +16,8 @@ extension_type_pxd_paths = {
     list: None,
     tuple: None,
     dict: None,
-    set: None
+    set: None,
+    np.ndarray: 'numpy'
 }
 
 
@@ -41,7 +45,6 @@ class HitN(Strategy):
 
 
 class JITRecompilationDecision:
-    calls: call_records_t
 
     def __init__(self, strategies: t.Iterable[Strategy]):
         self.strategies = list(strategies)
@@ -56,3 +59,12 @@ class JITRecompilationDecision:
         for strategy in self.strategies:
             new_jt.update(strategy(calls, freq, n))
         return new_jt
+
+    def trigger_jit(self, fn_place: 'JITFunctionHoldPlace'):
+        call_recorder = fn_place.call_recorder
+        new_jt = self.select(call_recorder.get())
+        dispatcher = {}
+        for argtypeids in new_jt:
+            argtypes = tuple(map(call_recorder.load_type, argtypeids))
+            dispatcher[argtypeids] = argtypes
+        fn_place.add_methods(dispatcher)

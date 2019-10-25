@@ -14,7 +14,7 @@ from restrain_jit.becython.cy_jit import JITSystem
 jit_sys = JITSystem()
 
 # DEBUG['stack-vm'] = True
-Options['log-phi'] = True
+# Options['log-phi'] = True
 
 # show generated code for debug
 jit_sys.store_base_method_log = True
@@ -44,19 +44,21 @@ template = "f(seq, 12)"
 
 
 def test(f):
-    t = timeit(template, number=1000, globals=dict(f=f, seq=[*range(1000)]))
+    t = timeit(template, number=30000, globals=dict(f=f, seq=[*range(1000)]))
     print(f, 'costs', t)
 
 
-print(jit_sys.fn_place_index[id(f)].base_method_code)
+# print(jit_sys.fn_place_index[id(f)].base_method_code)
 
-print(f(list(range(100)), 3))
 test(f)
 test(g)
-
-fn_place = jit_sys.fn_place_index[id(f)]
-call_records = fn_place.call_records
-vec = (call_records.get())
-print(call_records.load_type(vec[0][0]))
-
-
+test(f)
+test(f)
+# test(g)
+#
+# fn_place = jit_sys.fn_place_index[id(f)]
+# call_records = fn_place.call_recorder
+# vec = (call_records.get())
+# print(call_records.load_type(vec[0][0]))
+#
+# print('\n'.join(fn_place.memoize_partial_code.to_code_lines()))

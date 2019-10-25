@@ -48,7 +48,7 @@ exts = [
 setup(
     ext_modules=cythonize(
         exts,
-        compiler_directives=dict(language_level="3str")
+        compiler_directives=dict(language_level="3str", infer_types=True)
     ))
 """)
 
