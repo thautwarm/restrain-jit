@@ -145,9 +145,8 @@ class CyVM(AM[Instr, Repr]):
         return Reg(n)
 
     def from_higher(self, qualifier: str, name: str):
-        regname = self.alloc()
-        self.add_instr(regname, PyGlob(qualifier, name))
-        return Reg(regname)
+        assert not qualifier
+        return Prim('', name)
 
     def from_lower(self, qualifier: str, name: str):
         return Prim(qualifier, name)

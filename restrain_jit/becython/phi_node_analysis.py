@@ -196,9 +196,6 @@ def main(sv_instrs):
             assert not lhs
             self += phi.Store(rhs.reg.n, rhs.val)
 
-        elif isinstance(rhs, sv.PyGlob):
-            self += phi.PyGlob(lhs, rhs.qual, rhs.name)
-
         elif isinstance(rhs, sv.Load):
             if lhs:
                 self += phi.Load(lhs, rhs.reg)

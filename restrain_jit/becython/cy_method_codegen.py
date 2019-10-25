@@ -13,6 +13,11 @@ try:
 except ImportError:
     pass
 
+
+class UndefGlobal:
+    pass
+
+
 Import = -10
 TypeDecl = -5
 Customizable = 0
@@ -22,7 +27,9 @@ Finally = 10
 preludes = [
     "cimport restrain_jit.becython.cython_rts.RestrainJIT as RestrainJIT",
     "from restrain_jit.becython.cython_rts.RestrainJIT cimport Cell",
-    "from libc.stdint cimport int64_t", "from libcpp.cast cimport reinterpret_cast"
+    "from libc.stdint cimport int64_t, int8_t", "from libcpp.cast cimport reinterpret_cast",
+    "from restrain_jit.becython.cython_rts.hotspot cimport typeid, inttoptr",
+    "from libcpp.vector cimport vector as std_vector"
 ]
 
 
@@ -76,8 +83,20 @@ class CodeEmit:
 
         # TODO: some globals, like 'type' or others, don't need to initialize here.
         # Also, the initialization of those can badly hurt the performance, e.g., 'type'.
-        self.glob = {each: self.gensym(each) for each in glob_deps}
 
+        def is_supported_builtin(s):
+            if s in ('type', 'range', 'len', 'print'):
+                return False
+            raise NameError(s)
+
+        actual_glob = function_place.globals
+        self.glob = {
+            each: self.gensym(each)
+            for each in glob_deps
+            if each in actual_glob or is_supported_builtin(each)
+        }
+
+        function_place.glob_deps = tuple(self.glob.keys())
         fn_name = self.mangle(code_info.name)
 
         once_code_out = CodeOut()
@@ -247,6 +266,11 @@ def emit_repr(self: CodeEmit, r: Repr) -> str:
     elif isinstance(r, Reg):
         return self.mangle(r.n)
     elif isinstance(r, Prim):
+        if not r.qual:
+            # python const
+            name = r.n
+            glob_name = self.glob.get(name, name)
+            return glob_name
         return "{}.{}".format(r.qual, r.n)
     else:
         raise TypeError(r)
@@ -316,18 +340,6 @@ def end(_: EndBlock, self: CodeEmit):
     self.set_cont('{} + 1'.format(self.cont_name))
     self += "{}continue".format(self.prefix)
     self.dedent()
-
-
-@emit.register(PyGlob)
-def glob(n: t.Union[PyGlob], self: CodeEmit):
-    if not n.target:
-        return
-    tag = self.mangle(n.target)
-    qual = n.qual
-    assert not qual, "Python Globals not using qualname yet."
-    name = n.name
-    glob_name = self.glob[name]
-    self += "{}{} = {}".format(self.prefix, tag, glob_name)
 
 
 @emit.register

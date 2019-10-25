@@ -33,4 +33,4 @@ cdef extern from "typeint.h":
     int check_ptr_eq(object, object)
     object unsafe_cast(void*)
 
-cpdef int64_t typeid(object)
+cdef int64_t typeid(object)
