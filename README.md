@@ -15,8 +15,9 @@ The first and yet the only "CPython compatible" Python JIT, over the world.
 
 This comes with my talk on PyConChina 2019.
 
-
 ## Restrain JIT: The Cython Back End
+
+For the previous suspending Julia back end, check the branch [julia-backend](https://github.com/thautwarm/restrain-jit/tree/julia-beckend).
 
 Cython is a widely used Python to C compiler, although it's lack of optimizations, it compiles fast,
 which greatly reduces the annoyance of JIT overhead.
@@ -24,6 +25,11 @@ which greatly reduces the annoyance of JIT overhead.
 Currently the Cython back end works for many fundamental Python constructs. The constructs haven't suppported
 yet are exceptions(but you can wrap it as a function) and closures(ready to support today).
 
-The Cython back end did much more on the compilation stuffs, like Control Flow Analysis, SSA conversions and
-corresponding passes. It's also based on Python bytecode, so Restrain JIT on Cython is still free of hack and
-available in any case.
+The Cython back end did much more on the compilation stuffs, like Control Flow Analysis, many kinds of abstract interpretations, SSA conversions and
+corresponding passes. One of the most awesome pass is the Phi-Node analysis pass,
+which converts the semantics of Stack Virtual Machine to a Register-based Virtual Machine, and generates Phi nodes.
+
+Besides, this is still based on Python bytecode, so Restrain JIT on Cython is still free of hack and available in any case.
+
+The developement of Cython back end is a joy. Yes, debugging is so fast that I can make faster developement iterations,
+and no need to wait half a minute when I want to re-run codes :)
