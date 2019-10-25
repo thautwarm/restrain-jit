@@ -1,59 +1,35 @@
 # Getting Started With Development
 
-> Recommended use python3.x with system version, PyJulia could not support conda (or other python virtual env which use the static link).
->
-> PS: PyJulia will be removed later, so you could use any python version in the later version.
 
-## Install dependencies
+## Prerequisite
+- Python: CPython 3.6 or newer
+- Cython: recommend 0.29+(tested)
 
-``` bash
-pip3 install -r requirements.txt
+## `.restrain` Dotfiles
+
+Copy https://github.com/thautwarm/restrain-jit/tree/master/.restrain to
+your user directory, and edit `~/.restrain/info.json`, to specify 
+`"cython.rts"`.
+
+```json
+{
+    "julia": {/*whatever*/},
+    "cython": {
+        "rts": "~/.restrain/cython_rts"
+    }
+}
 ```
 
-## PyCall
+Then use `g++`(a C++ compiler compatible to that compiles your Python) to generate necessary libraries.
 
-In Julia Repl Pkg Mode:
-
-``` julia
-add PyCall
-add https://github.com/thautwarm/RestrainJIT.jl
+```
+~/.restrain > cd cython_rts/src
+~/.restrain/cython_rts/src > g++ -I../include -fPIC -c typeint.c
+~/.restrain/cython_rts/src > mv typeint.o ../lib/typeint
 ```
 
-Exit Pkg Mode :
 
-``` julia
-using RestrainJIT # pre-compile Restrain JIT
-ENV[PYTHON] = "<add your python binary path here>"
-using Pkg
-Pkg.build(PyCall) # compile PyCall
-```
+Then check [tests/becy](https://github.com/thautwarm/restrain-jit/tree/master/tests/becy) for examples, e.g.,
 
-Test Link Success (in julia repl) :
-
-``` julia
-using PyCall
-math = pyimport("math")
-math.sin(math.pi / 4) # returns ≈ 1/√2 = 0.70710678...
-```
-
-## PyJulia
-
-``` python
-import julia
-julia.install()
-```
-
-Test if lined successful :
-
-``` python
-from julia import Main
-# if could import Main Module, linked success.
-```
-
-## Run Demo
-
-You can install `pytest` via `pip` and run test cases with
-
-``` python
-python3 test/test_functional.py
-```
+- [Loop](https://github.com/thautwarm/restrain-jit/blob/master/tests/becy/test_loop.py)
+- [If](https://github.com/thautwarm/restrain-jit/blob/master/tests/becy/test_if.py)

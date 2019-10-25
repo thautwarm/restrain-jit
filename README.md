@@ -27,7 +27,8 @@ yet are exceptions(but you can wrap it as a function) and closures(ready to supp
 
 The Cython back end did much more on the compilation stuffs, like Control Flow Analysis, many kinds of abstract interpretations, SSA conversions and
 corresponding passes. One of the most awesome pass is the Phi-Node analysis pass,
-which converts the semantics of Stack Virtual Machine to a Register-based Virtual Machine, and generates Phi nodes.
+which converts the semantics of Stack Virtual Machine to a Register-based Virtual Machine, and generates Phi nodes:
+[phi_node_analysis](https://github.com/thautwarm/restrain-jit/blob/master/restrain_jit/becython/phi_node_analysis.py)
 
 Besides, this is still based on Python bytecode, so Restrain JIT on Cython is still free of hack and available in any case.
 
