@@ -147,7 +147,7 @@ class CodeEmit:
         self.priority = Customizable
         with indent(self):
             if code_info.argcount:
-                typeids = mk_call_record(arguments.values())
+                typeids = mk_call_record(list(arguments.values()))
                 self += "{}# BEGIN MONITOR".format(self.prefix)
                 self += "{}cdef call_record_t res_call_record = {}".format(
                     self.prefix, typeids)
@@ -290,8 +290,9 @@ def emit(a: Instr, self: CodeEmit):
 
 def emit_const(self: CodeEmit, r: object):
     if isinstance(r, (ValSymbol, Symbol)):
-        var_name = self.declare_symbol(r.s)
-        return var_name
+        return r.s
+        # var_name = self.declare_symbol(r.s)
+        # return var_name
     elif isinstance(r, PyCodeInfo):
         fn_place = self.jit_system.allocate_place_for_function(r)
         fn_place.globals_from(self.function_place.globals)
@@ -439,7 +440,14 @@ def app(a: App, self: CodeEmit):
             assert len(args) is 2
             self += "{}{}({}[{}])".format(self.prefix, tag, args[0], args[1])
             return
-
+        if a.f.n == "py_get_attr":
+            assert len(args) is 2
+            self += "{}{}{}.{}".format(self.prefix, tag, args[0], args[1])
+            return
+        if a.f.n == "py_store_attr":
+            assert len(args) is 3
+            self += "{}{}.{} = {}".format(self.prefix, args[0], args[1], args[2])
+            return
         op = {
             'py_add': '+',
             'py_sub': '-',

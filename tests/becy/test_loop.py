@@ -48,17 +48,40 @@ def test(f):
     print(f, 'costs', t)
 
 
-# print(jit_sys.fn_place_index[id(f)].base_method_code)
+test(f)
+test(g)
+test(f)
+test(g)
+
+
+@jit_sys.jit
+def f(low, high, step):
+    s = 0
+    i = low
+    while i < high:
+        s = s + i
+        i = i + step
+    return s
+
+
+def g(low, high, step):
+    s = 0
+    i = low
+    while i < high:
+        s = s + i
+        i = i + step
+    return s
+
+
+template = "f(0, 1000, 3)"
+
+
+def test(f):
+    t = timeit(template, number=30000, globals=dict(f=f, seq=[*range(1000)]))
+    print(f, 'costs', t)
+
 
 test(f)
 test(g)
 test(f)
-test(f)
-# test(g)
-#
-# fn_place = jit_sys.fn_place_index[id(f)]
-# call_records = fn_place.call_recorder
-# vec = (call_records.get())
-# print(call_records.load_type(vec[0][0]))
-#
-# print('\n'.join(fn_place.memoize_partial_code.to_code_lines()))
+test(g)

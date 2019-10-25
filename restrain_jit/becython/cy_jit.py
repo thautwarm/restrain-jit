@@ -3,7 +3,7 @@ from restrain_jit.becython.cy_method_codegen import CodeEmit, UndefGlobal
 from restrain_jit.becython.cy_jit_common import *
 from restrain_jit.becython.cython_vm import CyVM
 from restrain_jit.becython.cy_jit_ext_template import mk_module_code, mk_call_record_t, mk_hard_coded_method_getter_module
-from restrain_jit.becython.cy_loader import compile_module, JIT_FUNCTION_DIR, JIT_TYPE_DIR
+from restrain_jit.becython.cy_loader import compile_module, JIT_FUNCTION_DIR, JIT_TYPE_DIR, ximport_module
 from restrain_jit.jit_info import PyFuncInfo, PyCodeInfo
 from restrain_jit.utils import CodeOut
 from restrain_jit.becython import cy_jit_common as cmc
@@ -94,6 +94,58 @@ class JITSystem:
         self.jit_fptr_index = {}
         self.fn_place_index = {}  # type: t.Dict[int, JITFunctionHoldPlace]
         self.store_base_method_log = False
+
+    def jitdata(self, cls: type):
+        undef = object()
+        anns = {}
+        code = []
+        imports = []
+        for i, (k, t) in enumerate(cls.__annotations__.items()):
+            path = extension_type_pxd_paths.get(t, undef)
+            if path is undef:
+                anns[k] = 'object'
+            elif path is None:
+                anns[k] = t.__name__
+            else:
+                typename = "{}{}".format(typed_head, i)
+                anns[k] = typename
+                imports.append('from {} cimport {} as {}'.format(
+                    path, t.__name__, typename))
+        code.append("cdef class {}:".format(cls.__name__))
+        for attr, typestr in anns.items():
+            code.append("    cdef {} x_{}".format(typestr, attr))
+        code.append("    def __init__(self, {}):".format(', '.join(anns)))
+        for attr, _ in anns.items():
+            code.append("        self.x_{0} = {0}".format(attr))
+
+        for attr, typestr in anns.items():
+            code.append("    cpdef {1} get_{0}(self):".format(attr, typestr))
+            code.append("           return self.x_{0}".format(attr))
+
+            code.append("    @property")
+            code.append("    def {0}(self):".format(attr))
+            code.append("           return self.x_{0}".format(attr))
+
+            code.append("    cpdef void set_{0}(self, {1} {0}):".format(attr, typestr))
+            code.append("           self.x_{0} = {0}".format(attr))
+
+            code.append("    @{}.setter".format(attr))
+            code.append("    def {0}(self, {1} {0}):".format(attr, typestr))
+            code.append("           self.x_{0} = {0}".format(attr))
+
+        pyx = '\n'.join(imports + code)
+
+        code.clear()
+        code.append("cdef class {}:".format(cls.__name__))
+        for attr, typestr in anns.items():
+            code.append("    cdef {} x_{}".format(typestr, attr))
+        for attr, typestr in anns.items():
+            code.append("    cpdef void set_{0}(self, {1})".format(attr, typestr))
+            code.append("    cpdef {1} get_{0}(self)".format(attr, typestr))
+
+        pxd = '\n'.join(imports + code)
+        mod = ximport_module(JIT_TYPE_DIR, cls.__name__, pyx, pxd)
+        return getattr(mod, cls.__name__)
 
     def jit(self, f: FunctionType):
         func_info = self.get_func_info(f)

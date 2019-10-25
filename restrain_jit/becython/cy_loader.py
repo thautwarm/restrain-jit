@@ -108,6 +108,22 @@ def compile_module(under_dir: Path, mod_name: str, source_code: str, libs=()):
     return mod
 
 
+def ximport_module(under_dir: Path, mod_name: str, pyx_source: str, pxd_source):
+    mod_name = mod_name
+    directory = Path(tempfile.mkdtemp(dir=str(under_dir)))
+    pyx_file = directory / (mod_name + '.pyx')
+    pxd_file = directory / (mod_name + '.pxd')
+    with open(pyx_file, 'w') as f:
+        f.write(pyx_source)
+    with open(pxd_file, 'w') as f:
+        f.write(pxd_source)
+
+        # find the python extension module.
+        # pyd_name = next(each for each in os.listdir(dirname) if each.endswith(suffix))
+    mod = import_module("{}.{}.{}".format(under_dir.name, directory.name, mod_name))
+    return mod
+
+
 def setup_pyx_for_cpp():
     """
     This is to support --cplus for pyximport
